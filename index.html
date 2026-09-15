@@ -43,6 +43,10 @@
       background: radial-gradient(circle 240px at var(--mx, 50%) var(--my, 40%),
         rgba(177,77,255,0.3), rgba(60,20,120,0.1) 55%, transparent 76%); }
     .reflector.fantasma-off { opacity: 0; }
+    .reflector.toque-glitch { animation: toque-glitch 0.45s steps(3); }
+    @keyframes toque-glitch {
+      0% { opacity: 0; } 30% { opacity: 1; } 55% { opacity: 0.25; }
+      80% { opacity: 1; } 100% { opacity: 1; } }
     .reflector.modo-rojo {
       background: radial-gradient(circle 280px at var(--mx, 50%) var(--my, 40%),
         rgba(255,26,26,0.55), rgba(150,8,8,0.2) 55%, transparent 76%); }
@@ -636,25 +640,48 @@
       idleEspera = setTimeout(empezarDeriva, 1500);
     }
     document.addEventListener('pointermove', e => moverLuz(e.clientX, e.clientY), { passive: true });
-    // Táctil: el dedo guía la luz con su propio canal
-    document.addEventListener('touchmove', e => {
-      const t = e.touches && e.touches[0];
-      if (t) moverLuz(t.clientX, t.clientY);
-    }, { passive: true });
+    // OPCIÓN 2: la luz NACE donde tocas, se queda fija 2s con interferencia y se apaga.
+    // No sigue al dedo: la página se desliza libre.
+    let toqueApaga = null;
     document.addEventListener('touchstart', e => {
       const r = document.getElementById('reflector');
-      if (r) r.classList.remove('fantasma-off');
+      if (!r) return;
       const t = e.touches && e.touches[0];
-      if (t) moverLuz(t.clientX, t.clientY);
+      if (t) {
+        r.style.setProperty('--mx', t.clientX + 'px');
+        r.style.setProperty('--my', t.clientY + 'px');
+      }
+      r.classList.remove('fantasma-off', 'toque-glitch');
+      void r.offsetWidth;
+      r.classList.add('toque-glitch');
+      clearTimeout(toqueApaga);
+      clearTimeout(idleEspera);
+      clearInterval(idleDeriva);
+      toqueApaga = setTimeout(() => r.classList.add('fantasma-off'), 2000);
+      try { tickGlitch(); } catch (err) {}
     }, { passive: true });
     document.addEventListener('touchend', () => {
-      // El fantasma se despide despacio (0.8s) en vez de apagarse de golpe
-      const r = document.getElementById('reflector');
-      if (r) r.classList.add('fantasma-off');
       clearTimeout(idleEspera);
       clearInterval(idleDeriva);
       idleEspera = setTimeout(empezarDeriva, 1500);
     });
+    // Interferencias de cada toque: parpadeo + tick de estática
+    function tickGlitch() {
+      try {
+        const ctx = getCtx();
+        const t = ctx.currentTime;
+        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.12, ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+        const src = ctx.createBufferSource(); src.buffer = buf;
+        const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 2000;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.12, t);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+        src.connect(f).connect(g).connect(ctx.destination);
+        src.start(t);
+      } catch (e) {}
+    }
     // (La detección vive en pointermove con elementFromPoint: infalible)
     // Clic de linterna con audio real: primera mitad = encender, segunda = apagar.
     // Si el archivo falla, entra el clic generado de suplente (siempre suena algo).
