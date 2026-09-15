@@ -244,6 +244,16 @@
       @keyframes nota-pulso { 0%,100% { transform: scale(1); opacity: 0.75; } 50% { transform: scale(1.1); opacity: 1; } }
       #btn-musica-movil.encendida { background: #b14dff; color: #000; opacity: 1;
         box-shadow: 0 0 22px #b14dff; animation: none; }
+      /* Botones flotantes intuitivos: etiqueta + luna recogida */
+      #btn-menu::after { content: 'MENÚ'; position: absolute; top: 100%; left: 50%;
+        transform: translateX(-50%); font-size: 9px; letter-spacing: 2px; color: #ff1a1a;
+        margin-top: 5px; font-family: Arial, sans-serif; }
+      #btn-musica-movil::after { content: 'MÚSICA'; position: absolute; top: 100%; left: 50%;
+        transform: translateX(-50%); font-size: 9px; letter-spacing: 2px; color: #b14dff;
+        margin-top: 5px; font-family: Arial, sans-serif; }
+      #btn-menu, #btn-musica-movil { overflow: visible; }
+      .luna { width: 190px !important; height: 190px !important;
+        top: -60px !important; right: -55px !important; opacity: 0.75; }
     }
     /* Al llegar de otra página, la pantalla enciende suave (parpadeo uniforme) */
     body { animation: encender 1.1s ease-out backwards; }
@@ -535,6 +545,8 @@
       } catch (e) {}
       location.reload();
     }
+    // Versión de ESTA página: si version.json trae otra, se avisa al visitante
+    const UMBRA_VERSION = '3.3';
     setInterval(async () => {
       try {
         const r = await fetch('version.json', { cache: 'no-store' });
