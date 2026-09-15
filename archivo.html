@@ -363,6 +363,9 @@
     // El reflector sigue al cursor por toda la página
     let baseMX = window.innerWidth / 2, baseMY = window.innerHeight * 0.4;
     let idleEspera = null, idleDeriva = null;
+    if ('ontouchstart' in window) {
+      idleEspera = setTimeout(empezarDeriva, 800);
+    }
     function empezarDeriva() {
       // Quietud 1.5s: la linterna vaga sola alrededor del último punto
       const t0 = performance.now();

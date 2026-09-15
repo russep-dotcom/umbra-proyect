@@ -562,7 +562,7 @@
       location.reload();
     }
     // MODO PRUEBA: aviso en cada recarga (quitar para modo real)
-    const AVISO_SIEMPRE = true;
+    const AVISO_SIEMPRE = false;
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
     const UMBRA_VERSION = '3.5';
     function mostrarAvisoUpdate(msg) {
@@ -605,6 +605,10 @@
     // El reflector sigue al cursor por toda la página
     let baseMX = window.innerWidth / 2, baseMY = window.innerHeight * 0.4;
     let idleEspera = null, idleDeriva = null;
+    // En celular no hay cursor: la linterna vaga sola desde el inicio
+    if ('ontouchstart' in window) {
+      idleEspera = setTimeout(empezarDeriva, 800);
+    }
     function empezarDeriva() {
       const t0 = performance.now();
       clearInterval(idleDeriva);
