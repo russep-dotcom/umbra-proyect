@@ -620,18 +620,30 @@
         rr.style.setProperty('--my', (baseMY + Math.sin(t * 1.3) * 12) + 'px');
       }, 50);
     }
-    document.addEventListener('pointermove', e => {
+    // La luz la mueve UNA función: ratón y dedo usan el mismo camino
+    function moverLuz(x, y) {
       const r = document.getElementById('reflector');
       if (!r) return;
-      r.style.setProperty('--mx', e.clientX + 'px');
-      r.style.setProperty('--my', e.clientY + 'px');
-      const el = document.elementFromPoint(e.clientX, e.clientY);
+      r.style.setProperty('--mx', x + 'px');
+      r.style.setProperty('--my', y + 'px');
+      const el = document.elementFromPoint(x, y);
       r.classList.toggle('modo-rojo', !!(el && el.closest && (el.closest('.caja-inicio') || el.closest('button'))));
-      baseMX = e.clientX; baseMY = e.clientY;
+      baseMX = x; baseMY = y;
       clearTimeout(idleEspera);
       clearInterval(idleDeriva);
       idleEspera = setTimeout(empezarDeriva, 1500);
+    }
+    document.addEventListener('pointermove', e => moverLuz(e.clientX, e.clientY), { passive: true });
+    // Táctil: el dedo guía la luz con su propio canal
+    document.addEventListener('touchmove', e => {
+      const t = e.touches && e.touches[0];
+      if (t) moverLuz(t.clientX, t.clientY);
     }, { passive: true });
+    document.addEventListener('touchend', () => {
+      clearTimeout(idleEspera);
+      clearInterval(idleDeriva);
+      idleEspera = setTimeout(empezarDeriva, 1500);
+    });
     // (La detección vive en pointermove con elementFromPoint: infalible)
     // Clic de linterna con audio real: primera mitad = encender, segunda = apagar.
     // Si el archivo falla, entra el clic generado de suplente (siempre suena algo).

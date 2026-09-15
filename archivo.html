@@ -378,11 +378,12 @@
         rr.style.setProperty('--my', (baseMY + Math.sin(t * 1.3) * 12) + 'px');
       }, 50);
     }
-    document.addEventListener('pointermove', e => {
+    // La luz la mueve UNA función: ratón y dedo usan el mismo camino
+    function moverLuz(x, y) {
       const r = document.getElementById('reflector');
       if (!r) return;
-      r.style.setProperty('--mx', e.clientX + 'px');
-      r.style.setProperty('--my', e.clientY + 'px');
+      r.style.setProperty('--mx', x + 'px');
+      r.style.setProperty('--my', y + 'px');
       // Detección directa en 3 estados: categoría / recuadro madre / fondo
       const COL = {
         alfa: ['rgba(255,26,26,0.55)', 'rgba(150,8,8,0.2)'],
@@ -391,7 +392,7 @@
         gamma: ['rgba(26,255,196,0.45)', 'rgba(10,120,90,0.16)'],
         omega: ['rgba(42,75,255,0.55)', 'rgba(20,35,150,0.2)']
       };
-      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const el = document.elementFromPoint(x, y);
       const caja = el && el.closest ? el.closest('.caja') : null;
       const boton = el && el.closest ? el.closest('button') : null;
       const seccion = el && el.closest ? el.closest('section') : null;
@@ -413,11 +414,22 @@
       } else {
         r.classList.remove('modo-rojo', 'modo-blanco');
       }
-      baseMX = e.clientX; baseMY = e.clientY;
+      baseMX = x; baseMY = y;
       clearTimeout(idleEspera);
       clearInterval(idleDeriva);
       idleEspera = setTimeout(empezarDeriva, 1500);
+    }
+    document.addEventListener('pointermove', e => moverLuz(e.clientX, e.clientY), { passive: true });
+    // Táctil: el dedo guía la luz con su propio canal
+    document.addEventListener('touchmove', e => {
+      const t = e.touches && e.touches[0];
+      if (t) moverLuz(t.clientX, t.clientY);
     }, { passive: true });
+    document.addEventListener('touchend', () => {
+      clearTimeout(idleEspera);
+      clearInterval(idleDeriva);
+      idleEspera = setTimeout(empezarDeriva, 1500);
+    });
     // (La detección vive en pointermove con elementFromPoint: infalible)
     // Clic de linterna: clic 1 al 0.72s (encender), clic 2 al 2.23s (apagar)
     function tockSuplente() {
