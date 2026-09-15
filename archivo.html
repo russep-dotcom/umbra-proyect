@@ -315,9 +315,27 @@
   <audio id="aud-almas" src="audio/almas.wav" preload="auto"></audio>
   <audio id="aud-glitch" preload="auto"></audio>
   <div id="crash"><div class="fondo-opulento"><i></i><i></i><i></i></div><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;position:relative;z-index:1;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer>☠ UMBRA · Archivo clasificado · Solo personal autorizado · v3.2 ☠</footer>
+  <footer>☠ UMBRA · Archivo clasificado · Solo personal autorizado · v3.4 ☠</footer>
 
   <script>
+    // Campanada del archivo (misma familia que la portada)
+    function chimeArchivo() {
+      try {
+        const ctx = getCtx();
+        const t = ctx.currentTime;
+        [[392, 0], [311.1, 0.35]].forEach(([f, dt]) => {
+          const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f;
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.0001, t + dt);
+          g.gain.exponentialRampToValueAtTime(0.12, t + dt + 0.05);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + dt + 2.0);
+          o.connect(g).connect(ctx.destination);
+          o.start(t + dt); o.stop(t + dt + 2.1);
+        });
+      } catch (e) {}
+    }
+    // El aviso de versión también sube con campana, como los demás
+    document.head.insertAdjacentHTML('beforeend', '<style>#aviso-update.subiendo{animation:aviso-sube 1s cubic-bezier(0.22,1,0.36,1) forwards;}@keyframes aviso-sube{from{transform:translate(-50%,-110%);opacity:0;}to{transform:translate(-50%,0);opacity:1;}}</style>');
     // Versión de ESTA página: si version.json trae otra, se avisa al visitante
     const UMBRA_VERSION = '3.4';
     setInterval(async () => {
@@ -325,8 +343,13 @@
         const r = await fetch('version.json', { cache: 'no-store' });
         const j = await r.json();
         if (j.version && j.version !== UMBRA_VERSION) {
+          const av = document.getElementById('aviso-update');
           document.getElementById('aviso-msg').textContent = j.mensaje || 'Hay contenido nuevo.';
-          document.getElementById('aviso-update').style.display = 'block';
+          av.classList.remove('subiendo');
+          av.style.display = 'block';
+          void av.offsetWidth;
+          av.classList.add('subiendo');
+          try { chimeArchivo(); } catch (e) {}
         }
       } catch (e) {}
     }, 60000);
