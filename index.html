@@ -579,9 +579,17 @@
         av.classList.add('listo');
       }, 1900);
     }
-    // MODO PRUEBA: sale en cada recarga (se quita al terminar de probar)
+    // MODO PRUEBA: sale en cada recarga con el mensaje ORIGINAL del json
     if (AVISO_SIEMPRE) {
-      setTimeout(() => mostrarAvisoUpdate('PRUEBA: así se ve el aviso de actualización.'), 1500);
+      setTimeout(async () => {
+        let msg = 'Hay contenido nuevo.';
+        try {
+          const r = await fetch('version.json', { cache: 'no-store' });
+          const j = await r.json();
+          if (j.mensaje) msg = j.mensaje;
+        } catch (e) {}
+        mostrarAvisoUpdate(msg);
+      }, 1500);
     }
     const verTimer = setInterval(async () => {
       try {
