@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=0.9">
   <title>UMBRA · Vigila lo que cruzó</title>
   <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Nosifer&family=Special+Elite&family=Creepster&family=Cinzel:wght@700&display=swap" rel="stylesheet">
   <style>
@@ -208,6 +208,7 @@
     @keyframes hint-pulse { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
     :focus-visible { outline: 2px solid var(--alfa); outline-offset: 3px; }
     /* Móvil: todo respira en pantalla chica, botones gordos para el dedo */
+    #btn-menu { display: none; }
     @media (max-width: 640px) {
       h1 { font-size: 42px !important; letter-spacing: 7px; }
       .tag { font-size: 13px; }
@@ -216,6 +217,17 @@
       button { font-size: 15px; padding: 15px 24px; min-height: 48px; }
       #crash h2 { font-size: 26px; }
       #aviso-bienvenida, #aviso-negacion { width: 94vw; padding: 22px 18px; font-size: 14px; }
+      /* Menú hamburguesa solo en móvil: los controles viven adentro */
+      #btn-menu { display: block; position: fixed; top: 12px; right: 12px; z-index: 70;
+        font-size: 20px; padding: 10px 14px; }
+      #controles { display: none; position: fixed; top: 64px; right: 12px; z-index: 70;
+        background: rgba(8,0,0,0.96); border: 1px solid #4a0505; border-radius: 12px; padding: 16px; }
+      #controles.abierto { display: block; }
+      #controles #hint-sonido, #controles #btn-musica,
+      #controles #btn-ajustes, #controles #panel-ajustes { position: static; }
+      #controles #btn-musica, #controles #btn-ajustes { width: 100%; margin-top: 8px; }
+      #controles #panel-ajustes { display: none; margin-top: 10px; }
+      #controles #panel-ajustes.abierto { display: block; }
     }
     /* Al llegar de otra página, la pantalla enciende suave (parpadeo uniforme) */
     body { animation: encender 1.1s ease-out backwards; }
@@ -304,6 +316,8 @@
   </div>
   <div class="vela" aria-hidden="true"></div>
 
+  <button id="btn-menu" onclick="document.getElementById('controles').classList.toggle('abierto')" title="Menú">☰</button>
+  <div id="controles">
   <div id="hint-sonido">↓ ENCIENDE EL SONIDO AQUÍ ↓</div>
   <button id="btn-musica" onclick="toggleMusica(true)">MUSICA / OFF</button>
   <button id="btn-ajustes" onclick="document.getElementById('panel-ajustes').classList.toggle('abierto')" title="Ajustes">⚙</button>
@@ -313,6 +327,7 @@
     <input type="range" id="aj-vol" min="0" max="100" value="100" oninput="ajustarVolumen(this.value)">
     <label style="margin-top:10px;">Sonido de transición: <span id="aj-carga-num">100</span></label>
     <input type="range" id="aj-carga" min="0" max="100" value="100" oninput="ajustarCargaVol(this.value)">
+  </div>
   </div>
   <div id="aviso-update" style="display:none;position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:80;background:#140a02;border:1px solid #ff7a1a;border-radius:8px;color:#ff7a1a;font-size:13px;letter-spacing:1px;padding:12px 18px;max-width:90vw;text-align:center;">
     <span id="aviso-msg"></span><br><br>
