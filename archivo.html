@@ -350,7 +350,12 @@
           void av.offsetWidth;
           av.classList.add('subiendo');
           try { chimeArchivo(); } catch (e) {}
-          setTimeout(() => av.classList.add('listo'), 1900);
+          setTimeout(() => {
+            av.classList.remove('subiendo');
+            av.style.top = '50%';
+            av.style.transform = 'translate(-50%, -50%)';
+            av.classList.add('listo');
+          }, 1900);
           clearInterval(verTimer);
         }
       } catch (e) {}
