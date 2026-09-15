@@ -311,7 +311,7 @@
   </div>
   <div id="aviso-update" style="display:none;position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:80;background:#140a02;border:1px solid #ff7a1a;border-radius:8px;color:#ff7a1a;font-size:13px;letter-spacing:1px;padding:12px 18px;max-width:90vw;text-align:center;">
     <span id="aviso-msg"></span><br><br>
-    <button onclick="location.reload()" style="font-size:13px;padding:8px 20px;">ACTUALIZAR AHORA</button>
+    <button id="aviso-btn" onclick="location.reload()" style="font-size:13px;padding:8px 20px;">ACTUALIZAR AHORA</button>
   </div>
   <audio id="aud-viento" src="audio/viento.m4a" loop preload="auto"></audio>
   <audio id="aud-click" src="audio/on-off.wav" preload="auto"></audio>
@@ -341,27 +341,69 @@
       } catch (e) {}
     }
     // El aviso de versión también sube con campana, como los demás
-    document.head.insertAdjacentHTML('beforeend', '<style>#aviso-update{left:0 !important;right:0 !important;margin-left:auto !important;margin-right:auto !important;max-width:640px !important;width:92vw !important;font-size:17px !important;padding:30px 28px !important;}#aviso-update.subiendo{animation:aviso-sube 1.8s cubic-bezier(0.22,1,0.36,1) forwards;}@keyframes aviso-sube{from{top:110vh;transform:translateY(0);}to{top:50%;transform:translateY(-50%);}}#aviso-update.listo{animation:aviso-late 2.2s ease-in-out infinite;box-shadow:0 0 60px rgba(255,122,26,0.5);}@keyframes aviso-late{0%,100%{box-shadow:0 0 30px rgba(255,122,26,0.3);}50%{box-shadow:0 0 70px rgba(255,122,26,0.6);}}html,body{overflow-x:hidden;}</style>');
+    document.head.insertAdjacentHTML('beforeend', '<style>#aviso-update{left:50% !important;right:auto !important;margin-left:0 !important;margin-right:0 !important;transform:translateX(-50%);max-width:640px !important;width:92vw !important;font-size:17px !important;padding:30px 28px !important;}#aviso-update.subiendo{animation:aviso-sube 1.8s cubic-bezier(0.22,1,0.36,1) forwards;}@keyframes aviso-sube{from{top:110vh;transform:translate(-50%,0);}to{top:50%;transform:translate(-50%,-50%);}}#aviso-update.listo{animation:aviso-late 2.2s ease-in-out infinite;box-shadow:0 0 60px rgba(255,122,26,0.5);}@keyframes aviso-late{0%,100%{box-shadow:0 0 30px rgba(255,122,26,0.3);}50%{box-shadow:0 0 70px rgba(255,122,26,0.6);}}html,body{overflow-x:hidden;}</style>');
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
     const UMBRA_VERSION = '3.6';
+    function mostrarAvisoArchivo(msg, modo) {
+      const av = document.getElementById('aviso-update');
+      document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';
+      const btn = document.getElementById('aviso-btn');
+      if (btn) {
+        if (modo === 'entrada') {
+          btn.textContent = 'ENTENDIDO';
+          btn.onclick = () => { av.style.display = 'none'; av.classList.remove('listo'); };
+        } else {
+          btn.textContent = 'ACTUALIZAR AHORA';
+          btn.onclick = () => location.reload();
+        }
+      }
+      av.classList.remove('subiendo');
+      av.style.display = 'block';
+      void av.offsetWidth;
+      av.classList.add('subiendo');
+      try { chimeArchivo(); } catch (e) {}
+      setTimeout(() => {
+        av.classList.remove('subiendo');
+        av.style.top = '50%';
+        av.style.left = '50%';
+        av.style.transform = 'translate(-50%,-50%)';
+        av.classList.add('listo');
+      }, 1900);
+    }
+    // INMERSIVO: al entrar siempre hay transmisión de UMBRA (se cierra sin recargar)
+    // INMERSIVO: al entrar siempre hay transmisión de UMBRA (se cierra sin recargar)
+    setTimeout(async () => {
+      let msg = 'Hay contenido nuevo.';
+      try {
+        const r = await fetch('version.json', { cache: 'no-store' });
+        const j = await r.json();
+        if (j.mensaje) msg = j.mensaje;
+      } catch (e) {}
+      const av = document.getElementById('aviso-update');
+      if (av && av.style.display !== 'block') mostrarAvisoArchivo(msg, 'entrada');
+    }, 2000);
+    // INMERSIVO: si sales y vuelves (+15s fuera), la señal te recibe de nuevo
+    let fueraDesde = 0, ultimoRetorno = 0;
+    document.addEventListener('visibilitychange', async () => {
+      if (document.hidden) { fueraDesde = Date.now(); return; }
+      if (Date.now() - fueraDesde < 15000 || Date.now() - ultimoRetorno < 30000) return;
+      ultimoRetorno = Date.now();
+      const av = document.getElementById('aviso-update');
+      if (av && av.style.display === 'block') return;
+      let msg = 'La señal se restableció. UMBRA sigue vigilando.';
+      try {
+        const r = await fetch('version.json', { cache: 'no-store' });
+        const j = await r.json();
+        if (j.mensaje) msg = j.mensaje;
+      } catch (e) {}
+      mostrarAvisoArchivo(msg, 'entrada');
+    });
     const verTimer = setInterval(async () => {
       try {
         const r = await fetch('version.json', { cache: 'no-store' });
         const j = await r.json();
         if (j.version && j.version !== UMBRA_VERSION) {
-          const av = document.getElementById('aviso-update');
-          document.getElementById('aviso-msg').textContent = j.mensaje || 'Hay contenido nuevo.';
-          av.classList.remove('subiendo');
-          av.style.display = 'block';
-          void av.offsetWidth;
-          av.classList.add('subiendo');
-          try { chimeArchivo(); } catch (e) {}
-          setTimeout(() => {
-            av.classList.remove('subiendo');
-            av.style.top = '50%';
-            av.style.transform = 'translateY(-50%)';
-            av.classList.add('listo');
-          }, 1900);
+          mostrarAvisoArchivo(j.mensaje, 'update');
           clearInterval(verTimer);
         }
       } catch (e) {}
@@ -505,7 +547,6 @@
       clearTimeout(idleEspera);
       clearInterval(idleDeriva);
       arrancarCaza();
-      try { tickGlitch(); } catch (err) {}
     }, { passive: true });
     document.addEventListener('touchmove', e => {
       if (!ES_MOVIL) return;
