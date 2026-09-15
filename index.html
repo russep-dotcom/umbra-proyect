@@ -309,7 +309,11 @@
     /* El aviso de versión SUBE desde abajo como las demás, más grande */
     html, body { overflow-x: hidden; }
     #aviso-update { left: 0 !important; right: 0 !important; margin-left: auto !important; margin-right: auto !important;
-      max-width: 640px !important; width: 92vw !important; font-size: 17px !important; padding: 30px 28px !important; }
+      max-width: 700px !important; width: 94vw !important; font-size: 19px !important; padding: 36px 32px !important; }
+    /* Diamante superior: mi firma en el aviso */
+    #aviso-update::before { content: ''; position: absolute; top: -9px; left: 50%;
+      width: 16px; height: 16px; margin-left: -8px; transform: rotate(45deg);
+      background: #ff1a1a; box-shadow: 0 0 16px #ff0000; }
     #aviso-update.subiendo { animation: aviso-sube 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
     @keyframes aviso-sube { from { top: 110vh; transform: translateY(0); } to { top: 50%; transform: translateY(-50%); } }
     #aviso-update.listo { animation: aviso-late 2.2s ease-in-out infinite; box-shadow: 0 0 60px rgba(255,122,26,0.5); }
@@ -556,26 +560,35 @@
       } catch (e) {}
       location.reload();
     }
+    // MODO PRUEBA: aviso en cada recarga (quitar para modo real)
+    const AVISO_SIEMPRE = true;
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
     const UMBRA_VERSION = '3.5';
+    function mostrarAvisoUpdate(msg) {
+      const av = document.getElementById('aviso-update');
+      document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';
+      av.classList.remove('subiendo');
+      av.style.display = 'block';
+      void av.offsetWidth;
+      av.classList.add('subiendo');
+      try { chimeBienvenida(); } catch (e) {}
+      setTimeout(() => {
+        av.classList.remove('subiendo');
+        av.style.top = '50%';
+        av.style.transform = 'translateY(-50%)';
+        av.classList.add('listo');
+      }, 1900);
+    }
+    // MODO PRUEBA: sale en cada recarga (se quita al terminar de probar)
+    if (AVISO_SIEMPRE) {
+      setTimeout(() => mostrarAvisoUpdate('PRUEBA: así se ve el aviso de actualización.'), 1500);
+    }
     const verTimer = setInterval(async () => {
       try {
         const r = await fetch('version.json', { cache: 'no-store' });
         const j = await r.json();
         if (j.version && j.version !== UMBRA_VERSION) {
-          const av = document.getElementById('aviso-update');
-          document.getElementById('aviso-msg').textContent = j.mensaje || 'Hay contenido nuevo.';
-          av.classList.remove('subiendo');
-          av.style.display = 'block';
-          void av.offsetWidth;
-          av.classList.add('subiendo');
-          try { chimeBienvenida(); } catch (e) {}
-          setTimeout(() => {
-            av.classList.remove('subiendo');
-            av.style.top = '50%';
-            av.style.transform = 'translateY(-50%)';
-            av.classList.add('listo');
-          }, 1900);
+          mostrarAvisoUpdate(j.mensaje);
           clearInterval(verTimer);
         }
       } catch (e) {}
