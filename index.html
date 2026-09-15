@@ -307,10 +307,11 @@
     #sync-pct { color: #ff1a1a; font-family: 'Metal Mania', 'Impact', cursive; font-size: 22px;
       letter-spacing: 6px; text-shadow: 0 0 16px #ff0000; animation: sync-pulso 0.9s ease-in-out infinite; }
     /* El aviso de versión SUBE desde abajo como las demás, más grande */
-    #aviso-update { max-width: 640px !important; width: 92vw !important; font-size: 17px !important;
-      padding: 30px 28px !important; }
+    html, body { overflow-x: hidden; }
+    #aviso-update { left: 0 !important; right: 0 !important; margin-left: auto !important; margin-right: auto !important;
+      max-width: 640px !important; width: 92vw !important; font-size: 17px !important; padding: 30px 28px !important; }
     #aviso-update.subiendo { animation: aviso-sube 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-    @keyframes aviso-sube { from { top: 110vh; transform: translate(-50%, 0); } to { top: 50%; transform: translate(-50%, -50%); } }
+    @keyframes aviso-sube { from { top: 110vh; transform: translateY(0); } to { top: 50%; transform: translateY(-50%); } }
     #aviso-update.listo { animation: aviso-late 2.2s ease-in-out infinite; box-shadow: 0 0 60px rgba(255,122,26,0.5); }
     @keyframes aviso-late { 0%,100% { box-shadow: 0 0 30px rgba(255,122,26,0.3); } 50% { box-shadow: 0 0 70px rgba(255,122,26,0.6); } }
     /* La bienvenida SUBE desde abajo hasta el centro */
@@ -572,7 +573,7 @@
           setTimeout(() => {
             av.classList.remove('subiendo');
             av.style.top = '50%';
-            av.style.transform = 'translate(-50%, -50%)';
+            av.style.transform = 'translateY(-50%)';
             av.classList.add('listo');
           }, 1900);
           clearInterval(verTimer);
