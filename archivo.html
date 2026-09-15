@@ -335,10 +335,10 @@
       } catch (e) {}
     }
     // El aviso de versión también sube con campana, como los demás
-    document.head.insertAdjacentHTML('beforeend', '<style>#aviso-update.subiendo{animation:aviso-sube 1s cubic-bezier(0.22,1,0.36,1) forwards;}@keyframes aviso-sube{from{transform:translate(-50%,-110%);opacity:0;}to{transform:translate(-50%,0);opacity:1;}}</style>');
-    // Versión de ESTA página: si version.json trae otra, se avisa al visitante
-    const UMBRA_VERSION = '3.4';
-    setInterval(async () => {
+    document.head.insertAdjacentHTML('beforeend', '<style>#aviso-update{max-width:560px !important;width:92vw !important;font-size:15px !important;padding:20px 24px !important;}#aviso-update.subiendo{animation:aviso-sube 1.4s cubic-bezier(0.22,1,0.36,1) forwards;}@keyframes aviso-sube{from{top:110vh;}to{top:12px;}}</style>');
+    // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
+    const UMBRA_VERSION = '3.5';
+    const verTimer = setInterval(async () => {
       try {
         const r = await fetch('version.json', { cache: 'no-store' });
         const j = await r.json();
@@ -350,6 +350,7 @@
           void av.offsetWidth;
           av.classList.add('subiendo');
           try { chimeArchivo(); } catch (e) {}
+          clearInterval(verTimer);
         }
       } catch (e) {}
     }, 60000);
