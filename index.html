@@ -428,7 +428,7 @@
   <div id="mirada"><div class="fondo-opulento"><i></i><i></i><i></i></div><span class="aro a1"></span><span class="aro a2"></span><span class="aro a3"></span><div class="ojo-g"><div class="pupila-g"></div></div><div class="flash-fin" id="flash-fin"></div></div>
   <div id="paso"><span class="vena v1"><i></i></span><span class="vena v2"><i></i></span><span class="vena v3"><i></i></span><span class="vena v4"><i></i></span></div>
   <div id="crash"><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v3.5 ☠</footer>
+  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v3.6 ☠</footer>
 
   <script>
     // La nota flotante refleja la principal y viceversa
@@ -570,7 +570,7 @@
     // MODO PRUEBA: aviso en cada recarga (quitar para modo real)
     const AVISO_SIEMPRE = false;
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '3.5';
+    const UMBRA_VERSION = '3.6';
     function mostrarAvisoUpdate(msg) {
       const av = document.getElementById('aviso-update');
       document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';
@@ -639,31 +639,75 @@
       clearInterval(idleDeriva);
       idleEspera = setTimeout(empezarDeriva, 1500);
     }
-    document.addEventListener('pointermove', e => moverLuz(e.clientX, e.clientY), { passive: true });
-    // OPCIÓN 2: la luz NACE donde tocas, se queda fija 2s con interferencia y se apaga.
-    // No sigue al dedo: la página se desliza libre.
-    let toqueApaga = null;
-    document.addEventListener('touchstart', e => {
+    // PC intacto: solo ratón mueve directo
+    document.addEventListener('pointermove', e => {
+      if (e.pointerType && e.pointerType !== 'mouse') return;
+      moverLuz(e.clientX, e.clientY);
+    }, { passive: true });
+    // MÓVIL ONLY: la luz te persigue pero nunca te alcanza.
+    // Al arrastrar va detrás del dedo con retardo suave.
+    // Al soltar se queda donde murió y se apaga lento.
+    const ES_MOVIL = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window);
+    let curLX = baseMX, curLY = baseMY, objLX = baseMX, objLY = baseMY;
+    let persigueRaf = null, toqueApaga = null, cazaActiva = false, cazaIniciada = false;
+    function pasoCaza() {
       const r = document.getElementById('reflector');
-      if (!r) return;
+      if (!r) { persigueRaf = null; return; }
+      curLX += (objLX - curLX) * 0.08;
+      curLY += (objLY - curLY) * 0.08;
+      r.style.setProperty('--mx', curLX + 'px');
+      r.style.setProperty('--my', curLY + 'px');
+      baseMX = curLX; baseMY = curLY;
+      try {
+        const el = document.elementFromPoint(curLX, curLY);
+        r.classList.toggle('modo-rojo', !!(el && el.closest && (el.closest('.caja-inicio') || el.closest('button'))));
+      } catch (e) {}
+      if (cazaActiva || Math.abs(objLX - curLX) > 0.4 || Math.abs(objLY - curLY) > 0.4) {
+        persigueRaf = requestAnimationFrame(pasoCaza);
+      } else {
+        persigueRaf = null;
+      }
+    }
+    function arrancarCaza() {
+      if (persigueRaf) return;
+      persigueRaf = requestAnimationFrame(pasoCaza);
+    }
+    document.addEventListener('touchstart', e => {
+      if (!ES_MOVIL) return;
+      const r = document.getElementById('reflector');
+      if (!r || r.classList.contains('apagada')) return;
       const t = e.touches && e.touches[0];
       if (t) {
-        r.style.setProperty('--mx', t.clientX + 'px');
-        r.style.setProperty('--my', t.clientY + 'px');
+        objLX = t.clientX; objLY = t.clientY;
+        if (!cazaIniciada) { curLX = objLX; curLY = objLY; cazaIniciada = true; }
       }
+      cazaActiva = true;
+      r.style.transition = 'opacity 0.3s';
       r.classList.remove('fantasma-off', 'toque-glitch');
       void r.offsetWidth;
       r.classList.add('toque-glitch');
       clearTimeout(toqueApaga);
       clearTimeout(idleEspera);
       clearInterval(idleDeriva);
-      toqueApaga = setTimeout(() => r.classList.add('fantasma-off'), 2000);
+      arrancarCaza();
       try { tickGlitch(); } catch (err) {}
     }, { passive: true });
+    document.addEventListener('touchmove', e => {
+      if (!ES_MOVIL) return;
+      const t = e.touches && e.touches[0];
+      if (t) { objLX = t.clientX; objLY = t.clientY; arrancarCaza(); }
+    }, { passive: true });
     document.addEventListener('touchend', () => {
-      clearTimeout(idleEspera);
-      clearInterval(idleDeriva);
-      idleEspera = setTimeout(empezarDeriva, 1500);
+      if (!ES_MOVIL) return;
+      cazaActiva = false;
+      clearTimeout(toqueApaga);
+      toqueApaga = setTimeout(() => {
+        const r = document.getElementById('reflector');
+        if (!r) return;
+        if (persigueRaf) { cancelAnimationFrame(persigueRaf); persigueRaf = null; }
+        r.style.transition = 'opacity 2.5s ease-out';
+        r.classList.add('fantasma-off');
+      }, 350);
     });
     // Interferencias de cada toque: parpadeo + tick de estática
     function tickGlitch() {
@@ -729,8 +773,9 @@
         }, 1500);
       }
     }
-    // Clic IZQUIERDO = interruptor de linterna (los enlaces y botones no se tocan)
+    // Clic IZQUIERDO = interruptor de linterna SOLO PC (móvil usa fade, no toggle)
     document.addEventListener('click', e => {
+      if (window.matchMedia('(pointer: coarse)').matches && ('ontouchstart' in window)) return;
       if (e.target.closest && e.target.closest('a, button, input, textarea, select, summary')) return;
       const r = document.getElementById('reflector');
       if (!r) return;
