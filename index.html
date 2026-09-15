@@ -39,8 +39,10 @@
       background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.65) 100%); }
     /* Reflector: los negros y rojos se encienden alrededor del cursor */
     .reflector { position: fixed; inset: 0; z-index: 58; pointer-events: none;
+      transition: opacity 0.8s ease-out;
       background: radial-gradient(circle 240px at var(--mx, 50%) var(--my, 40%),
         rgba(177,77,255,0.3), rgba(60,20,120,0.1) 55%, transparent 76%); }
+    .reflector.fantasma-off { opacity: 0; }
     .reflector.modo-rojo {
       background: radial-gradient(circle 280px at var(--mx, 50%) var(--my, 40%),
         rgba(255,26,26,0.55), rgba(150,8,8,0.2) 55%, transparent 76%); }
@@ -639,7 +641,16 @@
       const t = e.touches && e.touches[0];
       if (t) moverLuz(t.clientX, t.clientY);
     }, { passive: true });
+    document.addEventListener('touchstart', e => {
+      const r = document.getElementById('reflector');
+      if (r) r.classList.remove('fantasma-off');
+      const t = e.touches && e.touches[0];
+      if (t) moverLuz(t.clientX, t.clientY);
+    }, { passive: true });
     document.addEventListener('touchend', () => {
+      // El fantasma se despide despacio (0.8s) en vez de apagarse de golpe
+      const r = document.getElementById('reflector');
+      if (r) r.classList.add('fantasma-off');
       clearTimeout(idleEspera);
       clearInterval(idleDeriva);
       idleEspera = setTimeout(empezarDeriva, 1500);

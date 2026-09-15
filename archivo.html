@@ -425,7 +425,15 @@
       const t = e.touches && e.touches[0];
       if (t) moverLuz(t.clientX, t.clientY);
     }, { passive: true });
+    document.addEventListener('touchstart', e => {
+      const r = document.getElementById('reflector');
+      if (r) r.classList.remove('fantasma-off');
+      const t = e.touches && e.touches[0];
+      if (t) moverLuz(t.clientX, t.clientY);
+    }, { passive: true });
     document.addEventListener('touchend', () => {
+      const r = document.getElementById('reflector');
+      if (r) r.classList.add('fantasma-off');
       clearTimeout(idleEspera);
       clearInterval(idleDeriva);
       idleEspera = setTimeout(empezarDeriva, 1500);
