@@ -233,9 +233,8 @@
       #controles.abierto { display: block; }
       #controles #hint-sonido, #controles #btn-musica,
       #controles #btn-ajustes, #controles #panel-ajustes { position: static; }
-      #controles #btn-musica, #controles #btn-ajustes { width: 100%; margin-top: 8px; }
-      #controles #panel-ajustes { display: none; margin-top: 10px; }
-      #controles #panel-ajustes.abierto { display: block; }
+      #controles #btn-musica, #controles #btn-ajustes { display: none; }
+      #controles #panel-ajustes { display: block; margin-top: 0; }
       /* Nota musical flotante: visible siempre, pulsa suave para invitar */
       #btn-musica-movil { display: block; position: fixed; right: 8px; bottom: 76px; z-index: 70;
         width: 46px; height: 46px; border-radius: 50%; font-size: 20px; padding: 0;
@@ -347,7 +346,7 @@
   <div id="controles">
   <div id="hint-sonido">↓ ENCIENDE EL SONIDO AQUÍ ↓</div>
   <button id="btn-musica" onclick="toggleMusica(true)">MUSICA / OFF</button>
-  <button id="btn-ajustes" onclick="document.getElementById('panel-ajustes').classList.toggle('abierto')" title="Ajustes">⚙</button>
+  <button id="btn-ajustes" onclick="document.getElementById('panel-ajustes').classList.toggle('abierto')" title="Ajustes" style="font-size:0;position:fixed;left:14px;bottom:14px;z-index:30;width:46px;height:46px;border-radius:50%;border:2px solid #b14dff;background:radial-gradient(circle,#1a001a 30%,#000 70%);padding:0;"><span style="position:absolute;inset:14px;border-radius:50%;background:#b14dff;box-shadow:0 0 12px #b14dff;display:block;"></span></button>
   <div id="panel-ajustes">
     <h3>AJUSTES</h3>
     <label>Sonidos de fondo de la página: <span id="aj-vol-num">100</span></label>
@@ -546,7 +545,7 @@
       location.reload();
     }
     // Versión de ESTA página: si version.json trae otra, se avisa al visitante
-    const UMBRA_VERSION = '3.3';
+    const UMBRA_VERSION = '3.4';
     setInterval(async () => {
       try {
         const r = await fetch('version.json', { cache: 'no-store' });
