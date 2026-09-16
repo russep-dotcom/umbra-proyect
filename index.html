@@ -28,11 +28,11 @@
     .n1 { top: 20%; left: -30%; animation: deriva 26s ease-in-out infinite alternate; }
     .n2 { top: 60%; left: -10%; animation: deriva 34s ease-in-out infinite alternate-reverse; }
     @keyframes deriva { from { transform: translateX(0); } to { transform: translateX(12%); } }
-    .brasa { position: absolute; bottom: -10px; width: 4px; height: 4px; border-radius: 50%; background: #ff5a1a; box-shadow: 0 0 8px #ff5a1a; animation: subir linear infinite; }
-    /* En computador llegan más alto: se mantienen vivas hasta arriba y ahí se desvanecen */
-    @keyframes subir { 0% { transform: translateY(0); opacity: 0; } 8% { opacity: 1; } 75% { opacity: 1; } 100% { transform: translateY(-115vh); opacity: 0; } }
-    /* Brasas al frente: suben POR ENCIMA del recuadro sin tapar nada (son de 4px) */
-    .brasas-frente { position: fixed; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
+    .brasa { position: absolute; bottom: -10px; width: 4px; height: 4px; border-radius: 50%; background: #ff5a1a; box-shadow: 0 0 8px #ff5a1a; filter: blur(0.5px); animation: subir linear infinite; }
+    /* En computador salen de la pantalla: suben visibles hasta arriba del todo */
+    @keyframes subir { 0% { transform: translateY(0); opacity: 0; } 6% { opacity: 1; } 88% { opacity: 1; } 100% { transform: translateY(-120vh); opacity: 0; } }
+    /* Brasas detrás del recuadro en computador (como antes); al frente SOLO en celular */
+    .brasas-frente { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
     /* En celular llegan hasta el logo y ahí se desvanecen suave (no se apagan de golpe) */
     @keyframes subir-movil { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(-105vh); opacity: 0; } }
     /* ===== GRANO DE CINE + VIÑETA + LUZ DE VELA ===== */
@@ -284,15 +284,19 @@
         top: -60px !important; right: -55px !important; opacity: 0.75; }
       /* Zoom fijo SOLO en celular: sin pellizco ni doble toque (computador libre) */
       html { touch-action: pan-x pan-y !important; }
-      /* Brasas hasta el logo en celular (en computador no se toca dónde se desvanecen) */
+      /* Brasas al frente SOLO en celular (en computador van abajo del recuadro) */
+      .brasas-frente { z-index: 3; }
       .brasas-frente .brasa { animation-name: subir-movil; }
-      /* En celular suben más despacio y con 5 puntos basta (los extras son del computador) */
-      .brasas-frente .brasa:nth-child(n+6) { display: none; }
+      /* En celular 8 puntos lentos hasta el logo */
+      .brasas-frente .brasa:nth-child(n+9) { display: none; }
       .brasas-frente .brasa:nth-child(1) { animation-duration: 16s !important; }
       .brasas-frente .brasa:nth-child(2) { animation-duration: 20s !important; }
       .brasas-frente .brasa:nth-child(3) { animation-duration: 18s !important; }
       .brasas-frente .brasa:nth-child(4) { animation-duration: 22s !important; }
       .brasas-frente .brasa:nth-child(5) { animation-duration: 19s !important; }
+      .brasas-frente .brasa:nth-child(6) { animation-duration: 24s !important; }
+      .brasas-frente .brasa:nth-child(7) { animation-duration: 17s !important; }
+      .brasas-frente .brasa:nth-child(8) { animation-duration: 21s !important; }
     }
     /* Al llegar de otra página, la pantalla enciende suave (parpadeo uniforme) */
     body { animation: encender 1.1s ease-out backwards; }
@@ -389,15 +393,18 @@
     <div class="niebla-capa n2"></div>
   </div>
   <div class="brasas-frente" aria-hidden="true">
-    <span class="brasa" style="left:8%;animation-duration:9s;"></span>
+    <span class="brasa" style="left:4%;animation-duration:9s;"></span>
     <span class="brasa" style="left:22%;animation-duration:12s;animation-delay:-4s;"></span>
-    <span class="brasa" style="left:47%;animation-duration:10s;animation-delay:-2s;"></span>
-    <span class="brasa" style="left:68%;animation-duration:13s;animation-delay:-7s;"></span>
-    <span class="brasa" style="left:85%;animation-duration:11s;animation-delay:-5s;"></span>
+    <span class="brasa" style="left:39%;animation-duration:15s;animation-delay:-1s;"></span>
+    <span class="brasa" style="left:56%;animation-duration:13.5s;animation-delay:-8s;"></span>
+    <span class="brasa" style="left:72%;animation-duration:12.5s;animation-delay:-3s;"></span>
+    <span class="brasa" style="left:89%;animation-duration:13s;animation-delay:-7s;"></span>
     <span class="brasa" style="left:14%;animation-duration:14s;animation-delay:-9s;"></span>
-    <span class="brasa" style="left:36%;animation-duration:15s;animation-delay:-1s;"></span>
-    <span class="brasa" style="left:60%;animation-duration:9.5s;animation-delay:-6s;"></span>
-    <span class="brasa" style="left:93%;animation-duration:12.5s;animation-delay:-3s;"></span>
+    <span class="brasa" style="left:64%;animation-duration:9.5s;animation-delay:-6s;"></span>
+    <span class="brasa" style="left:31%;animation-duration:10.5s;animation-delay:-11s;"></span>
+    <span class="brasa" style="left:81%;animation-duration:11s;animation-delay:-5s;"></span>
+    <span class="brasa" style="left:47%;animation-duration:10s;animation-delay:-2s;"></span>
+    <span class="brasa" style="left:96%;animation-duration:11.5s;animation-delay:-12s;"></span>
   </div>
   <div class="vela" aria-hidden="true"></div>
 
@@ -469,7 +476,7 @@
   <div id="mirada"><div class="fondo-opulento"><i></i><i></i><i></i></div><span class="aro a1"></span><span class="aro a2"></span><span class="aro a3"></span><div class="ojo-g"><div class="pupila-g"></div></div><div class="flash-fin" id="flash-fin"></div></div>
   <div id="paso"><span class="vena v1"><i></i></span><span class="vena v2"><i></i></span><span class="vena v3"><i></i></span><span class="vena v4"><i></i></span></div>
   <div id="crash"><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.12 ☠</footer>
+  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.13 ☠</footer>
 
   <script>
     // La nota flotante refleja la principal y viceversa
@@ -621,7 +628,7 @@
     // MODO PRUEBA: aviso en cada recarga (quitar para modo real)
     const AVISO_SIEMPRE = false;
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '4.12';
+    const UMBRA_VERSION = '4.13';
     function mostrarAvisoUpdate(msg) {
       const av = document.getElementById('aviso-update');
       document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';

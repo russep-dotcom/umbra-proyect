@@ -1,6 +1,6 @@
 {
-  "version": "4.12",
-  "mensaje": "UMBRA v4.12: brasas mejoradas. Recarga para ver el nuevo contenido.",
-  "mensaje_movil": "UMBRA v4.12: las brasas ahora suben más despacio hasta el logo. Recarga para ver el nuevo contenido.",
-  "mensaje_pc": "UMBRA v4.12: las brasas llegan más alto y salen más seguidas. Recarga para ver el nuevo contenido."
+  "version": "4.13",
+  "mensaje": "UMBRA v4.13: brasas con desenfoque leve. Recarga para ver el nuevo contenido.",
+  "mensaje_movil": "UMBRA v4.13: más brasas suaves hasta el logo. Recarga para ver el nuevo contenido.",
+  "mensaje_pc": "UMBRA v4.13: las brasas salen de la pantalla sin agruparse. Recarga para ver el nuevo contenido."
 }
