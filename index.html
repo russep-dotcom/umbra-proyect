@@ -230,12 +230,26 @@
       button { font-size: 15px; padding: 15px 24px; min-height: 48px; }
       #crash h2 { font-size: 26px; }
       #aviso-bienvenida, #aviso-negacion { width: 94vw; padding: 22px 18px; font-size: 14px; }
-      /* Menú hamburguesa solo en móvil: ojo UMBRA en la esquina */
+      /* Menú móvil: ojo UMBRA PRO — retícula de vigilancia + iris con vida */
       #btn-menu { display: block; position: fixed; top: 8px; right: 8px; z-index: 70;
         font-size: 0; padding: 0; width: 46px; height: 46px; border-radius: 50%;
-        border: 2px solid #8a0303; background: radial-gradient(circle, #1a0000 30%, #000 70%); }
-      #btn-menu::before { content: ''; position: absolute; inset: 13px; border-radius: 50%;
-        background: #ff1a1a; box-shadow: 0 0 12px #ff0000; }
+        border: 2px solid #c40f0f;
+        background:
+          radial-gradient(circle, #060000 0 56%, rgba(6,0,0,0) 57%),
+          repeating-conic-gradient(from 0deg, rgba(255,26,26,0.8) 0deg 2deg, transparent 2deg 14deg),
+          radial-gradient(circle, #3a0505 0%, #140000 55%, #000 80%);
+        box-shadow: 0 0 16px rgba(255,0,0,0.5), inset 0 0 10px #000;
+        animation: menu-respira 3.2s ease-in-out infinite; }
+      @keyframes menu-respira {
+        0%,100% { box-shadow: 0 0 10px rgba(255,0,0,0.35), inset 0 0 10px #000; }
+        50% { box-shadow: 0 0 22px rgba(255,0,0,0.75), inset 0 0 10px #000; } }
+      #btn-menu::before { content: ''; position: absolute; inset: 12px; border-radius: 50%;
+        background:
+          radial-gradient(circle at 36% 30%, rgba(255,200,200,0.95) 0 7%, rgba(255,200,200,0) 8%),
+          radial-gradient(circle, #ff5252 0 20%, #e01111 36%, #7a0808 60%, #200000 80%);
+        box-shadow: 0 0 14px #ff1a1a, inset 0 0 5px #000;
+        animation: menu-late 3.2s ease-in-out infinite; }
+      @keyframes menu-late { 0%,100% { transform: scale(1); } 50% { transform: scale(1.14); } }
       #controles { display: none; position: fixed; top: 64px; right: 12px; z-index: 70;
         background: rgba(8,0,0,0.96); border: 1px solid #4a0505; border-radius: 12px; padding: 16px; }
       #controles.abierto { display: block; }
@@ -253,8 +267,8 @@
         box-shadow: 0 0 22px #b14dff; animation: none; }
       /* Botones flotantes intuitivos: etiqueta + luna recogida */
       #btn-menu::after { content: 'MENÚ'; position: absolute; top: 100%; left: 50%;
-        transform: translateX(-50%); font-size: 9px; letter-spacing: 2px; color: #ff1a1a;
-        margin-top: 5px; font-family: Arial, sans-serif; }
+        transform: translateX(-50%); font-size: 9px; letter-spacing: 3px; font-weight: bold; color: #ff1a1a;
+        text-shadow: 0 0 8px #ff0000; margin-top: 5px; font-family: Arial, sans-serif; }
       #btn-musica-movil::after { content: 'MÚSICA'; position: absolute; top: 100%; left: 50%;
         transform: translateX(-50%); font-size: 9px; letter-spacing: 2px; color: #b14dff;
         margin-top: 5px; font-family: Arial, sans-serif; }
@@ -431,7 +445,7 @@
   <div id="mirada"><div class="fondo-opulento"><i></i><i></i><i></i></div><span class="aro a1"></span><span class="aro a2"></span><span class="aro a3"></span><div class="ojo-g"><div class="pupila-g"></div></div><div class="flash-fin" id="flash-fin"></div></div>
   <div id="paso"><span class="vena v1"><i></i></span><span class="vena v2"><i></i></span><span class="vena v3"><i></i></span><span class="vena v4"><i></i></span></div>
   <div id="crash"><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v3.8 ☠</footer>
+  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v3.9 ☠</footer>
 
   <script>
     // La nota flotante refleja la principal y viceversa
@@ -573,7 +587,7 @@
     // MODO PRUEBA: aviso en cada recarga (quitar para modo real)
     const AVISO_SIEMPRE = false;
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '3.8';
+    const UMBRA_VERSION = '3.9';
     function mostrarAvisoUpdate(msg, modo) {
       const av = document.getElementById('aviso-update');
       document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';
