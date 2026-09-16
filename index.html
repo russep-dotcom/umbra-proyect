@@ -447,7 +447,7 @@
   <div id="mirada"><div class="fondo-opulento"><i></i><i></i><i></i></div><span class="aro a1"></span><span class="aro a2"></span><span class="aro a3"></span><div class="ojo-g"><div class="pupila-g"></div></div><div class="flash-fin" id="flash-fin"></div></div>
   <div id="paso"><span class="vena v1"><i></i></span><span class="vena v2"><i></i></span><span class="vena v3"><i></i></span><span class="vena v4"><i></i></span></div>
   <div id="crash"><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.3 ☠</footer>
+  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.4 ☠</footer>
 
   <script>
     // La nota flotante refleja la principal y viceversa
@@ -596,23 +596,14 @@
     // MODO PRUEBA: aviso en cada recarga (quitar para modo real)
     const AVISO_SIEMPRE = false;
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '4.3';
-    let avisoUpdateVersion = null;
-    function mostrarAvisoUpdate(msg, modo) {
+    const UMBRA_VERSION = '4.4';
+    function mostrarAvisoUpdate(msg) {
       const av = document.getElementById('aviso-update');
       document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';
       const btn = document.getElementById('aviso-btn');
       if (btn) {
-        if (modo === 'entrada') {
-          btn.textContent = 'ENTENDIDO';
-          btn.onclick = () => { av.style.display = 'none'; av.classList.remove('listo'); };
-        } else {
-          btn.textContent = 'ACTUALIZAR AHORA';
-          btn.onclick = () => {
-            try { if (avisoUpdateVersion) localStorage.setItem('umbra_transmision_' + avisoUpdateVersion, 'si'); } catch (e) {}
-            try { location.href = location.pathname + '?umbra=' + Date.now(); } catch (e2) { location.reload(); }
-          };
-        }
+        btn.textContent = 'ACTUALIZAR AHORA';
+        btn.onclick = () => { try { location.href = location.pathname + '?umbra=' + Date.now(); } catch (e) { location.reload(); } };
       }
       av.classList.remove('subiendo');
       av.style.display = 'block';
@@ -627,27 +618,7 @@
         av.classList.add('listo');
       }, 1900);
     }
-    // INMERSIVO: la transmisión de entrada sale 1 sola vez por versión y usuario
-    setTimeout(() => {
-      try { if (localStorage.getItem('umbra_transmision_' + UMBRA_VERSION)) return; } catch (e) {}
-      const av = document.getElementById('aviso-update');
-      if (av && av.style.display !== 'block') {
-        mostrarAvisoUpdate('Transmisión UMBRA establecida. Vigila lo que cruzó… y no hagas ruido.', 'entrada');
-        try { localStorage.setItem('umbra_transmision_' + UMBRA_VERSION, 'si'); } catch (e) {}
-      }
-    }, 2000);
-    // INMERSIVO: si sales y vuelves (+15s fuera), la señal te recibe de nuevo
-    let fueraDesde = 0, ultimoRetorno = 0;
-    document.addEventListener('visibilitychange', async () => {
-      if (document.hidden) { fueraDesde = Date.now(); return; }
-      if (Date.now() - fueraDesde < 15000 || Date.now() - ultimoRetorno < 30000) return;
-      ultimoRetorno = Date.now();
-      const av = document.getElementById('aviso-update');
-      if (av && av.style.display === 'block') return;
-      try { if (localStorage.getItem('umbra_transmision_' + UMBRA_VERSION)) return; } catch (e) {}
-      mostrarAvisoUpdate('La señal se restableció. UMBRA sigue vigilando.', 'entrada');
-      try { localStorage.setItem('umbra_transmision_' + UMBRA_VERSION, 'si'); } catch (e) {}
-    });
+    // La bienvenida de nuevos vive en su propio sistema; aquí solo el aviso de update
     // MODO PRUEBA: sale en cada recarga con el mensaje ORIGINAL del json
     if (AVISO_SIEMPRE) {
       setTimeout(async () => {
@@ -670,8 +641,7 @@
           try { ya = sessionStorage.getItem('umbra_update_avistado'); } catch (e) {}
           if (ya === j.version) return;
           try { sessionStorage.setItem('umbra_update_avistado', j.version); } catch (e) {}
-          avisoUpdateVersion = j.version;
-          mostrarAvisoUpdate(j.mensaje, 'update');
+          mostrarAvisoUpdate(j.mensaje);
           clearInterval(verTimer);
         }
       } catch (e) {}
