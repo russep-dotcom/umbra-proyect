@@ -208,6 +208,8 @@
       letter-spacing: 3px; margin: 0 0 10px; font-size: 16px; text-align: center; }
     #panel-ajustes label { display: block; margin: 10px 0 4px; color: #b8b8b8; }
     #panel-ajustes input[type="range"] { width: 100%; accent-color: #b14dff; }
+    /* Lista de sonidos con scroll: cada sonido con su propio control */
+    #panel-ajustes .aj-lista { max-height: 52vh; overflow-y: auto; padding-right: 4px; }
     #panel-ajustes .fila-aj { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     #panel-ajustes .sw { font-size: 12px; padding: 6px 12px; }
     /* Engranaje de ajustes: gira lento como un mecanismo UMBRA */
@@ -406,10 +408,32 @@
   <button id="btn-ajustes" onclick="document.getElementById('panel-ajustes').classList.toggle('abierto')" title="Ajustes" style="font-size:0;position:fixed;left:14px;bottom:14px;z-index:30;width:46px;height:46px;border-radius:50%;border:2px solid #b14dff;background:radial-gradient(circle,#1a001a 30%,#000 70%);padding:0;"><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:24px;color:#b14dff;text-shadow:0 0 12px #b14dff;animation:ajuste-gira 6s linear infinite;">⚙</span></button>
   <div id="panel-ajustes">
     <h3>AJUSTES</h3>
-    <label>Sonidos de fondo de la página: <span id="aj-vol-num">100</span></label>
+    <div class="aj-lista">
+    <label>Fondo (música y viento): <span id="aj-vol-num">100</span></label>
     <input type="range" id="aj-vol" min="0" max="100" value="100" oninput="ajustarVolumen(this.value)">
-    <label style="margin-top:10px;">Sonido de transición: <span id="aj-carga-num">100</span></label>
-    <input type="range" id="aj-carga" min="0" max="100" value="100" oninput="ajustarCargaVol(this.value)">
+    <label style="margin-top:10px;">Murmullo del portal: <span id="aj-murmullo-num">100</span></label>
+    <input type="range" id="aj-murmullo" min="0" max="100" value="100" oninput="ajustarSonido('umbra_v_murmullo', this.value, 'aj-murmullo-num')">
+    <label style="margin-top:10px;">Latido del portal: <span id="aj-latido-num">100</span></label>
+    <input type="range" id="aj-latido" min="0" max="100" value="100" oninput="ajustarSonido('umbra_v_latido', this.value, 'aj-latido-num')">
+    <label style="margin-top:10px;">Grito ALFA: <span id="aj-almas-num">100</span></label>
+    <input type="range" id="aj-almas" min="0" max="100" value="100" oninput="ajustarSonido('umbra_v_almas', this.value, 'aj-almas-num')">
+    <label style="margin-top:10px;">Falla DELTA: <span id="aj-falla1-num">100</span></label>
+    <input type="range" id="aj-falla1" min="0" max="100" value="100" oninput="ajustarSonido('umbra_v_falla1', this.value, 'aj-falla1-num')">
+    <label style="margin-top:10px;">Falla BETA: <span id="aj-falla2-num">100</span></label>
+    <input type="range" id="aj-falla2" min="0" max="100" value="100" oninput="ajustarSonido('umbra_v_falla2', this.value, 'aj-falla2-num')">
+    <label style="margin-top:10px;">Falla GAMMA/OMEGA: <span id="aj-falla3-num">100</span></label>
+    <input type="range" id="aj-falla3" min="0" max="100" value="100" oninput="ajustarSonido('umbra_v_falla3', this.value, 'aj-falla3-num')">
+    <label style="margin-top:10px;">Regreso a portada: <span id="aj-vuelta-num">100</span></label>
+    <input type="range" id="aj-vuelta" min="0" max="100" value="100" oninput="ajustarSonido('umbra_v_vuelta', this.value, 'aj-vuelta-num')">
+    <label style="margin-top:10px;">Desconexión: <span id="aj-glitchalfa-num">100</span></label>
+    <input type="range" id="aj-glitchalfa" min="0" max="100" value="100" oninput="ajustarSonido('umbra_v_glitchalfa', this.value, 'aj-glitchalfa-num')">
+    <label style="margin-top:10px;">Campanas de aviso: <span id="aj-chime-num">100</span></label>
+    <input type="range" id="aj-chime" min="0" max="100" value="100" oninput="ajustarSonido('umbra_v_chime', this.value, 'aj-chime-num')">
+    <label style="margin-top:10px;">Truenos: <span id="aj-trueno-num">100</span></label>
+    <input type="range" id="aj-trueno" min="0" max="100" value="100" oninput="ajustarSonido('umbra_v_trueno', this.value, 'aj-trueno-num')">
+    <label style="margin-top:10px;">Clic de interruptor: <span id="aj-clic-num">100</span></label>
+    <input type="range" id="aj-clic" min="0" max="100" value="100" oninput="ajustarSonido('umbra_v_clic', this.value, 'aj-clic-num')">
+    </div>
   </div>
   </div>
   <div id="aviso-update" style="display:none;position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:80;background:#140a02;border:1px solid #ff7a1a;border-radius:8px;color:#ff7a1a;font-size:13px;letter-spacing:1px;padding:12px 18px;max-width:90vw;text-align:center;">
@@ -466,7 +490,7 @@
   <div id="mirada"><div class="fondo-opulento"><i></i><i></i><i></i></div><span class="aro a1"></span><span class="aro a2"></span><span class="aro a3"></span><div class="ojo-g"><div class="pupila-g"></div></div><div class="flash-fin" id="flash-fin"></div></div>
   <div id="paso"><span class="vena v1"><i></i></span><span class="vena v2"><i></i></span><span class="vena v3"><i></i></span><span class="vena v4"><i></i></span></div>
   <div id="crash"><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.26 ☠</footer>
+  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.27 ☠</footer>
 
   <script>
     // La nota flotante refleja la principal y viceversa
@@ -534,7 +558,7 @@
           const g = ctx.createGain();
           const g2 = ctx.createGain(); g2.gain.value = 0.25;
           g.gain.setValueAtTime(0.0001, t + dt);
-          g.gain.exponentialRampToValueAtTime(0.14, t + dt + 0.05);
+          g.gain.exponentialRampToValueAtTime(0.14 * volSonido('umbra_v_chime'), t + dt + 0.05);
           g.gain.exponentialRampToValueAtTime(0.0001, t + dt + 2.2);
           o.connect(g); o2.connect(g2).connect(g); g.connect(ctx.destination);
           o.start(t + dt); o2.start(t + dt); o.stop(t + dt + 2.3); o2.stop(t + dt + 2.3);
@@ -618,7 +642,7 @@
     // MODO PRUEBA: aviso en cada recarga (quitar para modo real)
     const AVISO_SIEMPRE = false;
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '4.26';
+    const UMBRA_VERSION = '4.27';
     function mostrarAvisoUpdate(msg) {
       const av = document.getElementById('aviso-update');
       document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';
@@ -816,7 +840,7 @@
         const src = ctx.createBufferSource(); src.buffer = buf;
         const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 2000;
         const g = ctx.createGain();
-        g.gain.setValueAtTime(0.12, t);
+        g.gain.setValueAtTime(0.12 * volSonido('umbra_v_clic'), t);
         g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
         src.connect(f).connect(g).connect(ctx.destination);
         src.start(t);
@@ -832,7 +856,7 @@
         const o = ctx.createOscillator(); o.type = 'square'; o.frequency.value = 2200;
         const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 1200;
         const g = ctx.createGain();
-        g.gain.setValueAtTime(0.25, t);
+        g.gain.setValueAtTime(0.25 * volSonido('umbra_v_clic'), t);
         g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
         o.connect(f).connect(g).connect(ctx.destination);
         o.start(t); o.stop(t + 0.06);
@@ -849,7 +873,7 @@
         try {
           a.pause();
           a.currentTime = encender ? 0.6 : 2.1;
-          a.volume = 0.9;
+          a.volume = 0.9 * volSonido('umbra_v_clic');
           const p = a.play();
           if (p && p.catch) p.catch(() => tockSuplente());
           setTimeout(() => { try { a.pause(); } catch (e) {} }, 600);
@@ -1166,7 +1190,7 @@
           f.Q.value = 3;
           const g = ctx.createGain();
           g.gain.setValueAtTime(0.0001, t + dt);
-          g.gain.exponentialRampToValueAtTime(0.28, t + dt + 0.25);
+          g.gain.exponentialRampToValueAtTime(0.28 * volSonido('umbra_v_murmullo'), t + dt + 0.25);
           g.gain.exponentialRampToValueAtTime(0.0001, t + dt + dur);
           src.connect(f).connect(g); g.connect(ctx.destination);
           src.start(t + dt);
@@ -1205,7 +1229,7 @@
               const g = ctxP.createGain();
               const tt = ctxP.currentTime + dt;
               g.gain.setValueAtTime(0.0001, tt);
-              g.gain.exponentialRampToValueAtTime(0.85, tt + 0.04);
+              g.gain.exponentialRampToValueAtTime(0.85 * volSonido('umbra_v_latido'), tt + 0.04);
               g.gain.exponentialRampToValueAtTime(0.0001, tt + 0.4);
               o.connect(g).connect(ctxP.destination);
               o.start(tt); o.stop(tt + 0.45);
@@ -1213,7 +1237,7 @@
               const h = ctxP.createOscillator(); h.type = 'sine'; h.frequency.value = (i ? 40 : 50) * 2;
               const gh = ctxP.createGain();
               gh.gain.setValueAtTime(0.0001, tt);
-              gh.gain.exponentialRampToValueAtTime(0.22, tt + 0.04);
+              gh.gain.exponentialRampToValueAtTime(0.22 * volSonido('umbra_v_latido'), tt + 0.04);
               gh.gain.exponentialRampToValueAtTime(0.0001, tt + 0.4);
               h.connect(gh).connect(ctxP.destination);
               h.start(tt); h.stop(tt + 0.45);
@@ -1360,7 +1384,64 @@
     }
     function ajustarCargaVol(v) {
       try { localStorage.setItem('umbra_vol_carga', String(v)); } catch (e) {}
-      document.getElementById('aj-carga-num').textContent = v;
+      try { document.getElementById('aj-carga-num').textContent = v; } catch (e) {}
+    }
+    // Volumen por sonido: panel compartido portada/cajón, cada sonido el suyo (0-100)
+    const CLAVE_SONIDO = { alfa: 'umbra_v_almas', delta: 'umbra_v_falla1', beta: 'umbra_v_falla2', gamma: 'umbra_v_falla3', omega: 'umbra_v_falla3' };
+    function volSonido(key) {
+      try {
+        const v = parseInt(localStorage.getItem(key) || '100', 10);
+        return Math.max(0, Math.min(100, isNaN(v) ? 100 : v)) / 100;
+      } catch (e) { return 1; }
+    }
+    function clavePorSrc(src) {
+      try {
+        const s = String(src || '');
+        if (s.indexOf('almas') >= 0) return 'umbra_v_almas';
+        if (s.indexOf('falla1') >= 0) return 'umbra_v_falla1';
+        if (s.indexOf('falla2') >= 0) return 'umbra_v_falla2';
+        if (s.indexOf('falla3') >= 0) return 'umbra_v_falla3';
+        if (s.indexOf('glitch-alfa') >= 0) return 'umbra_v_glitchalfa';
+      } catch (e) {}
+      return 'umbra_v_falla2';
+    }
+    function ajustarSonido(key, v, numId) {
+      try { localStorage.setItem(key, String(v)); } catch (e) {}
+      try { document.getElementById(numId).textContent = v; } catch (e) {}
+      if (key === 'umbra_vol') {
+        try {
+          if (typeof musica !== 'undefined' && musica && musica.master) musica.master.gain.setTargetAtTime(leerVol(), getCtx().currentTime, 0.1);
+        } catch (e) {}
+        try {
+          const av = document.getElementById('aud-viento');
+          if (av && !av.paused) av.volume = leerVolViento();
+        } catch (e) {}
+      }
+    }
+    function pintarSonidos() {
+      const pares = [
+        ['aj-murmullo', 'aj-murmullo-num', 'umbra_v_murmullo'],
+        ['aj-latido', 'aj-latido-num', 'umbra_v_latido'],
+        ['aj-almas', 'aj-almas-num', 'umbra_v_almas'],
+        ['aj-falla1', 'aj-falla1-num', 'umbra_v_falla1'],
+        ['aj-falla2', 'aj-falla2-num', 'umbra_v_falla2'],
+        ['aj-falla3', 'aj-falla3-num', 'umbra_v_falla3'],
+        ['aj-vuelta', 'aj-vuelta-num', 'umbra_v_vuelta'],
+        ['aj-glitchalfa', 'aj-glitchalfa-num', 'umbra_v_glitchalfa'],
+        ['aj-chime', 'aj-chime-num', 'umbra_v_chime'],
+        ['aj-trueno', 'aj-trueno-num', 'umbra_v_trueno'],
+        ['aj-clic', 'aj-clic-num', 'umbra_v_clic']
+      ];
+      pares.forEach(([id, num, key]) => {
+        try {
+          const g = localStorage.getItem(key);
+          const val = (g === null || g === undefined) ? '100' : String(g);
+          const inp = document.getElementById(id);
+          const n = document.getElementById(num);
+          if (inp) inp.value = val;
+          if (n) n.textContent = val;
+        } catch (e) {}
+      });
     }
     // El navegador a veces la frena: despierta con tu primer clic.
     // El panel muestra tus gustos guardados.
@@ -1368,9 +1449,7 @@
       const gv = localStorage.getItem('umbra_vol') || '100';
       document.getElementById('aj-vol').value = gv;
       document.getElementById('aj-vol-num').textContent = gv;
-      const gc = localStorage.getItem('umbra_vol_carga') || '100';
-      document.getElementById('aj-carga').value = gc;
-      document.getElementById('aj-carga-num').textContent = gc;
+      pintarSonidos();
     } catch (e) {}
     try {
       if (localStorage.getItem('umbra_musica') !== 'off') {

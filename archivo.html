@@ -130,6 +130,8 @@
       animation: hint-pulse 1.6s ease-in-out infinite; }
     @keyframes hint-pulse { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
     #panel-ajustes.abierto { display: block !important; }
+    /* Lista de sonidos con scroll: cada sonido con su propio control */
+    #panel-ajustes .aj-lista { max-height: 52vh; overflow-y: auto; padding-right: 4px; }
     /* Engranaje de ajustes: gira lento como un mecanismo UMBRA */
     @keyframes ajuste-gira { to { transform: rotate(360deg); } }
     .nav { margin: 30px; } .nav a { color: var(--sangre); margin: 0 12px; letter-spacing: 2px; }
@@ -337,10 +339,32 @@
   <button id="btn-ajustes" onclick="toggleAjustes(event)" title="Ajustes" style="position:fixed;left:14px;bottom:14px;z-index:30;width:46px;height:46px;border-radius:50%;border:2px solid #b14dff;background:radial-gradient(circle,#1a001a 30%,#000 70%);padding:0;"><span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:24px;color:#b14dff;text-shadow:0 0 12px #b14dff;animation:ajuste-gira 6s linear infinite;">⚙</span></button>
   <div id="panel-ajustes" onclick="event.stopPropagation()" style="display:none;position:fixed;left:14px;bottom:62px;z-index:30;background:rgba(10,0,0,0.92);border:1px solid #b14dff;border-radius:10px;padding:16px 18px;width:250px;text-align:left;font-size:13px;letter-spacing:1px;box-shadow:0 0 24px rgba(177,77,255,0.25);">
     <h3 style="font-family:'Metal Mania','Impact',cursive;color:#b14dff;letter-spacing:3px;margin:0 0 10px;font-size:16px;text-align:center;">AJUSTES</h3>
-    <label>Sonidos de fondo de la página: <span id="aj-viento-num">80</span></label>
+    <div class="aj-lista">
+    <label>Fondo (música y viento): <span id="aj-viento-num">80</span></label>
     <input type="range" id="aj-viento" min="0" max="100" value="80" style="width:100%;accent-color:#b14dff;" oninput="ajustarVientoVol(this.value)">
-    <label style="margin-top:10px;">Sonido de transición: <span id="aj-carga-num">100</span></label>
-    <input type="range" id="aj-carga" min="0" max="100" value="100" style="width:100%;accent-color:#b14dff;" oninput="ajustarCargaVol(this.value)">
+    <label style="margin-top:10px;">Murmullo del portal: <span id="aj-murmullo-num">100</span></label>
+    <input type="range" id="aj-murmullo" min="0" max="100" value="100" style="width:100%;accent-color:#b14dff;" oninput="ajustarSonido('umbra_v_murmullo', this.value, 'aj-murmullo-num')">
+    <label style="margin-top:10px;">Latido del portal: <span id="aj-latido-num">100</span></label>
+    <input type="range" id="aj-latido" min="0" max="100" value="100" style="width:100%;accent-color:#b14dff;" oninput="ajustarSonido('umbra_v_latido', this.value, 'aj-latido-num')">
+    <label style="margin-top:10px;">Grito ALFA: <span id="aj-almas-num">100</span></label>
+    <input type="range" id="aj-almas" min="0" max="100" value="100" style="width:100%;accent-color:#b14dff;" oninput="ajustarSonido('umbra_v_almas', this.value, 'aj-almas-num')">
+    <label style="margin-top:10px;">Falla DELTA: <span id="aj-falla1-num">100</span></label>
+    <input type="range" id="aj-falla1" min="0" max="100" value="100" style="width:100%;accent-color:#b14dff;" oninput="ajustarSonido('umbra_v_falla1', this.value, 'aj-falla1-num')">
+    <label style="margin-top:10px;">Falla BETA: <span id="aj-falla2-num">100</span></label>
+    <input type="range" id="aj-falla2" min="0" max="100" value="100" style="width:100%;accent-color:#b14dff;" oninput="ajustarSonido('umbra_v_falla2', this.value, 'aj-falla2-num')">
+    <label style="margin-top:10px;">Falla GAMMA/OMEGA: <span id="aj-falla3-num">100</span></label>
+    <input type="range" id="aj-falla3" min="0" max="100" value="100" style="width:100%;accent-color:#b14dff;" oninput="ajustarSonido('umbra_v_falla3', this.value, 'aj-falla3-num')">
+    <label style="margin-top:10px;">Regreso a portada: <span id="aj-vuelta-num">100</span></label>
+    <input type="range" id="aj-vuelta" min="0" max="100" value="100" style="width:100%;accent-color:#b14dff;" oninput="ajustarSonido('umbra_v_vuelta', this.value, 'aj-vuelta-num')">
+    <label style="margin-top:10px;">Desconexión: <span id="aj-glitchalfa-num">100</span></label>
+    <input type="range" id="aj-glitchalfa" min="0" max="100" value="100" style="width:100%;accent-color:#b14dff;" oninput="ajustarSonido('umbra_v_glitchalfa', this.value, 'aj-glitchalfa-num')">
+    <label style="margin-top:10px;">Campanas de aviso: <span id="aj-chime-num">100</span></label>
+    <input type="range" id="aj-chime" min="0" max="100" value="100" style="width:100%;accent-color:#b14dff;" oninput="ajustarSonido('umbra_v_chime', this.value, 'aj-chime-num')">
+    <label style="margin-top:10px;">Truenos: <span id="aj-trueno-num">100</span></label>
+    <input type="range" id="aj-trueno" min="0" max="100" value="100" style="width:100%;accent-color:#b14dff;" oninput="ajustarSonido('umbra_v_trueno', this.value, 'aj-trueno-num')">
+    <label style="margin-top:10px;">Clic de interruptor: <span id="aj-clic-num">100</span></label>
+    <input type="range" id="aj-clic" min="0" max="100" value="100" style="width:100%;accent-color:#b14dff;" oninput="ajustarSonido('umbra_v_clic', this.value, 'aj-clic-num')">
+    </div>
   </div>
   <div id="aviso-update" style="display:none;position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:80;background:#140a02;border:1px solid #ff7a1a;border-radius:8px;color:#ff7a1a;font-size:13px;letter-spacing:1px;padding:12px 18px;max-width:90vw;text-align:center;">
     <span id="aviso-msg"></span><br><br>
@@ -354,7 +378,7 @@
   <audio id="aud-almas" src="audio/almas.wav" preload="auto"></audio>
   <audio id="aud-glitch" preload="auto"></audio>
   <div id="crash"><div class="fondo-opulento"><i></i><i></i><i></i></div><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;position:relative;z-index:1;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer>☠ UMBRA · Archivo clasificado · Solo personal autorizado · v4.26 ☠</footer>
+  <footer>☠ UMBRA · Archivo clasificado · Solo personal autorizado · v4.27 ☠</footer>
 
   <script>
     // Campanada del archivo (misma familia que la portada)
@@ -366,7 +390,7 @@
           const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f;
           const g = ctx.createGain();
           g.gain.setValueAtTime(0.0001, t + dt);
-          g.gain.exponentialRampToValueAtTime(0.12, t + dt + 0.05);
+          g.gain.exponentialRampToValueAtTime(0.12 * volSonido('umbra_v_chime'), t + dt + 0.05);
           g.gain.exponentialRampToValueAtTime(0.0001, t + dt + 2.0);
           o.connect(g).connect(ctx.destination);
           o.start(t + dt); o.stop(t + dt + 2.1);
@@ -376,7 +400,7 @@
     // El aviso de versión también sube con campana, como los demás
     document.head.insertAdjacentHTML('beforeend', '<style>#aviso-update{left:50% !important;right:auto !important;margin-left:0 !important;margin-right:0 !important;transform:translateX(-50%);max-width:640px !important;width:92vw !important;font-size:17px !important;padding:30px 28px !important;}#aviso-update.subiendo{animation:aviso-sube 1.8s cubic-bezier(0.22,1,0.36,1) forwards;}@keyframes aviso-sube{from{top:110vh;transform:translate(-50%,0);}to{top:50%;transform:translate(-50%,-50%);}}#aviso-update.listo{animation:aviso-late 2.2s ease-in-out infinite;box-shadow:0 0 60px rgba(255,122,26,0.5);}@keyframes aviso-late{0%,100%{box-shadow:0 0 30px rgba(255,122,26,0.3);}50%{box-shadow:0 0 70px rgba(255,122,26,0.6);}}html,body{overflow-x:hidden;}</style>');
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '4.26';
+    const UMBRA_VERSION = '4.27';
     function mostrarAvisoArchivo(msg) {
       const av = document.getElementById('aviso-update');
       document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';
@@ -619,7 +643,7 @@
         const src = ctx.createBufferSource(); src.buffer = buf;
         const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 2000;
         const g = ctx.createGain();
-        g.gain.setValueAtTime(0.12, t);
+        g.gain.setValueAtTime(0.12 * volSonido('umbra_v_clic'), t);
         g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
         src.connect(f).connect(g).connect(ctx.destination);
         src.start(t);
@@ -634,7 +658,7 @@
         const o = ctx.createOscillator(); o.type = 'square'; o.frequency.value = 2200;
         const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 1200;
         const g = ctx.createGain();
-        g.gain.setValueAtTime(0.25, t);
+        g.gain.setValueAtTime(0.25 * volSonido('umbra_v_clic'), t);
         g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
         o.connect(f).connect(g).connect(ctx.destination);
         o.start(t); o.stop(t + 0.06);
@@ -651,7 +675,7 @@
         try {
           a.pause();
           a.currentTime = encender ? 0.6 : 2.1;
-          a.volume = 0.9;
+          a.volume = 0.9 * volSonido('umbra_v_clic');
           const p = a.play();
           if (p && p.catch) p.catch(() => tockSuplente());
           setTimeout(() => { try { a.pause(); } catch (e) {} }, 600);
@@ -739,7 +763,7 @@
           // Si empezó otro viaje, este se retira sin pelear el volumen
           if (turno !== turnoClas) { clearInterval(paso); return; }
           const s = (performance.now() - t0) / 1000;
-          const P = 0.65 * leerVolCarga() / 0.6;
+          const P = 0.65 * volSonido(CLAVE_SONIDO[(tipo || '').toLowerCase()] || 'umbra_v_falla2');
           if (s < 0.5) a.volume = Math.min(P, (s / 0.5) * P);
           else if (s < total - 1.0) a.volume = P;
           else if (s < total) a.volume = Math.max(0.0001, P * (1 - (s - (total - 1.0))));
@@ -798,12 +822,12 @@
         a.pause();
         a.src = 'audio/vuelta.wav';
         a.currentTime = 0;
-        a.volume = 0.7 * leerVolCarga() / 0.6;
+        a.volume = 0.7 * volSonido('umbra_v_vuelta');
         a.play();
       } catch (e) {}
     }
     function ajustarVientoVol(v) {
-      try { localStorage.setItem('umbra_vol_viento', String(v)); } catch (e) {}
+      try { localStorage.setItem('umbra_vol', String(v)); } catch (e) {}
       document.getElementById('aj-viento-num').textContent = v;
       try {
         const a = document.getElementById('aud-viento');
@@ -812,13 +836,70 @@
     }
     function ajustarCargaVol(v) {
       try { localStorage.setItem('umbra_vol_carga', String(v)); } catch (e) {}
-      document.getElementById('aj-carga-num').textContent = v;
+      try { document.getElementById('aj-carga-num').textContent = v; } catch (e) {}
     }
     function leerVolCarga() {
       try {
         const v = parseInt(localStorage.getItem('umbra_vol_carga') || '100', 10);
         return Math.max(0, Math.min(100, isNaN(v) ? 100 : v)) / 100 * 0.6;
       } catch (e) { return 0.6; }
+    }
+    // Volumen por sonido: panel compartido portada/cajón, cada sonido el suyo (0-100)
+    const CLAVE_SONIDO = { alfa: 'umbra_v_almas', delta: 'umbra_v_falla1', beta: 'umbra_v_falla2', gamma: 'umbra_v_falla3', omega: 'umbra_v_falla3' };
+    function volSonido(key) {
+      try {
+        const v = parseInt(localStorage.getItem(key) || '100', 10);
+        return Math.max(0, Math.min(100, isNaN(v) ? 100 : v)) / 100;
+      } catch (e) { return 1; }
+    }
+    function clavePorSrc(src) {
+      try {
+        const s = String(src || '');
+        if (s.indexOf('almas') >= 0) return 'umbra_v_almas';
+        if (s.indexOf('falla1') >= 0) return 'umbra_v_falla1';
+        if (s.indexOf('falla2') >= 0) return 'umbra_v_falla2';
+        if (s.indexOf('falla3') >= 0) return 'umbra_v_falla3';
+        if (s.indexOf('glitch-alfa') >= 0) return 'umbra_v_glitchalfa';
+      } catch (e) {}
+      return 'umbra_v_falla2';
+    }
+    function ajustarSonido(key, v, numId) {
+      try { localStorage.setItem(key, String(v)); } catch (e) {}
+      try { document.getElementById(numId).textContent = v; } catch (e) {}
+      if (key === 'umbra_vol') {
+        try {
+          if (typeof musica !== 'undefined' && musica && musica.master) musica.master.gain.setTargetAtTime(leerVol(), getCtx().currentTime, 0.1);
+        } catch (e) {}
+        try {
+          const av = document.getElementById('aud-viento');
+          if (av && !av.paused) av.volume = leerVolViento();
+        } catch (e) {}
+      }
+    }
+    function pintarSonidos() {
+      const pares = [
+        ['aj-murmullo', 'aj-murmullo-num', 'umbra_v_murmullo'],
+        ['aj-latido', 'aj-latido-num', 'umbra_v_latido'],
+        ['aj-almas', 'aj-almas-num', 'umbra_v_almas'],
+        ['aj-falla1', 'aj-falla1-num', 'umbra_v_falla1'],
+        ['aj-falla2', 'aj-falla2-num', 'umbra_v_falla2'],
+        ['aj-falla3', 'aj-falla3-num', 'umbra_v_falla3'],
+        ['aj-vuelta', 'aj-vuelta-num', 'umbra_v_vuelta'],
+        ['aj-glitchalfa', 'aj-glitchalfa-num', 'umbra_v_glitchalfa'],
+        ['aj-chime', 'aj-chime-num', 'umbra_v_chime'],
+        ['aj-trueno', 'aj-trueno-num', 'umbra_v_trueno'],
+        ['aj-clic', 'aj-clic-num', 'umbra_v_clic']
+      ];
+      pares.forEach(([id, num, key]) => {
+        try {
+          const g = localStorage.getItem(key);
+          const val = (g === null || g === undefined) ? '100' : String(g);
+          const inp = document.getElementById(id);
+          const n = document.getElementById(num);
+          if (inp) inp.value = val;
+          if (n) n.textContent = val;
+        } catch (e) {}
+      });
     }
     // Reproductor genérico con fundidos de cine (entra suave, sale gradual)
     let turnoToc = 0;
@@ -836,7 +917,7 @@
         const paso = setInterval(() => {
           if (turno !== turnoToc) { clearInterval(paso); return; }
           const s = (performance.now() - t0) / 1000;
-          const P = 0.65 * leerVolCarga() / 0.6;
+          const P = 0.65 * volSonido(clavePorSrc(a.src));
           if (s < 0.5) a.volume = Math.min(P, (s / 0.5) * P);
           else if (s < total - 1.0) a.volume = P;
           else if (s < total) a.volume = Math.max(0.0001, P * (1 - (s - (total - 1.0))));
@@ -938,28 +1019,31 @@
         const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 140;
         const g = ctx.createGain();
         g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(0.5, t + 0.08);
+        g.gain.exponentialRampToValueAtTime(0.5 * volSonido('umbra_v_trueno'), t + 0.08);
         g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
         src.connect(f).connect(g).connect(ctx.destination);
         src.start(t);
       } catch (e) {}
     }
     // El viento lo maneja un solo botón: una sola función manda
-    // Volumen del viento (80 en ajustes, hasta 0.9 seguro)
+    // Volumen del viento (compartido con la portada; respeta tu gusto viejo guardado)
     function leerVolViento() {
       try {
-        const v = parseInt(localStorage.getItem('umbra_vol_viento') || '80', 10);
+        let g = localStorage.getItem('umbra_vol');
+        if (g === null || g === undefined) g = localStorage.getItem('umbra_vol_viento');
+        if (g === null || g === undefined) g = '80';
+        const v = parseInt(g, 10);
         return Math.max(0, Math.min(100, isNaN(v) ? 80 : v)) / 100 * 0.9;
       } catch (e) { return 0.72; }
     }
     // Sliders con memoria: al cargar muestran tus gustos guardados
     try {
-      const wv = localStorage.getItem('umbra_vol_viento') || '80';
-      const cv = localStorage.getItem('umbra_vol_carga') || '100';
+      let wv = localStorage.getItem('umbra_vol');
+      if (wv === null || wv === undefined) wv = localStorage.getItem('umbra_vol_viento');
+      if (wv === null || wv === undefined) wv = '80';
       document.getElementById('aj-viento').value = wv;
       document.getElementById('aj-viento-num').textContent = wv;
-      document.getElementById('aj-carga').value = cv;
-      document.getElementById('aj-carga-num').textContent = cv;
+      pintarSonidos();
     } catch (e) {}
     // Música: computador intacto (VIENTO + mensaje), móvil solo la nota ♪
     function esMovil() {
