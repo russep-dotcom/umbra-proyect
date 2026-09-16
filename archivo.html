@@ -117,6 +117,11 @@
     #btn-estatica { position: fixed; right: 14px; bottom: 14px; z-index: 30; font-size: 13px; padding: 10px 16px;
       color: #b14dff; border-color: #b14dff; }
     #btn-estatica:hover { background: #b14dff; color: #000; box-shadow: 0 0 22px #b14dff; }
+    /* Encendida: igual que la portada, se nota sin decir OFF/ON */
+    #btn-estatica.encendida { background: #b14dff; color: #000; border-color: #b14dff;
+      box-shadow: 0 0 22px #b14dff; }
+    /* Nota musical flotante: igual que la portada, solo en móvil */
+    #btn-musica-movil { display: none; }
     /* Mensaje del indicador, como en la portada */
     #hint-estatica { position: fixed; right: 14px; bottom: 62px; z-index: 30;
       background: #0c0214; border: 1px solid #b14dff; border-radius: 8px;
@@ -149,6 +154,21 @@
       #btn-ajustes::after { content: 'AJUSTES'; position: absolute; top: 100%; left: 50%;
         transform: translateX(-50%); font-size: 9px; letter-spacing: 2px; color: #b14dff;
         margin-top: 5px; font-family: Arial, sans-serif; }
+      /* Música en móvil igual que la portada: nota flotante + aviso arriba de ella */
+      #btn-musica-movil { display: block; position: fixed; right: 8px; bottom: 76px; z-index: 32;
+        width: 46px; height: 46px; border-radius: 50%; font-size: 20px; padding: 0;
+        min-height: 0; color: #b14dff; border-color: #b14dff; opacity: 0.75; overflow: visible;
+        animation: nota-pulso 2.2s ease-in-out infinite; }
+      @keyframes nota-pulso { 0%,100% { transform: scale(1); opacity: 0.75; } 50% { transform: scale(1.1); opacity: 1; } }
+      #btn-musica-movil.encendida { background: #b14dff; color: #000; opacity: 1;
+        box-shadow: 0 0 22px #b14dff; animation: none; }
+      #btn-musica-movil::after { content: 'MÚSICA'; position: absolute; top: 100%; left: 50%;
+        transform: translateX(-50%); font-size: 9px; letter-spacing: 2px; color: #b14dff;
+        margin-top: 5px; font-family: Arial, sans-serif; }
+      #hint-estatica { left: auto !important; right: 8px !important; bottom: 132px !important;
+        max-width: 92vw !important; white-space: nowrap !important;
+        background: rgba(12,0,20,0.92) !important; border-radius: 20px !important;
+        padding: 10px 18px !important; }
     }
     body { animation: encender 1.1s ease-out backwards; }
     /* Sin selección de texto (la linterna no sombrea nada) + táctil sin retardos */
@@ -311,8 +331,9 @@
   <div class="reflector" id="reflector" aria-hidden="true"></div>
   <div class="vineta" aria-hidden="true"></div>
 
-  <div id="hint-estatica">↓ ENCIENDE EL VIENTO AQUÍ ↓</div>
-  <button id="btn-estatica" onclick="toggleEstatica()">VIENTO: OFF</button>
+  <div id="hint-estatica">ENCIENDE EL SONIDO AQUÍ ↓</div>
+  <button id="btn-estatica" onclick="toggleEstatica()">MUSICA / OFF</button>
+  <button id="btn-musica-movil" onclick="toggleEstaticaMovil()" title="Música">♪</button>
   <button id="btn-ajustes" onclick="toggleAjustes(event)" title="Ajustes" style="position:fixed;left:14px;bottom:14px;z-index:30;width:46px;height:46px;border-radius:50%;border:2px solid #b14dff;background:radial-gradient(circle,#1a001a 30%,#000 70%);padding:0;"><span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:24px;color:#b14dff;text-shadow:0 0 12px #b14dff;animation:ajuste-gira 6s linear infinite;">⚙</span></button>
   <div id="panel-ajustes" onclick="event.stopPropagation()" style="display:none;position:fixed;left:14px;bottom:62px;z-index:30;background:rgba(10,0,0,0.92);border:1px solid #b14dff;border-radius:10px;padding:16px 18px;width:250px;text-align:left;font-size:13px;letter-spacing:1px;box-shadow:0 0 24px rgba(177,77,255,0.25);">
     <h3 style="font-family:'Metal Mania','Impact',cursive;color:#b14dff;letter-spacing:3px;margin:0 0 10px;font-size:16px;text-align:center;">AJUSTES</h3>
@@ -333,7 +354,7 @@
   <audio id="aud-almas" src="audio/almas.wav" preload="auto"></audio>
   <audio id="aud-glitch" preload="auto"></audio>
   <div id="crash"><div class="fondo-opulento"><i></i><i></i><i></i></div><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;position:relative;z-index:1;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer>☠ UMBRA · Archivo clasificado · Solo personal autorizado · v4.4 ☠</footer>
+  <footer>☠ UMBRA · Archivo clasificado · Solo personal autorizado · v4.5 ☠</footer>
 
   <script>
     // Campanada del archivo (misma familia que la portada)
@@ -355,7 +376,7 @@
     // El aviso de versión también sube con campana, como los demás
     document.head.insertAdjacentHTML('beforeend', '<style>#aviso-update{left:50% !important;right:auto !important;margin-left:0 !important;margin-right:0 !important;transform:translateX(-50%);max-width:640px !important;width:92vw !important;font-size:17px !important;padding:30px 28px !important;}#aviso-update.subiendo{animation:aviso-sube 1.8s cubic-bezier(0.22,1,0.36,1) forwards;}@keyframes aviso-sube{from{top:110vh;transform:translate(-50%,0);}to{top:50%;transform:translate(-50%,-50%);}}#aviso-update.listo{animation:aviso-late 2.2s ease-in-out infinite;box-shadow:0 0 60px rgba(255,122,26,0.5);}@keyframes aviso-late{0%,100%{box-shadow:0 0 30px rgba(255,122,26,0.3);}50%{box-shadow:0 0 70px rgba(255,122,26,0.6);}}html,body{overflow-x:hidden;}</style>');
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '4.4';
+    const UMBRA_VERSION = '4.5';
     function mostrarAvisoArchivo(msg) {
       const av = document.getElementById('aviso-update');
       document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';
@@ -908,6 +929,20 @@
       document.getElementById('aj-carga-num').textContent = cv;
     } catch (e) {}
     // El viento lo maneja un solo botón: una sola función manda
+    // Etiqueta igual que la portada (MUSICA / OFF-ON) aunque el fondo siga siendo viento
+    function pintarBotonMusica() {
+      const btn = document.getElementById('btn-estatica');
+      const mov = document.getElementById('btn-musica-movil');
+      if (btn) {
+        btn.textContent = vientoOn ? 'MUSICA / ON' : 'MUSICA / OFF';
+        btn.classList.toggle('encendida', vientoOn);
+      }
+      if (mov) mov.classList.toggle('encendida', vientoOn);
+    }
+    function toggleEstaticaMovil() {
+      try { toggleEstatica(); } catch (e) {}
+      setTimeout(pintarBotonMusica, 150);
+    }
     function setViento(on) {
       const btn = document.getElementById('btn-estatica');
       const hint = document.getElementById('hint-estatica');
@@ -918,7 +953,7 @@
           vientoOn = false;
           clearInterval(truenoTimer);
           try { localStorage.setItem('umbra_viento', 'off'); } catch (e) {}
-          btn.textContent = 'VIENTO: OFF';
+          pintarBotonMusica();
           hint.style.display = 'block';
           return;
         }
@@ -938,10 +973,10 @@
           if (vientoOn) trueno();
         }, 5000);
         setTimeout(() => { if (vientoOn) trueno(); }, 2500);
-        btn.textContent = 'VIENTO: ON';
+        pintarBotonMusica();
         hint.style.display = 'none';
       } catch (e) {
-        btn.textContent = 'VIENTO: ERROR';
+        btn.textContent = 'MUSICA / ERROR';
       }
     }
     function toggleEstatica() {
@@ -971,10 +1006,11 @@
         const av0 = document.getElementById('aud-viento');
         try { av0.volume = leerVolViento(); av0.play(); } catch (e) {}
         if (av0.paused) {
-          document.getElementById('btn-estatica').textContent = 'VIENTO: OFF';
+          vientoOn = false;
+          pintarBotonMusica();
         } else {
           vientoOn = true;
-          document.getElementById('btn-estatica').textContent = 'VIENTO: ON';
+          pintarBotonMusica();
           document.getElementById('hint-estatica').style.display = 'none';
         }
         const arr2 = () => {
@@ -984,7 +1020,7 @@
             if (localStorage.getItem('umbra_viento') !== 'off' && av.paused) {
               av.volume = leerVolViento(); av.play();
               vientoOn = true;
-              document.getElementById('btn-estatica').textContent = 'VIENTO: ON';
+              pintarBotonMusica();
               document.getElementById('hint-estatica').style.display = 'none';
             }
           } catch (e) {}
