@@ -1,6 +1,6 @@
 {
-  "version": "4.27",
-  "mensaje": "UMBRA v4.27: cada sonido con su propio volumen. Recarga para ver el nuevo contenido.",
-  "mensaje_movil": "UMBRA v4.27: cada sonido con su propio volumen en ajustes. Recarga para ver el nuevo contenido.",
-  "mensaje_pc": "UMBRA v4.27: cada sonido con su propio volumen en ajustes. Recarga para ver el nuevo contenido."
+  "version": "4.28",
+  "mensaje": "UMBRA v4.28: ajustes reorganizados por sonido. Recarga para ver el nuevo contenido.",
+  "mensaje_movil": "UMBRA v4.28: ajustes reorganizados por sonido. Recarga para ver el nuevo contenido.",
+  "mensaje_pc": "UMBRA v4.28: ajustes reorganizados por sonido. Recarga para ver el nuevo contenido."
 }
