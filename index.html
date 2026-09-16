@@ -230,26 +230,18 @@
       button { font-size: 15px; padding: 15px 24px; min-height: 48px; }
       #crash h2 { font-size: 26px; }
       #aviso-bienvenida, #aviso-negacion { width: 94vw; padding: 22px 18px; font-size: 14px; }
-      /* Menú móvil: ojo UMBRA PRO — retícula de vigilancia + iris con vida */
+      /* Menú móvil: el mismo ojo del computador — arco + anillo punteado + pupila */
       #btn-menu { display: block; position: fixed; top: 8px; right: 8px; z-index: 70;
         font-size: 0; padding: 0; width: 46px; height: 46px; border-radius: 50%;
-        border: 2px solid #c40f0f;
-        background:
-          radial-gradient(circle, #060000 0 56%, rgba(6,0,0,0) 57%),
-          repeating-conic-gradient(from 0deg, rgba(255,26,26,0.8) 0deg 2deg, transparent 2deg 14deg),
-          radial-gradient(circle, #3a0505 0%, #140000 55%, #000 80%);
-        box-shadow: 0 0 16px rgba(255,0,0,0.5), inset 0 0 10px #000;
-        animation: menu-respira 3.2s ease-in-out infinite; }
-      @keyframes menu-respira {
-        0%,100% { box-shadow: 0 0 10px rgba(255,0,0,0.35), inset 0 0 10px #000; }
-        50% { box-shadow: 0 0 22px rgba(255,0,0,0.75), inset 0 0 10px #000; } }
-      #btn-menu::before { content: ''; position: absolute; inset: 12px; border-radius: 50%;
-        background:
-          radial-gradient(circle at 36% 30%, rgba(255,200,200,0.95) 0 7%, rgba(255,200,200,0) 8%),
-          radial-gradient(circle, #ff5252 0 20%, #e01111 36%, #7a0808 60%, #200000 80%);
-        box-shadow: 0 0 14px #ff1a1a, inset 0 0 5px #000;
-        animation: menu-late 3.2s ease-in-out infinite; }
-      @keyframes menu-late { 0%,100% { transform: scale(1); } 50% { transform: scale(1.14); } }
+        border: 2px solid transparent; border-top-color: #ff1a1a; border-right-color: #550000;
+        background: radial-gradient(circle, #1a0000 30%, #000 70%);
+        box-shadow: 0 0 16px rgba(255,0,0,0.5), inset 0 0 10px #000; }
+      #btn-menu::before { content: ''; position: absolute; inset: 5px; border-radius: 50%;
+        border: 2px dashed rgba(255,26,26,0.55);
+        background: radial-gradient(circle, #ff4040 0 24%, #c40f0f 34%, #5a0808 46%, rgba(0,0,0,0) 47%);
+        box-shadow: 0 0 14px rgba(255,26,26,0.6), inset 0 0 5px #000;
+        animation: girar 12s linear infinite reverse, menu-brillo 3.2s ease-in-out infinite; }
+      @keyframes menu-brillo { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.3); } }
       #controles { display: none; position: fixed; top: 64px; right: 12px; z-index: 70;
         background: rgba(8,0,0,0.96); border: 1px solid #4a0505; border-radius: 12px; padding: 16px; }
       #controles.abierto { display: block; }
@@ -273,6 +265,15 @@
         transform: translateX(-50%); font-size: 9px; letter-spacing: 2px; color: #b14dff;
         margin-top: 5px; font-family: Arial, sans-serif; }
       #btn-menu, #btn-musica-movil { overflow: visible; }
+      /* Aviso de sonido en móvil: píldora centrada que no choca con MÚSICA */
+      #hint-sonido { left: 50% !important; right: auto !important; transform: translateX(-50%) !important;
+        bottom: 150px !important; max-width: 92vw !important; white-space: nowrap !important;
+        background: rgba(12,0,20,0.92) !important; border-radius: 20px !important;
+        padding: 10px 18px !important;
+        animation: hint-aviso 2.4s ease-in-out infinite !important; }
+      @keyframes hint-aviso {
+        0%,100% { box-shadow: 0 0 10px rgba(177,77,255,0.3); opacity: 0.92; }
+        50% { box-shadow: 0 0 26px rgba(177,77,255,0.7); opacity: 1; } }
       .luna { width: 190px !important; height: 190px !important;
         top: -60px !important; right: -55px !important; opacity: 0.75; }
     }
@@ -445,7 +446,7 @@
   <div id="mirada"><div class="fondo-opulento"><i></i><i></i><i></i></div><span class="aro a1"></span><span class="aro a2"></span><span class="aro a3"></span><div class="ojo-g"><div class="pupila-g"></div></div><div class="flash-fin" id="flash-fin"></div></div>
   <div id="paso"><span class="vena v1"><i></i></span><span class="vena v2"><i></i></span><span class="vena v3"><i></i></span><span class="vena v4"><i></i></span></div>
   <div id="crash"><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v3.9 ☠</footer>
+  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.0 ☠</footer>
 
   <script>
     // La nota flotante refleja la principal y viceversa
@@ -587,7 +588,7 @@
     // MODO PRUEBA: aviso en cada recarga (quitar para modo real)
     const AVISO_SIEMPRE = false;
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '3.9';
+    const UMBRA_VERSION = '4.0';
     function mostrarAvisoUpdate(msg, modo) {
       const av = document.getElementById('aviso-update');
       document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';
@@ -614,19 +615,12 @@
         av.classList.add('listo');
       }, 1900);
     }
-    // INMERSIVO: al entrar siempre hay transmisión de UMBRA (se cierra sin recargar)
     // INMERSIVO: la transmisión de entrada sale 1 sola vez por versión y usuario
-    setTimeout(async () => {
+    setTimeout(() => {
       try { if (localStorage.getItem('umbra_transmision_' + UMBRA_VERSION)) return; } catch (e) {}
-      let msg = 'Hay contenido nuevo.';
-      try {
-        const r = await fetch('version.json', { cache: 'no-store' });
-        const j = await r.json();
-        if (j.mensaje) msg = j.mensaje;
-      } catch (e) {}
       const av = document.getElementById('aviso-update');
       if (av && av.style.display !== 'block') {
-        mostrarAvisoUpdate(msg, 'entrada');
+        mostrarAvisoUpdate('Transmisión UMBRA establecida. Vigila lo que cruzó… y no hagas ruido.', 'entrada');
         try { localStorage.setItem('umbra_transmision_' + UMBRA_VERSION, 'si'); } catch (e) {}
       }
     }, 2000);
@@ -639,13 +633,7 @@
       const av = document.getElementById('aviso-update');
       if (av && av.style.display === 'block') return;
       try { if (localStorage.getItem('umbra_transmision_' + UMBRA_VERSION)) return; } catch (e) {}
-      let msg = 'La señal se restableció. UMBRA sigue vigilando.';
-      try {
-        const r = await fetch('version.json', { cache: 'no-store' });
-        const j = await r.json();
-        if (j.mensaje) msg = j.mensaje;
-      } catch (e) {}
-      mostrarAvisoUpdate(msg, 'entrada');
+      mostrarAvisoUpdate('La señal se restableció. UMBRA sigue vigilando.', 'entrada');
       try { localStorage.setItem('umbra_transmision_' + UMBRA_VERSION, 'si'); } catch (e) {}
     });
     // MODO PRUEBA: sale en cada recarga con el mensaje ORIGINAL del json
@@ -665,6 +653,11 @@
         const r = await fetch('version.json', { cache: 'no-store' });
         const j = await r.json();
         if (j.version && j.version !== UMBRA_VERSION) {
+          // Si esta versión ya se anunció en esta sesión (HTML viejo en caché), no repetir
+          let ya = null;
+          try { ya = sessionStorage.getItem('umbra_update_avistado'); } catch (e) {}
+          if (ya === j.version) return;
+          try { sessionStorage.setItem('umbra_update_avistado', j.version); } catch (e) {}
           mostrarAvisoUpdate(j.mensaje, 'update');
           clearInterval(verTimer);
         }
