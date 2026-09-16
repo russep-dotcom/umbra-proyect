@@ -29,7 +29,7 @@
     .n2 { top: 60%; left: -10%; animation: deriva 34s ease-in-out infinite alternate-reverse; }
     @keyframes deriva { from { transform: translateX(0); } to { transform: translateX(12%); } }
     .brasa { position: absolute; bottom: -10px; width: 4px; height: 4px; border-radius: 50%; background: #ff5a1a; box-shadow: 0 0 8px #ff5a1a; animation: subir linear infinite; }
-    @keyframes subir { 0% { transform: translateY(0); opacity: 0; } 8% { opacity: 1; } 78% { opacity: 1; } 92% { transform: translateY(-112vh); opacity: 0; } 100% { transform: translateY(-112vh); opacity: 0; } }
+    @keyframes subir { 0% { transform: translateY(0); opacity: 0; } 5% { opacity: 1; } 85% { transform: translateY(-105vh); opacity: 1; } 86% { transform: translateY(-106vh); opacity: 0; } 100% { transform: translateY(-106vh); opacity: 0; } }
     /* Brasas al frente: solo así se ven salir; abajo del recuadro el fondo se las tragaba de golpe */
     .brasas-frente { display: block; position: fixed; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
     .cielo .brasa { display: none; }
@@ -475,7 +475,7 @@
   <div id="mirada"><div class="fondo-opulento"><i></i><i></i><i></i></div><span class="aro a1"></span><span class="aro a2"></span><span class="aro a3"></span><div class="ojo-g"><div class="pupila-g"></div></div><div class="flash-fin" id="flash-fin"></div></div>
   <div id="paso"><span class="vena v1"><i></i></span><span class="vena v2"><i></i></span><span class="vena v3"><i></i></span><span class="vena v4"><i></i></span></div>
   <div id="crash"><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.21 ☠</footer>
+  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.22 ☠</footer>
 
   <script>
     // La nota flotante refleja la principal y viceversa
@@ -627,7 +627,7 @@
     // MODO PRUEBA: aviso en cada recarga (quitar para modo real)
     const AVISO_SIEMPRE = false;
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '4.21';
+    const UMBRA_VERSION = '4.22';
     function mostrarAvisoUpdate(msg) {
       const av = document.getElementById('aviso-update');
       document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';
