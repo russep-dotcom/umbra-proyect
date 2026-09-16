@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>UMBRA · Vigila lo que cruzó</title>
   <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Nosifer&family=Special+Elite&family=Creepster&family=Cinzel:wght@700&display=swap" rel="stylesheet">
   <style>
@@ -280,6 +280,8 @@
     }
     /* Al llegar de otra página, la pantalla enciende suave (parpadeo uniforme) */
     body { animation: encender 1.1s ease-out backwards; }
+    /* Zoom fijo en celular: la página no se agranda con pellizco ni doble toque */
+    html { touch-action: pan-x pan-y; }
     body { user-select: none; -webkit-user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
     input, textarea { user-select: text; -webkit-user-select: text; }
     @keyframes encender { from { opacity: 0; } to { opacity: 1; } }
@@ -447,7 +449,7 @@
   <div id="mirada"><div class="fondo-opulento"><i></i><i></i><i></i></div><span class="aro a1"></span><span class="aro a2"></span><span class="aro a3"></span><div class="ojo-g"><div class="pupila-g"></div></div><div class="flash-fin" id="flash-fin"></div></div>
   <div id="paso"><span class="vena v1"><i></i></span><span class="vena v2"><i></i></span><span class="vena v3"><i></i></span><span class="vena v4"><i></i></span></div>
   <div id="crash"><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.7 ☠</footer>
+  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.8 ☠</footer>
 
   <script>
     // La nota flotante refleja la principal y viceversa
@@ -492,6 +494,9 @@
     ['contextmenu', 'copy', 'cut', 'dragstart'].forEach(ev =>
       document.addEventListener(ev, e => e.preventDefault())
     );
+    // Zoom fijo: frena el pellizco en iOS y el zoom con Ctrl + rueda
+    document.addEventListener('gesturestart', e => e.preventDefault());
+    document.addEventListener('wheel', e => { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
     document.addEventListener('keydown', e => {
       const k = (e.key || '').toLowerCase();
       if ((e.ctrlKey || e.metaKey) && ['c', 'x', 's', 'u', 'p'].includes(k)) e.preventDefault();
@@ -596,7 +601,7 @@
     // MODO PRUEBA: aviso en cada recarga (quitar para modo real)
     const AVISO_SIEMPRE = false;
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '4.7';
+    const UMBRA_VERSION = '4.8';
     function mostrarAvisoUpdate(msg) {
       const av = document.getElementById('aviso-update');
       document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';
