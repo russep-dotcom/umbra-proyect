@@ -1,6 +1,6 @@
 {
-  "version": "4.15",
-  "mensaje": "UMBRA v4.15: brasas grandes que salen de la pantalla. Recarga para ver el nuevo contenido.",
-  "mensaje_movil": "UMBRA v4.15: brasas más grandes hasta el logo. Recarga para ver el nuevo contenido.",
-  "mensaje_pc": "UMBRA v4.15: brasas grandes y espaciadas que salen de la pantalla. Recarga para ver el nuevo contenido."
+  "version": "4.16",
+  "mensaje": "UMBRA v4.16: cada brasa con su propia velocidad. Recarga para ver el nuevo contenido.",
+  "mensaje_movil": "UMBRA v4.16: mejora solo en computador, en celular todo igual.",
+  "mensaje_pc": "UMBRA v4.16: cada brasa con su propia velocidad. Recarga para ver el nuevo contenido."
 }
