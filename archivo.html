@@ -352,7 +352,7 @@
   <audio id="aud-almas" src="audio/almas.wav" preload="auto"></audio>
   <audio id="aud-glitch" preload="auto"></audio>
   <div id="crash"><div class="fondo-opulento"><i></i><i></i><i></i></div><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;position:relative;z-index:1;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer>☠ UMBRA · Archivo clasificado · Solo personal autorizado · v4.5 ☠</footer>
+  <footer>☠ UMBRA · Archivo clasificado · Solo personal autorizado · v4.6 ☠</footer>
 
   <script>
     // Campanada del archivo (misma familia que la portada)
@@ -374,7 +374,7 @@
     // El aviso de versión también sube con campana, como los demás
     document.head.insertAdjacentHTML('beforeend', '<style>#aviso-update{left:50% !important;right:auto !important;margin-left:0 !important;margin-right:0 !important;transform:translateX(-50%);max-width:640px !important;width:92vw !important;font-size:17px !important;padding:30px 28px !important;}#aviso-update.subiendo{animation:aviso-sube 1.8s cubic-bezier(0.22,1,0.36,1) forwards;}@keyframes aviso-sube{from{top:110vh;transform:translate(-50%,0);}to{top:50%;transform:translate(-50%,-50%);}}#aviso-update.listo{animation:aviso-late 2.2s ease-in-out infinite;box-shadow:0 0 60px rgba(255,122,26,0.5);}@keyframes aviso-late{0%,100%{box-shadow:0 0 30px rgba(255,122,26,0.3);}50%{box-shadow:0 0 70px rgba(255,122,26,0.6);}}html,body{overflow-x:hidden;}</style>');
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '4.5';
+    const UMBRA_VERSION = '4.6';
     function mostrarAvisoArchivo(msg) {
       const av = document.getElementById('aviso-update');
       document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';
@@ -397,21 +397,28 @@
       }, 1900);
     }
     // La bienvenida de nuevos vive en su propio sistema; aquí solo el aviso de update
-    const verTimer = setInterval(async () => {
+    // Revisa al cargar + cada 20s + al volver a la pestaña, con anti-caché
+    async function chequearVersion() {
       try {
-        const r = await fetch('version.json', { cache: 'no-store' });
+        const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
         const j = await r.json();
         if (j.version && j.version !== UMBRA_VERSION) {
           // Si esta versión ya se anunció en esta sesión (HTML viejo en caché), no repetir
           let ya = null;
           try { ya = sessionStorage.getItem('umbra_update_avistado'); } catch (e) {}
-          if (ya === j.version) return;
+          if (ya === j.version) return true;
           try { sessionStorage.setItem('umbra_update_avistado', j.version); } catch (e) {}
           mostrarAvisoArchivo(j.mensaje);
-          clearInterval(verTimer);
+          try { clearInterval(verTimer); } catch (e2) {}
+          return true;
         }
       } catch (e) {}
-    }, 60000);
+      return false;
+    }
+    const verTimer = setInterval(chequearVersion, 20000);
+    setTimeout(chequearVersion, 3000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) chequearVersion(); });
+    window.addEventListener('focus', chequearVersion);
     // El reflector sigue al cursor por toda la página
     let baseMX = window.innerWidth / 2, baseMY = window.innerHeight * 0.4;
     let idleEspera = null, idleDeriva = null;
