@@ -199,7 +199,7 @@
       box-shadow: 0 0 22px #b14dff; }
     /* Barra de ajustes: engranaje + panel */
     #btn-ajustes { position: fixed; left: 14px; bottom: 14px; z-index: 30; font-size: 16px; padding: 10px 14px; }
-    #panel-ajustes { display: none; position: fixed; left: 14px; bottom: 62px; z-index: 30;
+    #panel-ajustes { display: none; position: fixed; left: 14px; bottom: 68px; z-index: 30;
       background: rgba(10,0,0,0.92); border: 1px solid #b14dff; border-radius: 10px;
       padding: 16px 18px; width: 250px; text-align: left; font-size: 13px; letter-spacing: 1px;
       box-shadow: 0 0 24px rgba(177,77,255,0.25); }
@@ -208,8 +208,9 @@
       letter-spacing: 3px; margin: 0 0 10px; font-size: 16px; text-align: center; }
     #panel-ajustes label { display: block; margin: 10px 0 4px; color: #b8b8b8; }
     #panel-ajustes input[type="range"] { width: 100%; accent-color: #b14dff; }
-    /* Lista de sonidos con scroll: cada sonido con su propio control */
-    #panel-ajustes .aj-lista { max-height: 52vh; overflow-y: auto; padding-right: 4px; }
+    /* Lista de sonidos con scroll: cada sonido con su propio control, sin barra fea */
+    #panel-ajustes .aj-lista { max-height: 52vh; overflow-y: auto; padding-right: 4px; overscroll-behavior: contain; scrollbar-width: none; -ms-overflow-style: none; }
+    #panel-ajustes .aj-lista::-webkit-scrollbar { display: none; }
     #panel-ajustes .fila-aj { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     #panel-ajustes .sw { font-size: 12px; padding: 6px 12px; }
     /* Engranaje de ajustes: gira lento como un mecanismo UMBRA */
@@ -490,7 +491,7 @@
   <div id="mirada"><div class="fondo-opulento"><i></i><i></i><i></i></div><span class="aro a1"></span><span class="aro a2"></span><span class="aro a3"></span><div class="ojo-g"><div class="pupila-g"></div></div><div class="flash-fin" id="flash-fin"></div></div>
   <div id="paso"><span class="vena v1"><i></i></span><span class="vena v2"><i></i></span><span class="vena v3"><i></i></span><span class="vena v4"><i></i></span></div>
   <div id="crash"><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.28 ☠</footer>
+  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.29 ☠</footer>
 
   <script>
     // La nota flotante refleja la principal y viceversa
@@ -642,7 +643,7 @@
     // MODO PRUEBA: aviso en cada recarga (quitar para modo real)
     const AVISO_SIEMPRE = false;
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '4.28';
+    const UMBRA_VERSION = '4.29';
     function mostrarAvisoUpdate(msg) {
       const av = document.getElementById('aviso-update');
       document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';

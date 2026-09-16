@@ -130,8 +130,9 @@
       animation: hint-pulse 1.6s ease-in-out infinite; }
     @keyframes hint-pulse { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
     #panel-ajustes.abierto { display: block !important; }
-    /* Lista de sonidos con scroll: cada sonido con su propio control */
-    #panel-ajustes .aj-lista { max-height: 52vh; overflow-y: auto; padding-right: 4px; }
+    /* Lista de sonidos con scroll: cada sonido con su propio control, sin barra fea */
+    #panel-ajustes .aj-lista { max-height: 52vh; overflow-y: auto; padding-right: 4px; overscroll-behavior: contain; scrollbar-width: none; -ms-overflow-style: none; }
+    #panel-ajustes .aj-lista::-webkit-scrollbar { display: none; }
     /* Engranaje de ajustes: gira lento como un mecanismo UMBRA */
     @keyframes ajuste-gira { to { transform: rotate(360deg); } }
     .nav { margin: 30px; } .nav a { color: var(--sangre); margin: 0 12px; letter-spacing: 2px; }
@@ -339,7 +340,7 @@
   <button id="btn-estatica" onclick="toggleEstatica()">VIENTO: OFF</button>
   <button id="btn-musica-movil" onclick="toggleEstaticaMovil()" title="Música">♪</button>
   <button id="btn-ajustes" onclick="toggleAjustes(event)" title="Ajustes" style="position:fixed;left:14px;bottom:14px;z-index:30;width:46px;height:46px;border-radius:50%;border:2px solid #b14dff;background:radial-gradient(circle,#1a001a 30%,#000 70%);padding:0;"><span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:24px;color:#b14dff;text-shadow:0 0 12px #b14dff;animation:ajuste-gira 6s linear infinite;">⚙</span></button>
-  <div id="panel-ajustes" onclick="event.stopPropagation()" style="display:none;position:fixed;left:14px;bottom:62px;z-index:30;background:rgba(10,0,0,0.92);border:1px solid #b14dff;border-radius:10px;padding:16px 18px;width:250px;text-align:left;font-size:13px;letter-spacing:1px;box-shadow:0 0 24px rgba(177,77,255,0.25);">
+  <div id="panel-ajustes" onclick="event.stopPropagation()" style="display:none;position:fixed;left:14px;bottom:68px;z-index:30;background:rgba(10,0,0,0.92);border:1px solid #b14dff;border-radius:10px;padding:16px 18px;width:250px;text-align:left;font-size:13px;letter-spacing:1px;box-shadow:0 0 24px rgba(177,77,255,0.25);">
     <h3 style="font-family:'Metal Mania','Impact',cursive;color:#b14dff;letter-spacing:3px;margin:0 0 10px;font-size:16px;text-align:center;">AJUSTES</h3>
     <div class="aj-lista">
     <label>Música: <span id="aj-musica-num">100</span></label>
@@ -378,7 +379,7 @@
   <audio id="aud-almas" src="audio/almas.wav" preload="auto"></audio>
   <audio id="aud-glitch" preload="auto"></audio>
   <div id="crash"><div class="fondo-opulento"><i></i><i></i><i></i></div><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;position:relative;z-index:1;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer>☠ UMBRA · Archivo clasificado · Solo personal autorizado · v4.28 ☠</footer>
+  <footer>☠ UMBRA · Archivo clasificado · Solo personal autorizado · v4.29 ☠</footer>
 
   <script>
     // Campanada del archivo (misma familia que la portada)
@@ -400,7 +401,7 @@
     // El aviso de versión también sube con campana, como los demás
     document.head.insertAdjacentHTML('beforeend', '<style>#aviso-update{left:50% !important;right:auto !important;margin-left:0 !important;margin-right:0 !important;transform:translateX(-50%);max-width:640px !important;width:92vw !important;font-size:17px !important;padding:30px 28px !important;}#aviso-update.subiendo{animation:aviso-sube 1.8s cubic-bezier(0.22,1,0.36,1) forwards;}@keyframes aviso-sube{from{top:110vh;transform:translate(-50%,0);}to{top:50%;transform:translate(-50%,-50%);}}#aviso-update.listo{animation:aviso-late 2.2s ease-in-out infinite;box-shadow:0 0 60px rgba(255,122,26,0.5);}@keyframes aviso-late{0%,100%{box-shadow:0 0 30px rgba(255,122,26,0.3);}50%{box-shadow:0 0 70px rgba(255,122,26,0.6);}}html,body{overflow-x:hidden;}</style>');
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '4.28';
+    const UMBRA_VERSION = '4.29';
     function mostrarAvisoArchivo(msg) {
       const av = document.getElementById('aviso-update');
       document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';
