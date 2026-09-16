@@ -265,8 +265,9 @@
         transform: translateX(-50%); font-size: 9px; letter-spacing: 2px; color: #b14dff;
         margin-top: 5px; font-family: Arial, sans-serif; }
       #btn-menu, #btn-musica-movil { overflow: visible; }
-      /* Aviso de sonido en móvil: píldora centrada que no choca con MÚSICA */
-      #hint-sonido { left: 50% !important; right: auto !important; transform: translateX(-50%) !important;
+      /* Aviso de sonido en móvil: píldora flotante, fuera del menú */
+      #hint-sonido { position: fixed !important; left: 50% !important; right: auto !important;
+        transform: translateX(-50%) !important;
         bottom: 150px !important; max-width: 92vw !important; white-space: nowrap !important;
         background: rgba(12,0,20,0.92) !important; border-radius: 20px !important;
         padding: 10px 18px !important;
@@ -446,7 +447,7 @@
   <div id="mirada"><div class="fondo-opulento"><i></i><i></i><i></i></div><span class="aro a1"></span><span class="aro a2"></span><span class="aro a3"></span><div class="ojo-g"><div class="pupila-g"></div></div><div class="flash-fin" id="flash-fin"></div></div>
   <div id="paso"><span class="vena v1"><i></i></span><span class="vena v2"><i></i></span><span class="vena v3"><i></i></span><span class="vena v4"><i></i></span></div>
   <div id="crash"><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.0 ☠</footer>
+  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.1 ☠</footer>
 
   <script>
     // La nota flotante refleja la principal y viceversa
@@ -588,7 +589,7 @@
     // MODO PRUEBA: aviso en cada recarga (quitar para modo real)
     const AVISO_SIEMPRE = false;
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '4.0';
+    const UMBRA_VERSION = '4.1';
     function mostrarAvisoUpdate(msg, modo) {
       const av = document.getElementById('aviso-update');
       document.getElementById('aviso-msg').textContent = msg || 'Hay contenido nuevo.';
@@ -599,7 +600,7 @@
           btn.onclick = () => { av.style.display = 'none'; av.classList.remove('listo'); };
         } else {
           btn.textContent = 'ACTUALIZAR AHORA';
-          btn.onclick = () => location.reload();
+          btn.onclick = () => { try { location.href = location.pathname + '?umbra=' + Date.now(); } catch (e) { location.reload(); } };
         }
       }
       av.classList.remove('subiendo');
