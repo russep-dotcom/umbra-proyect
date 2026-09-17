@@ -53,6 +53,26 @@
       align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 24px; }
     #suave.abierto { display: flex; animation: fundido 0.9s ease-in-out forwards; }
     @keyframes fundido { from { opacity: 0; } to { opacity: 1; } }
+    /* ===== Desconexión: cada 2 normales sale una ===== */
+    #crash { display: none; position: fixed; inset: 0; z-index: 99; cursor: wait;
+      background: repeating-linear-gradient(0deg, #000 0 4px, #140000 4px 5px, #001014 5px 6px);
+      align-items: center; justify-content: center; flex-direction: column; overflow: hidden; }
+    #crash.abierto { display: flex; animation: crash-in 0.55s steps(4); }
+    @keyframes crash-in {
+      0% { opacity: 0; transform: scale(1.8); }
+      30% { opacity: 1; transform: scale(1); filter: invert(1) brightness(2.5); }
+      55% { opacity: 1; transform: scale(1); filter: invert(0) brightness(0.4); }
+      100% { opacity: 1; transform: none; filter: invert(0); } }
+    #crash h2 { color: var(--alfa); font-size: 40px; font-family: 'Metal Mania', 'Impact', cursive; letter-spacing: 4px;
+      text-shadow: -4px 0 #ff0000, 4px 0 #00e5ff, 0 0 30px #ff0000; animation: rgb-jitter 0.65s steps(2) infinite; }
+    #crash p { animation: texto-brusco 0.45s steps(2) infinite; letter-spacing: 3px; }
+    @keyframes texto-brusco {
+      0% { transform: translate(0); } 25% { transform: translate(-5px, 3px) skewX(-2deg); }
+      50% { transform: translate(5px, -3px) skewX(2deg); } 75% { transform: translate(-3px, -4px); }
+      100% { transform: translate(0); } }
+    @keyframes rgb-jitter {
+      0% { transform: translate(0); } 25% { transform: translate(-4px, 2px); }
+      50% { transform: translate(4px, -2px); } 75% { transform: translate(-3px, -3px); } 100% { transform: translate(0); } }
     /* ===== Portal de carga: el mismo que lleva de la portada al cajón ===== */
     #paso-portal { display: none; position: fixed; inset: 0; z-index: 99; background: #000;
       align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 24px; }
@@ -267,7 +287,10 @@
   </main>
   <div id="paso-portal"><div class="jarvis"><div class="ticks"></div><div class="barrido"></div><div class="aro-d"></div><div class="nucleo"></div></div><p class="susurro" id="susurro"></p><div class="barra-carga"><i></i></div><p class="pct" id="pct-portal">0%</p></div>
   <div id="suave"></div>
+  <div id="crash"><h2>⚠ SEÑAL PERDIDA ⚠</h2><p>UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p></div>
   <audio id="aud-vuelta" src="../audio/vuelta.wav" preload="auto"></audio>
+  <audio id="aud-normal" src="../audio/falla3.mp4" preload="auto"></audio>
+  <audio id="aud-crash" src="../audio/glitch-alfa.wav" preload="auto"></audio>
   <div class="grano" aria-hidden="true"></div>
   <div class="vineta" aria-hidden="true"></div>
   <footer>☠ UMBRA · Esta página no existe para el público ☠</footer>
@@ -305,7 +328,7 @@
       try { puerta.style.opacity = '0'; } catch (e) {}
       setTimeout(mostrar, 450);
     }
-    // Sonido de las cargas: el mismo de la vuelta en la página normal
+    // Sonidos de las cargas: cada pantalla con el suyo
     function sonarVuelta() {
       try {
         const a = document.getElementById('aud-vuelta');
@@ -314,7 +337,16 @@
         if (p && p.catch) p.catch(() => {});
       } catch (e) {}
     }
-    // Portal al editor: el mismo que lleva de la portada al cajón
+    function sonarCarga(id, vol) {
+      try {
+        const a = document.getElementById(id);
+        a.pause(); a.currentTime = 0; a.volume = vol;
+        const p = a.play();
+        if (p && p.catch) p.catch(() => {});
+        setTimeout(() => { try { a.pause(); } catch (e) {} }, 3800);
+      } catch (e) {}
+    }
+    // Entrada al editor: cada 2 normales sale una de desconexión, como en el cajón
     const SUSURROS_ED = [
       'Guarda silencio. El archivo escucha.',
       'Solo el director cruza esta puerta.'
@@ -322,8 +354,21 @@
     let susurroTimerEd = null;
     function irEditor() {
       try {
+        let n = 0;
+        try { n = parseInt(localStorage.getItem('umbra_rot_ed') || '0', 10) || 0; } catch (e) {}
+        try { localStorage.setItem('umbra_rot_ed', String(n + 1)); } catch (e) {}
         document.getElementById('intro').style.display = 'none';
-        sonarVuelta();
+        if (n % 3 === 2) {
+          sonarCarga('aud-crash', 0.7);
+          document.getElementById('crash').classList.add('abierto');
+          setTimeout(() => {
+            document.getElementById('crash').classList.remove('abierto');
+            document.getElementById('herramientas').style.display = 'block';
+            tab('t-interfaz');
+          }, 3000);
+          return;
+        }
+        sonarCarga('aud-normal', 0.7);
         document.getElementById('paso-portal').classList.add('abierto');
         const el = document.getElementById('susurro');
         const texto = SUSURROS_ED[Math.floor(Math.random() * SUSURROS_ED.length)];
