@@ -92,9 +92,10 @@
     :focus-visible { outline: 2px solid var(--alfa); outline-offset: 3px; }
     /* Celular tal cual la portada: todo respira en pantalla chica */
     @media (max-width: 640px) {
-      /* Degradado vertical violeta a rojo, fijo y sin cortes */
+      /* Degradado vertical violeta a rojo en las 3 capas: imposible que se corte */
+      html { background: #7a1fa8; }
+      body { background: linear-gradient(180deg, #a11ff2 0%, #c81f9d 38%, #e6204f 68%, #f01010 100%) no-repeat fixed, #7a1fa8; }
       .cielo { background: linear-gradient(180deg, #a11ff2 0%, #c81f9d 38%, #e6204f 68%, #f01010 100%); }
-      html, body { background: #2a0a3a; }
       footer { position: relative; z-index: 2; color: #f0e6ff; text-shadow: 0 1px 6px #000; }
       .logo { width: 90px; height: 90px; }
       .logo .ojo { inset: 22px; }
