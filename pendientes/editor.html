@@ -345,43 +345,56 @@
         setTimeout(() => { try { a.pause(); } catch (e) {} }, 3800);
       } catch (e) {}
     }
-    // Portal normal: oleaje suave que baja (nada de glitch)
+    // Portal normal: murmullo y latido originales de la página normal, sin cambios
     let CTX_ED = null;
     function ctxEd() {
       if (!CTX_ED || CTX_ED.state === 'closed') CTX_ED = new (window.AudioContext || window.webkitAudioContext)();
       if (CTX_ED.state === 'suspended') CTX_ED.resume();
       return CTX_ED;
     }
-    function sonarPortalSuave() {
+    function sonarPortalOriginal() {
       try {
         const ctx = ctxEd();
         const t = ctx.currentTime;
-        const dur = 2.2;
-        const buf = ctx.createBuffer(1, ctx.sampleRate * dur, ctx.sampleRate);
-        const d = buf.getChannelData(0);
-        for (let i = 0; i < d.length; i++) {
-          const env = Math.sin((i / d.length) * Math.PI);
-          d[i] = (Math.random() * 2 - 1) * env;
-        }
-        const src = ctx.createBufferSource(); src.buffer = buf;
-        const f = ctx.createBiquadFilter(); f.type = 'lowpass';
-        f.frequency.setValueAtTime(2400, t);
-        f.frequency.exponentialRampToValueAtTime(220, t + dur);
-        const g = ctx.createGain();
-        g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(0.3, t + 0.4);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        src.connect(f).connect(g).connect(ctx.destination);
-        src.start(t);
-        const o = ctx.createOscillator(); o.type = 'sine';
-        o.frequency.setValueAtTime(90, t);
-        o.frequency.exponentialRampToValueAtTime(45, t + dur);
-        const go = ctx.createGain();
-        go.gain.setValueAtTime(0.0001, t);
-        go.gain.exponentialRampToValueAtTime(0.25, t + 0.3);
-        go.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        o.connect(go).connect(ctx.destination);
-        o.start(t); o.stop(t + dur + 0.1);
+        [0, 1.6, 3.1].forEach(dt => {
+          const dur = 1.2;
+          const buf = ctx.createBuffer(1, ctx.sampleRate * dur, ctx.sampleRate);
+          const d = buf.getChannelData(0);
+          for (let i = 0; i < d.length; i++) {
+            const env = Math.sin((i / d.length) * Math.PI);
+            d[i] = (Math.random() * 2 - 1) * env;
+          }
+          const src = ctx.createBufferSource(); src.buffer = buf;
+          const f = ctx.createBiquadFilter(); f.type = 'bandpass';
+          f.frequency.setValueAtTime(800 + Math.random() * 900, t + dt);
+          f.frequency.exponentialRampToValueAtTime(380, t + dt + dur);
+          f.Q.value = 3;
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.0001, t + dt);
+          g.gain.exponentialRampToValueAtTime(0.28, t + dt + 0.25);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + dt + dur);
+          src.connect(f).connect(g); g.connect(ctx.destination);
+          src.start(t + dt);
+        });
+        [0, 0.34].forEach((dt, i) => {
+          try {
+            const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = i ? 40 : 50;
+            const g = ctx.createGain();
+            const tt = ctx.currentTime + dt;
+            g.gain.setValueAtTime(0.0001, tt);
+            g.gain.exponentialRampToValueAtTime(0.85, tt + 0.04);
+            g.gain.exponentialRampToValueAtTime(0.0001, tt + 0.4);
+            o.connect(g).connect(ctx.destination);
+            o.start(tt); o.stop(tt + 0.45);
+            const h = ctx.createOscillator(); h.type = 'sine'; h.frequency.value = (i ? 40 : 50) * 2;
+            const gh = ctx.createGain();
+            gh.gain.setValueAtTime(0.0001, tt);
+            gh.gain.exponentialRampToValueAtTime(0.22, tt + 0.04);
+            gh.gain.exponentialRampToValueAtTime(0.0001, tt + 0.4);
+            h.connect(gh).connect(ctx.destination);
+            h.start(tt); h.stop(tt + 0.45);
+          } catch (e) {}
+        });
       } catch (e) {}
     }
       try {
@@ -414,7 +427,7 @@
           }, 3000);
           return;
         }
-        sonarPortalSuave();
+        sonarPortalOriginal();
         document.getElementById('paso-portal').classList.add('abierto');
         const el = document.getElementById('susurro');
         const texto = SUSURROS_ED[Math.floor(Math.random() * SUSURROS_ED.length)];
