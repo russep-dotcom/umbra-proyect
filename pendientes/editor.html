@@ -397,14 +397,6 @@
         });
       } catch (e) {}
     }
-      try {
-        const a = document.getElementById(id);
-        a.pause(); a.currentTime = 0; a.volume = vol;
-        const p = a.play();
-        if (p && p.catch) p.catch(() => {});
-        setTimeout(() => { try { a.pause(); } catch (e) {} }, 3800);
-      } catch (e) {}
-    }
     // Entrada al editor: cada 2 normales sale una de desconexión, como en el cajón
     const SUSURROS_ED = [
       'Guarda silencio. El archivo escucha.',
