@@ -103,6 +103,13 @@
         <textarea id="r-notas" rows="2"></textarea>
         <button onclick="guardarRegistro()">GUARDAR REGISTRO</button>
         <div id="lista"></div>
+        <h2>Llevar a otro aparato</h2>
+        <p style="font-size:14px;color:#8a8a8a;">Copia tus registros aquí y pégalos en tu otro aparato para que queden en ambos.</p>
+        <button onclick="exportar()">COPIAR MIS REGISTROS</button>
+        <textarea id="codigo" rows="3" readonly placeholder="Aquí sale tu código para copiar…"></textarea>
+        <label>PEGA AQUÍ EL CÓDIGO DEL OTRO APARATO</label>
+        <textarea id="codigo-in" rows="3" placeholder="Pega el código…"></textarea>
+        <button onclick="importar()">IMPORTAR</button>
       </div>
 
       <div class="tab" id="t-publicar">
@@ -175,6 +182,40 @@
       lista.splice(i, 1);
       try { localStorage.setItem('umbra_custom', JSON.stringify(lista)); } catch (e) {}
       pintarLista();
+    }
+    // ===== LLEVAR A OTRO APARATO =====
+    function exportar() {
+      const codigo = JSON.stringify(leer());
+      const box = document.getElementById('codigo');
+      box.value = codigo;
+      try { box.select(); } catch (e) {}
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(codigo);
+          alert('Copiado. Pégalo en tu otro aparato.');
+        } else {
+          document.execCommand('copy');
+          alert('Copiado. Pégalo en tu otro aparato.');
+        }
+      } catch (e) {
+        alert('Copia el código a mano.');
+      }
+    }
+    function importar() {
+      let datos = null;
+      try { datos = JSON.parse(document.getElementById('codigo-in').value.trim()); } catch (e) {}
+      if (!datos || !datos.length) { alert('Ese código no trae registros.'); return; }
+      const lista = leer();
+      let nuevos = 0;
+      datos.forEach(r => {
+        if (!r || !r.titulo) return;
+        const existe = lista.some(x => (x.titulo || '').toLowerCase() === String(r.titulo).toLowerCase());
+        if (!existe) { lista.push(r); nuevos++; }
+      });
+      try { localStorage.setItem('umbra_custom', JSON.stringify(lista)); } catch (e) {}
+      document.getElementById('codigo-in').value = '';
+      pintarLista();
+      alert(nuevos ? nuevos + ' registro(s) importados.' : 'Esos ya los tenías.');
     }
     function pintarLista() {
       const box = document.getElementById('lista');
