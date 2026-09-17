@@ -208,6 +208,13 @@
       letter-spacing: 3px; margin: 0 0 10px; font-size: 16px; text-align: center; }
     #panel-ajustes label { display: block; margin: 10px 0 4px; color: #b8b8b8; }
     #panel-ajustes input[type="range"] { width: 100%; accent-color: #b14dff; }
+    /* Controles iguales en ambas: riel morado con bolita brillante (sin depender del navegador) */
+    #panel-ajustes input[type="range"] { -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; }
+    #panel-ajustes input[type="range"]::-webkit-slider-runnable-track { height: 8px; border-radius: 6px; background: linear-gradient(to right, #b14dff var(--p, 100%), rgba(232,232,232,0.85) var(--p, 100%)); }
+    #panel-ajustes input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; margin-top: -5px; border-radius: 50%; background: #b14dff; border: none; box-shadow: 0 0 10px #b14dff; }
+    #panel-ajustes input[type="range"]::-moz-range-track { height: 8px; border-radius: 6px; background: rgba(232,232,232,0.85); }
+    #panel-ajustes input[type="range"]::-moz-range-progress { height: 8px; border-radius: 6px; background: #b14dff; }
+    #panel-ajustes input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border: none; border-radius: 50%; background: #b14dff; box-shadow: 0 0 10px #b14dff; }
     /* Lista de sonidos con scroll: cada sonido con su propio control, sin barra fea */
     #panel-ajustes .aj-lista { max-height: 52vh; overflow-y: auto; padding-right: 4px; overscroll-behavior: contain; scrollbar-width: none; -ms-overflow-style: none; }
     #panel-ajustes .aj-lista::-webkit-scrollbar { display: none; }
@@ -491,7 +498,7 @@
   <div id="mirada"><div class="fondo-opulento"><i></i><i></i><i></i></div><span class="aro a1"></span><span class="aro a2"></span><span class="aro a3"></span><div class="ojo-g"><div class="pupila-g"></div></div><div class="flash-fin" id="flash-fin"></div></div>
   <div id="paso"><span class="vena v1"><i></i></span><span class="vena v2"><i></i></span><span class="vena v3"><i></i></span><span class="vena v4"><i></i></span></div>
   <div id="crash"><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.30 ☠</footer>
+  <footer id="ui-pie">☠ UMBRA · Solo personal autorizado · 2026 · v4.31 ☠</footer>
 
   <script>
     // La nota flotante refleja la principal y viceversa
@@ -643,7 +650,7 @@
     // MODO PRUEBA: aviso en cada recarga (quitar para modo real)
     const AVISO_SIEMPRE = false;
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '4.30';
+    const UMBRA_VERSION = '4.31';
     // En celular el navegador duerme el audio: suena ya, y si nació dormido repite al primer toque
     function chimeAviso(fn) {
       try { fn(); } catch (e) {}
@@ -1475,6 +1482,24 @@
           if (inp) inp.value = val;
           if (n) n.textContent = val;
         } catch (e) {}
+      });
+      pintarPistas();
+    }
+    // El relleno morado del riel sigue al valor en cualquier navegador
+    function pintarPistas() {
+      try {
+        document.querySelectorAll('#panel-ajustes input[type="range"]').forEach(inp => {
+          inp.style.setProperty('--p', (inp.value || '100') + '%');
+        });
+      } catch (e) {}
+    }
+    if (!window.__pistasUMBRA) {
+      window.__pistasUMBRA = true;
+      document.addEventListener('input', e => {
+        try {
+          const t = e.target;
+          if (t && t.type === 'range' && t.closest && t.closest('#panel-ajustes')) t.style.setProperty('--p', t.value + '%');
+        } catch (e2) {}
       });
     }
     // El navegador a veces la frena: despierta con tu primer clic.
