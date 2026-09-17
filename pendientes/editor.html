@@ -33,6 +33,8 @@
     .brasa.br2 { left: 30% !important; animation-duration: 11s; animation-delay: -4s; }
     .brasa.br3 { left: 70% !important; animation-duration: 9.5s; animation-delay: -2s; }
     @keyframes subir { 0% { transform: translateY(0); opacity: 0; } 12% { opacity: 1; } 100% { transform: translateY(-105vh); opacity: 0; } }
+    /* Brasas al frente del recuadro: si van detrás no se notan */
+    .brasas-frente { position: fixed; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
     .vela { position: fixed; inset: 0; z-index: 1; pointer-events: none;
       background: radial-gradient(ellipse at 50% 30%, rgba(255,60,20,0.06), transparent 60%);
       animation: vela 5s infinite; }
@@ -114,13 +116,15 @@
     <div class="luna"></div>
     <div class="niebla-capa n1"></div>
     <div class="niebla-capa n2"></div>
+  </div>
+  <div class="vela" aria-hidden="true"></div>
+  <div class="brasas-frente" aria-hidden="true">
     <span class="brasa" style="left:12%;width:3px;height:3px;animation-duration:9s;"></span>
     <span class="brasa br2" style="width:6px;height:6px;"></span>
     <span class="brasa br3" style="width:4px;height:4px;"></span>
     <span class="brasa" style="left:48%;width:10px;height:10px;animation-duration:14s;animation-delay:-6s;"></span>
     <span class="brasa" style="left:86%;width:5px;height:5px;animation-duration:11s;animation-delay:-3s;"></span>
   </div>
-  <div class="vela" aria-hidden="true"></div>
   <header>
     <div class="logo" aria-hidden="true"><div class="anillo"></div><div class="anillo2"></div><div class="ojo"><div class="pupila"></div></div></div>
     <h1>PANEL PRIVADO</h1>
