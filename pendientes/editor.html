@@ -92,6 +92,11 @@
     :focus-visible { outline: 2px solid var(--alfa); outline-offset: 3px; }
     /* Celular tal cual la portada: todo respira en pantalla chica */
     @media (max-width: 640px) {
+      /* Fondo como la referencia: resplandor rojo al centro con vetas sobre violeta oscuro */
+      .cielo { background:
+        repeating-linear-gradient(180deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 5px),
+        radial-gradient(ellipse 75% 45% at 50% 48%, rgba(255,42,26,0.9), rgba(150,20,60,0.5) 45%, rgba(26,5,51,0.9) 75%, #0d0218 100%); }
+      html, body { background: #0d0218; }
       .logo { width: 90px; height: 90px; }
       .logo .ojo { inset: 22px; }
       .logo .pupila { width: 20px; height: 20px; }
