@@ -24,11 +24,12 @@
       filter: blur(2px); animation: luna 7s ease-in-out infinite; }
     @keyframes luna { 0%,100% { opacity: 0.85; transform: scale(1); } 50% { opacity: 1; transform: scale(1.04); } }
     .niebla-capa { position: absolute; width: 160%; height: 40%; border-radius: 50%; filter: blur(50px);
-      background: radial-gradient(ellipse, rgba(120,20,20,0.14), transparent 70%); }
+      background: radial-gradient(ellipse, rgba(90,30,150,0.16), transparent 70%); }
     .n1 { top: 20%; left: -30%; animation: deriva 26s ease-in-out infinite alternate; }
     .n2 { top: 60%; left: -10%; animation: deriva 34s ease-in-out infinite alternate-reverse; }
     @keyframes deriva { from { transform: translateX(0); } to { transform: translateX(12%); } }
-    .brasa { position: absolute; bottom: -10px; width: 4px; height: 4px; border-radius: 50%; background: #ff5a1a; box-shadow: 0 0 8px #ff5a1a; animation: subir 8s linear infinite; }
+    /* Brasas moradas con los mismos detalles: varios tamaños y blur como la luna */
+    .brasa { position: absolute; bottom: -10px; width: 4px; height: 4px; border-radius: 50%; background: #b14dff; box-shadow: 0 0 10px #b14dff; filter: blur(2px); animation: subir 8s linear infinite; }
     .brasa.br2 { left: 30% !important; animation-duration: 11s; animation-delay: -4s; }
     .brasa.br3 { left: 70% !important; animation-duration: 9.5s; animation-delay: -2s; }
     @keyframes subir { 0% { transform: translateY(0); opacity: 0; } 12% { opacity: 1; } 100% { transform: translateY(-105vh); opacity: 0; } }
@@ -113,9 +114,11 @@
     <div class="luna"></div>
     <div class="niebla-capa n1"></div>
     <div class="niebla-capa n2"></div>
-    <span class="brasa" style="left:15%;animation-duration:8s;"></span>
-    <span class="brasa br2" style="left:55%;"></span>
-    <span class="brasa br3" style="left:80%;"></span>
+    <span class="brasa" style="left:12%;width:3px;height:3px;animation-duration:9s;"></span>
+    <span class="brasa br2" style="width:6px;height:6px;"></span>
+    <span class="brasa br3" style="width:4px;height:4px;"></span>
+    <span class="brasa" style="left:48%;width:10px;height:10px;animation-duration:14s;animation-delay:-6s;"></span>
+    <span class="brasa" style="left:86%;width:5px;height:5px;animation-duration:11s;animation-delay:-3s;"></span>
   </div>
   <div class="vela" aria-hidden="true"></div>
   <header>
