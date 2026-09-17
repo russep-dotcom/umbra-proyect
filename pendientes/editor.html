@@ -94,6 +94,8 @@
     @media (max-width: 640px) {
       /* Recuadro más transparente para que se note el fondo */
       .caja-inicio { background: rgba(10,0,0,0.45); }
+      /* Pie visible sobre el fondo vivo */
+      footer { position: relative; z-index: 2; color: #f0e6ff; text-shadow: 0 1px 6px #000; }
       /* Fondo como la referencia: resplandor rojo al centro con vetas sobre violeta oscuro */
       .cielo { background:
         repeating-linear-gradient(180deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 5px),
