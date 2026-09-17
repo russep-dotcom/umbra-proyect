@@ -92,6 +92,8 @@
     :focus-visible { outline: 2px solid var(--alfa); outline-offset: 3px; }
     /* Celular tal cual la portada: todo respira en pantalla chica */
     @media (max-width: 640px) {
+      /* Fondo en degradado rojo a violeta, mandando el violeta */
+      body { background: linear-gradient(180deg, #2a0505 0%, #160426 38%, #1e0738 100%); }
       .logo { width: 90px; height: 90px; }
       .logo .ojo { inset: 22px; }
       .logo .pupila { width: 20px; height: 20px; }
