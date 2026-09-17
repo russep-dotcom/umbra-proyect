@@ -36,6 +36,16 @@
     .aviso { background: #140a02; border: 1px solid #ff7a1a; color: #ff7a1a; border-radius: 6px; padding: 12px; font-size: 14px; }
     footer { color: #3a3a3a; font-size: 12px; padding: 25px; text-align: center; }
     :focus-visible { outline: 2px solid var(--alfa); outline-offset: 3px; }
+    /* Celular: botones gordos para el dedo y letra de 16px para que no haga zoom solo */
+    @media (max-width: 640px) {
+      main { margin: 12px 8px; padding: 18px 14px; }
+      h1 { font-size: 26px; }
+      h2 { font-size: 19px; }
+      input, textarea, select { font-size: 16px; }
+      button { min-height: 48px; }
+      .tabs button { font-size: 12px; padding: 10px 10px; margin-top: 8px; }
+      #puerta input, #puerta button { width: 100%; box-sizing: border-box; }
+    }
     body { animation: encender 1.1s ease-out backwards; }
     @keyframes encender { from { opacity: 0; } to { opacity: 1; } }
   </style>
