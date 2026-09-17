@@ -94,7 +94,7 @@
       box-shadow: 0 0 22px #ff0000; animation: latido 3s infinite; }
     @keyframes latido { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
     main { position: relative; z-index: 2; }
-    h1 { font-family: 'Nosifer', 'Metal Mania', cursive; color: var(--alfa); font-size: clamp(34px, 10vw, 64px);
+    h1 { font-family: 'Creepster', 'Metal Mania', cursive; color: var(--alfa); font-size: clamp(34px, 10vw, 64px);
       letter-spacing: 4px; margin: 10px 0 0; text-align: center; text-shadow: 0 0 30px #ff0000, 0 4px 0 #2a0202; }
     .tag { font-family: 'Cinzel', Georgia, serif; font-weight: 700; letter-spacing: 3px; font-size: 14px; color: #ded6c2; margin: 8px 0 0; }
     .priv { font-size: 12px; letter-spacing: 3px; color: var(--priv);
@@ -118,6 +118,8 @@
     .item button:hover { background: var(--sangre); color: #000; box-shadow: 0 0 20px #ff0000; }
     .tab { display: none; }
     .tab.activa { display: block; }
+    /* Fundido entre recuadros al entrar (ambas pantallas) */
+    #puerta, #panel { transition: opacity 0.45s ease-out; }
     .item { border: 1px dashed #4a0505; border-radius: 6px; padding: 10px; margin: 8px 0; font-size: 14px; }
     .item button { font-size: 12px; padding: 6px 12px; }
     .aviso { background: #140a02; border: 1px solid #ff7a1a; color: #ff7a1a; border-radius: 6px; padding: 12px; font-size: 14px; }
@@ -137,10 +139,8 @@
       .logo { width: 90px; height: 90px; }
       .logo .ojo { inset: 22px; }
       .logo .pupila { width: 20px; height: 20px; }
-      h1 { letter-spacing: 4px; font-family: 'Creepster', 'Metal Mania', cursive; }
+      h1 { letter-spacing: 4px; }
       .tag { font-size: 12px; }
-      /* Fundido entre recuadros al entrar */
-      #puerta, #panel { transition: opacity 0.45s ease-out; }
       /* Sello que se ve sobre el rojo: pastilla oscura con filo grueso */
       .priv { background: rgba(0,0,0,0.65); border-width: 2px; color: #d9a5ff;
         box-shadow: 0 0 22px rgba(177,77,255,0.6); }
@@ -277,7 +277,6 @@
       }
     }
     function abrir() {
-      const movil = window.matchMedia('(max-width: 640px)').matches;
       const puerta = document.getElementById('puerta');
       const panel = document.getElementById('panel');
       const mostrar = () => {
@@ -291,7 +290,6 @@
         }));
         pintarLista();
       };
-      if (!movil) { mostrar(); return; }
       try { puerta.style.opacity = '0'; } catch (e) {}
       setTimeout(mostrar, 450);
     }
