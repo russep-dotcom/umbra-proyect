@@ -183,12 +183,29 @@
     #vista-board.pantalla #board-vp { flex: 1; height: auto; min-height: 0; }
     /* + y − solo en pantalla completa para no amontonar */
     #vista-board #btn-mas, #vista-board #btn-menos { display: none; }
-    /* Menú de ajustes del tablero: ⚙ despliega las opciones, ⛶/✕ siempre afuera */
-    #vista-board .board-bar .opcion { display: none; }
-    #vista-board .board-bar.abierto .opcion { display: inline-block; }
-    #vista-board.pantalla .board-bar.abierto #btn-mas,
-    #vista-board.pantalla .board-bar.abierto #btn-menos { display: inline-block; }
-    #vista-board .board-bar.abierto #btn-opciones { background: var(--priv); color: #000; }
+    /* Menú flotante del tablero: ⚙ despliega opciones apiladas */
+    .menu-wrap { position: relative; }
+    #menu-opciones { display: none; position: absolute; top: calc(100% + 6px); left: 0; z-index: 90;
+      background: rgba(8,0,0,0.96); border: 1px solid var(--priv); border-radius: 10px; padding: 8px;
+      flex-direction: column; gap: 6px; min-width: 210px; box-shadow: 0 0 24px rgba(177,77,255,0.35); }
+    .menu-wrap.abierto #menu-opciones { display: flex; }
+    #menu-opciones button { margin-top: 0; width: 100%; font-size: 13px; padding: 10px 14px; }
+    #vista-board.pantalla .menu-wrap.abierto #btn-mas,
+    #vista-board.pantalla .menu-wrap.abierto #btn-menos { display: block; }
+    #btn-opciones.encendida { background: var(--priv); color: #000; }
+    /* Clasificación con estética UMBRA (reemplaza al menú nativo) */
+    .clas-wrap { position: relative; margin-top: 4px; }
+    .clas-drop-btn { width: 100%; margin-top: 0; }
+    .clas-drop-btn.mini { width: auto; font-size: 12px; padding: 8px 12px; margin-top: 0; }
+    .clas-lista { display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 95;
+      background: rgba(8,0,0,0.97); border: 1px solid var(--priv); border-radius: 10px; padding: 8px;
+      flex-direction: column; gap: 6px; box-shadow: 0 0 24px rgba(177,77,255,0.35); }
+    .clas-lista.abierta { display: flex; }
+    .clas-lista button { margin-top: 0; width: 100%; font-size: 13px; padding: 10px 12px;
+      color: var(--bc, #ff1a1a); border-color: var(--bc, #ff1a1a); }
+    .clas-lista button:hover { background: var(--bc, #ff1a1a); color: #000; }
+    #board-bar .clas-wrap { margin-top: 0; }
+    #board-bar .clas-lista { left: auto; right: 0; min-width: 210px; }
     footer { color: #3a3a3a; font-size: 12px; padding: 25px; text-align: center; }
     :focus-visible { outline: 2px solid var(--alfa); outline-offset: 3px; }
     /* Celular tal cual la portada: todo respira en pantalla chica */
@@ -296,12 +313,26 @@
         </div>
         <div id="vista-board" style="display:none;">
           <div class="board-bar" id="board-bar">
-            <button onclick="document.getElementById('board-bar').classList.toggle('abierto')" id="btn-opciones" title="Ajustes">⚙</button>
+            <div class="menu-wrap" id="menu-wrap">
+              <button onclick="event.stopPropagation();document.getElementById('menu-wrap').classList.toggle('abierto');document.getElementById('btn-opciones').classList.toggle('encendida')" id="btn-opciones" title="Ajustes">⚙</button>
+              <div id="menu-opciones">
+                <button onclick="menuAccion(() => zoomReset())">CENTRAR</button>
+                <button id="btn-mas" onclick="menuAccion(() => zoomBoard(1.2))">ACERCAR +</button>
+                <button id="btn-menos" onclick="menuAccion(() => zoomBoard(1 / 1.2))">ALEJAR −</button>
+                <button onclick="modoTablero('form')">PASAR A FORMULARIO</button>
+              </div>
+            </div>
             <button onclick="pantallaBoard()" id="btn-pantalla" title="Pantalla completa">⛶</button>
-            <button class="opcion" onclick="zoomReset()" title="Centrar">CENTRAR</button>
-            <button class="opcion" id="btn-mas" onclick="zoomBoard(1.2)" title="Acercar">+</button>
-            <button class="opcion" id="btn-menos" onclick="zoomBoard(1 / 1.2)" title="Alejar">−</button>
-            <button class="opcion" onclick="modoTablero('form')">PASAR A FORMULARIO</button>
+            <div class="menu-wrap">
+              <button id="clas-board-btn" class="clas-drop-btn mini" onclick="event.stopPropagation();toggleClas('clas-lista-b')">ALFA ▾</button>
+              <div id="clas-lista-b" class="clas-lista">
+                <button style="--bc:#2a4bff" onclick="setClas('OMEGA')">OMEGA · inofensivo</button>
+                <button style="--bc:#1affc4" onclick="setClas('GAMMA')">GAMMA · poco peligroso</button>
+                <button style="--bc:#ff8c1a" onclick="setClas('BETA')">BETA · peligroso</button>
+                <button style="--bc:#b14dff" onclick="setClas('DELTA')">DELTA · muy peligroso</button>
+                <button style="--bc:#ff1a1a" onclick="setClas('ALFA')">ALFA · peligro mortal</button>
+              </div>
+            </div>
             <span id="zoom-num">100%</span>
           </div>
           <div id="board-vp"><div id="board-cv"></div></div>
@@ -311,10 +342,20 @@
         <label>TÍTULO DE LA CRIATURA</label>
         <input id="r-titulo" placeholder="EL MÍMICO">
         <label>CLASIFICACIÓN</label>
-        <select id="r-clas">
+        <select id="r-clas" style="display:none;">
           <option>OMEGA</option><option>GAMMA</option><option>BETA</option>
           <option>DELTA</option><option selected>ALFA</option>
         </select>
+        <div class="clas-wrap">
+          <button type="button" id="clas-btn" class="clas-drop-btn" onclick="event.stopPropagation();toggleClas('clas-lista')">ALFA ▾</button>
+          <div id="clas-lista" class="clas-lista">
+            <button type="button" style="--bc:#2a4bff" onclick="setClas('OMEGA')">OMEGA · inofensivo</button>
+            <button type="button" style="--bc:#1affc4" onclick="setClas('GAMMA')">GAMMA · poco peligroso</button>
+            <button type="button" style="--bc:#ff8c1a" onclick="setClas('BETA')">BETA · peligroso</button>
+            <button type="button" style="--bc:#b14dff" onclick="setClas('DELTA')">DELTA · muy peligroso</button>
+            <button type="button" style="--bc:#ff1a1a" onclick="setClas('ALFA')">ALFA · peligro mortal</button>
+          </div>
+        </div>
         <label>ALTURA / HÁBITAT / AVISTAMIENTOS</label>
         <input id="r-altura" placeholder="1–3 metros (aprox.)">
         <input id="r-habitat" placeholder="Indefinido">
@@ -526,6 +567,17 @@
         document.getElementById('intro').style.display = 'block';
       }
     }
+    // Cierra menús flotantes al tocar fuera (tablero y clasificación)
+    document.addEventListener('pointerdown', e => {
+      try {
+        if (e.target.closest && (e.target.closest('#menu-wrap') || e.target.closest('.clas-wrap'))) return;
+        const mw = document.getElementById('menu-wrap');
+        if (mw) mw.classList.remove('abierto');
+        const bo = document.getElementById('btn-opciones');
+        if (bo) bo.classList.remove('encendida');
+        document.querySelectorAll('.clas-lista.abierta').forEach(l => l.classList.remove('abierta'));
+      } catch (err) {}
+    });
     function tab(id) {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('activa'));
       document.getElementById(id).classList.add('activa');
@@ -706,13 +758,43 @@
         zoomBoard(e.deltaY < 0 ? 1.1 : 1 / 1.1);
       }, { passive: false });
     }
+    function menuAccion(fn) {
+      try { fn(); } catch (e) {}
+      try {
+        document.getElementById('menu-wrap').classList.remove('abierto');
+        document.getElementById('btn-opciones').classList.remove('encendida');
+      } catch (e) {}
+    }
+    function toggleClas(id) {
+      const l = document.getElementById(id);
+      if (!l) return;
+      const on = l.classList.toggle('abierta');
+      ['clas-lista', 'clas-lista-b'].forEach(x => {
+        if (x !== id) { const o = document.getElementById(x); if (o) o.classList.remove('abierta'); }
+      });
+    }
+    function setClas(v) {
+      try {
+        document.getElementById('r-clas').value = v;
+        const col = BOARD_COLORES[v] || '#ff1a1a';
+        ['clas-btn', 'clas-board-btn'].forEach(bid => {
+          const b = document.getElementById(bid);
+          if (b) { b.textContent = v + ' ▾'; b.style.color = col; b.style.borderColor = col; }
+        });
+        document.querySelectorAll('.clas-lista.abierta').forEach(l => l.classList.remove('abierta'));
+        syncBoard();
+      } catch (e) {}
+    }
     function modoTablero(m) {
       const vf = document.getElementById('vista-form');
       const vb = document.getElementById('vista-board');
       const bf = document.getElementById('modo-form-btn');
       const bb = document.getElementById('modo-board-btn');
-      const barra = document.getElementById('board-bar');
-      if (barra) barra.classList.remove('abierto');
+      try {
+        document.getElementById('menu-wrap').classList.remove('abierto');
+        document.getElementById('btn-opciones').classList.remove('encendida');
+        document.querySelectorAll('.clas-lista.abierta').forEach(l => l.classList.remove('abierta'));
+      } catch (e) {}
       if (m === 'board') {
         vf.style.display = 'none';
         vb.style.display = vb.classList.contains('pantalla') ? 'flex' : 'block';
