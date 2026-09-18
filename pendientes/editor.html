@@ -209,8 +209,12 @@
     .bcard .bdel { background: none; border: none; color: #5a5a5a; font-size: 12px; padding: 2px 6px;
       min-height: 0; margin: 0; cursor: pointer; font-family: Arial, sans-serif; }
     .bcard .bdel:hover { color: #ff1a1a; background: none; border: none; box-shadow: none; transform: none; }
-    .texto-card { border: none; background: none; box-shadow: none; width: auto; max-width: 320px; cursor: move; }
-    .texto-card .bcard-body { font-size: 20px; padding: 4px 8px; min-height: 0; }
+    .texto-card { border: none; background: none; box-shadow: none; width: 260px; max-width: 78vw; cursor: move; }
+    .texto-card .bcard-body { font-size: 20px; padding: 4px 8px; min-height: 0; overflow-wrap: anywhere; }
+    .bcard-body { overflow-wrap: anywhere; }
+    .submenu { display: none; flex-direction: column; gap: 6px; padding-left: 10px; border-left: 1px solid #4a0505; }
+    .submenu.abierto { display: flex; }
+    .submenu button { font-size: 12px; padding: 8px 10px; }
     .texto-card .bdel { position: absolute; top: -10px; right: -6px; background: #000; border-radius: 50%; opacity: 0.7; }
     #board-vacio { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
       color: #5a5a5a; font-size: 13px; letter-spacing: 2px; text-align: center; pointer-events: none; }
@@ -366,13 +370,16 @@
                 <button id="btn-mas" onclick="zoomBoard(1.2)">ACERCAR +</button>
                 <button id="btn-menos" onclick="zoomBoard(1 / 1.2)">ALEJAR −</button>
                 <div class="menu-sep">AGREGAR</div>
-                <button onclick="menuAccion(() => agregarCampo('r-titulo'))">FICHA · TÍTULO</button>
-                <button onclick="menuAccion(() => agregarCampo('r-desc'))">FICHA · DESCRIPCIÓN</button>
-                <button onclick="menuAccion(() => agregarCampo('r-avist'))">FICHA · AVISTAMIENTOS</button>
-                <button onclick="menuAccion(() => agregarCampo('r-habitat'))">FICHA · HÁBITAT</button>
-                <button onclick="menuAccion(() => agregarCampo('r-altura'))">FICHA · ALTURA</button>
-                <button onclick="menuAccion(() => agregarCampo('r-teorias'))">FICHA · TEORÍAS</button>
-                <button onclick="menuAccion(() => agregarCampo('r-notas'))">FICHA · NOTAS</button>
+                <button onclick="var s=document.getElementById('submenu-fichas');var o=s.classList.toggle('abierto');this.textContent=o?'FICHAS ▾':'FICHAS ▸';">FICHAS ▸</button>
+                <div class="submenu" id="submenu-fichas">
+                  <button onclick="menuAccion(() => agregarCampo('r-titulo'))">TÍTULO</button>
+                  <button onclick="menuAccion(() => agregarCampo('r-desc'))">DESCRIPCIÓN</button>
+                  <button onclick="menuAccion(() => agregarCampo('r-avist'))">AVISTAMIENTOS</button>
+                  <button onclick="menuAccion(() => agregarCampo('r-habitat'))">HÁBITAT</button>
+                  <button onclick="menuAccion(() => agregarCampo('r-altura'))">ALTURA</button>
+                  <button onclick="menuAccion(() => agregarCampo('r-teorias'))">TEORÍAS</button>
+                  <button onclick="menuAccion(() => agregarCampo('r-notas'))">NOTAS</button>
+                </div>
                 <button onclick="menuAccion(agregarCaja)">RECUADRO VACÍO</button>
                 <button onclick="menuAccion(agregarTexto)">TEXTO LIBRE</button>
               </div>
@@ -813,6 +820,7 @@
         const card = e.target.closest ? e.target.closest('.texto-card') : null;
         if (!card) return;
         const b = card.querySelector('.bcard-body');
+        if (b.textContent === 'Toca dos veces para escribir') b.textContent = '';
         b.contentEditable = 'true';
         b.focus();
         abrirEstilo(card);
@@ -876,7 +884,7 @@
         if (body && document.activeElement !== body) {
           const f = document.getElementById(card.dataset.campo);
           const txt = f ? f.value.trim() : '';
-          body.textContent = txt || '…';
+          body.textContent = txt;
         }
       });
     }
