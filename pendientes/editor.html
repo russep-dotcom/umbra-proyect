@@ -213,18 +213,9 @@
     .texto-card { border: none; background: none; box-shadow: none; width: 260px; max-width: 78vw; cursor: move; }
     .texto-card .bcard-body { font-size: 20px; padding: 4px 8px; min-height: 0; overflow-wrap: anywhere; }
     .bcard-body { overflow-wrap: anywhere; }
-    .submenu-wrap { position: relative; }
-    .submenu { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 99;
-      background: rgba(8,0,0,0.97); border: 1px solid var(--priv); border-radius: 10px; padding: 8px;
-      flex-direction: column; gap: 6px; max-height: 44vh; overflow-y: auto;
-      box-shadow: 0 0 24px rgba(177,77,255,0.35); }
-    .submenu.abierto { display: flex; }
-    .submenu { scrollbar-width: none; -ms-overflow-style: none; }
-    .submenu::-webkit-scrollbar { display: none; }
     /* Botones del menú en blanco (no morados) */
     #menu-opciones button { color: #e8e8e8; border-color: #e8e8e8; }
     #menu-opciones button:hover { background: #e8e8e8; color: #000; box-shadow: 0 0 14px rgba(232,232,232,0.4); }
-    .submenu button { font-size: 12px; padding: 8px 10px; }
     .texto-card .bdel { position: absolute; top: -10px; right: -6px; background: #000; border-radius: 50%; opacity: 0.7; }
     #board-vacio { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
       color: #5a5a5a; font-size: 13px; letter-spacing: 2px; text-align: center; pointer-events: none; }
@@ -384,20 +375,8 @@
                 <button id="btn-mas" onclick="zoomBoard(1.2)">ACERCAR +</button>
                 <button id="btn-menos" onclick="zoomBoard(1 / 1.2)">ALEJAR −</button>
                 <div class="menu-sep">AGREGAR</div>
-                <div class="submenu-wrap">
-                <button id="btn-fichas" onclick="var s=document.getElementById('submenu-fichas');var o=s.classList.toggle('abierto');this.textContent=o?'FICHAS ▾':'FICHAS ▸';">FICHAS ▸</button>
-                <div class="submenu" id="submenu-fichas">
-                  <button onclick="menuAccion(() => agregarCampo('r-titulo'))">TÍTULO</button>
-                  <button onclick="menuAccion(() => agregarCampo('r-desc'))">DESCRIPCIÓN</button>
-                  <button onclick="menuAccion(() => agregarCampo('r-avist'))">AVISTAMIENTOS</button>
-                  <button onclick="menuAccion(() => agregarCampo('r-habitat'))">HÁBITAT</button>
-                  <button onclick="menuAccion(() => agregarCampo('r-altura'))">ALTURA</button>
-                  <button onclick="menuAccion(() => agregarCampo('r-teorias'))">TEORÍAS</button>
-                  <button onclick="menuAccion(() => agregarCampo('r-notas'))">NOTAS</button>
-                  <button onclick="menuAccion(agregarCaja)">RECUADRO VACÍO</button>
-                  <button onclick="menuAccion(agregarTexto)">TEXTO LIBRE</button>
-                </div>
-                </div>
+                <button onclick="menuAccion(agregarCaja)">RECUADRO VACÍO</button>
+                <button onclick="menuAccion(agregarTexto)">TEXTO LIBRE</button>
               </div>
             </div>
             <button onclick="pantallaBoard()" id="btn-pantalla" title="Pantalla completa">⛶</button>
@@ -1020,8 +999,6 @@
       try {
         document.getElementById('menu-wrap').classList.remove('abierto');
         document.getElementById('btn-opciones').classList.remove('encendida');
-        document.getElementById('submenu-fichas').classList.remove('abierto');
-        document.getElementById('btn-fichas').textContent = 'FICHAS ▸';
       } catch (e) {}
     }
     function toggleClas(id) {
