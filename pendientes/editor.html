@@ -757,7 +757,7 @@
           '<span class="rh rh-sw" data-rh="sw"></span><span class="rh rh-se" data-rh="se"></span>' +
           '<div class="bcard-body" contenteditable="true"></div>';
         const b = d.querySelector('.bcard-body');
-        b.textContent = rec.texto || 'Toca dos veces para escribir';
+        b.textContent = rec.texto || 'Clic para escribir';
         if (rec.fuente) b.style.fontFamily = "'" + rec.fuente + "'";
         const col = rec.color || '#e8e8e8';
         b.style.color = col; b.dataset.fuente = rec.fuente || ''; b.dataset.color = col;
@@ -851,7 +851,7 @@
     }
     function agregarTexto() {
       const c = centroVista();
-      const el = crearTarjeta({ id: uidCard(), tipo: 'texto', texto: 'Toca dos veces para escribir', x: Math.round(c.x - 110), y: Math.round(c.y - 20) });
+      const el = crearTarjeta({ id: uidCard(), tipo: 'texto', texto: 'Clic para escribir', x: Math.round(c.x - 110), y: Math.round(c.y - 20) });
       syncBoard(); boardGuardar(); flashCard(el);
     }
     function buildBoard() {
@@ -896,7 +896,7 @@
         const card = e.target.closest ? e.target.closest('.texto-card') : null;
         if (!card) return;
         const b = card.querySelector('.bcard-body');
-        if (b.textContent === 'Toca dos veces para escribir') b.textContent = '';
+        if (b.textContent === 'Clic para escribir') b.textContent = '';
         b.contentEditable = 'true';
         b.focus();
         abrirEstilo(card);
@@ -907,7 +907,7 @@
         e.preventDefault();
         if (card.dataset.tipo === 'caja') { abrirEstiloCaja(card); return; }
         const b = card.querySelector('.bcard-body');
-        if (b.textContent === 'Toca dos veces para escribir') b.textContent = '';
+        if (b.textContent === 'Clic para escribir') b.textContent = '';
         b.contentEditable = 'true';
         b.focus();
         abrirEstilo(card);
@@ -1159,6 +1159,8 @@
         }
       });
       const fin = e => {
+        if (e._finYa) return;
+        e._finYa = true;
         puntos.delete(e.pointerId);
         if (puntos.size < 2 && modo === 'pellizco') modo = null;
         if (puntos.size === 0) {
@@ -1169,7 +1171,13 @@
               if (mov < 10) {
                 const card = e.target.closest ? e.target.closest('.bcard[data-tipo="caja"], .bcard[data-tipo="texto"]') : null;
                 document.querySelectorAll('#board-cv .bcard.sel').forEach(x => { if (x !== card || !document.contains(x)) x.classList.remove('sel'); });
-                if (card && document.contains(card)) card.classList.toggle('sel');
+                if (card && document.contains(card)) {
+                  card.classList.toggle('sel');
+                  const bd = card.querySelector('.bcard-body');
+                  if (bd && bd.isContentEditable && document.activeElement !== bd) {
+                    try { bd.focus(); } catch (err2) {}
+                  }
+                }
               }
             }
           } catch (err) {}
