@@ -209,9 +209,6 @@
     .bcard .bdel { background: none; border: none; color: #5a5a5a; font-size: 12px; padding: 2px 6px;
       min-height: 0; margin: 0; cursor: pointer; font-family: Arial, sans-serif; }
     .bcard .bdel:hover { color: #ff1a1a; background: none; border: none; box-shadow: none; transform: none; }
-    /* Fichas en blanco como hoja de papel */
-    .bcard[data-tipo="campo"] { background: linear-gradient(#f4efe2, #e2d7bd); }
-    .bcard[data-tipo="campo"] .bcard-body { color: #1a1512; }
     .texto-card { border: none; background: none; box-shadow: none; width: 260px; max-width: 78vw; cursor: move; }
     .texto-card .bcard-body { font-size: 20px; padding: 4px 8px; min-height: 0; overflow-wrap: anywhere; }
     .bcard-body { overflow-wrap: anywhere; }
@@ -221,6 +218,11 @@
       flex-direction: column; gap: 6px; max-height: 44vh; overflow-y: auto;
       box-shadow: 0 0 24px rgba(177,77,255,0.35); }
     .submenu.abierto { display: flex; }
+    .submenu { scrollbar-width: none; -ms-overflow-style: none; }
+    .submenu::-webkit-scrollbar { display: none; }
+    /* Botones del menú en blanco (no morados) */
+    #menu-opciones button { color: #e8e8e8; border-color: #e8e8e8; }
+    #menu-opciones button:hover { background: #e8e8e8; color: #000; box-shadow: 0 0 14px rgba(232,232,232,0.4); }
     .submenu button { font-size: 12px; padding: 8px 10px; }
     .texto-card .bdel { position: absolute; top: -10px; right: -6px; background: #000; border-radius: 50%; opacity: 0.7; }
     #board-vacio { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
@@ -391,10 +393,10 @@
                   <button onclick="menuAccion(() => agregarCampo('r-altura'))">ALTURA</button>
                   <button onclick="menuAccion(() => agregarCampo('r-teorias'))">TEORÍAS</button>
                   <button onclick="menuAccion(() => agregarCampo('r-notas'))">NOTAS</button>
+                  <button onclick="menuAccion(agregarCaja)">RECUADRO VACÍO</button>
+                  <button onclick="menuAccion(agregarTexto)">TEXTO LIBRE</button>
                 </div>
                 </div>
-                <button onclick="menuAccion(agregarCaja)">RECUADRO VACÍO</button>
-                <button onclick="menuAccion(agregarTexto)">TEXTO LIBRE</button>
               </div>
             </div>
             <button onclick="pantallaBoard()" id="btn-pantalla" title="Pantalla completa">⛶</button>
