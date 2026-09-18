@@ -755,7 +755,7 @@
         d.innerHTML = '<button class="bdel" title="Quitar">✕</button>' +
           '<span class="rh rh-nw" data-rh="nw"></span><span class="rh rh-ne" data-rh="ne"></span>' +
           '<span class="rh rh-sw" data-rh="sw"></span><span class="rh rh-se" data-rh="se"></span>' +
-          '<div class="bcard-body"></div>';
+          '<div class="bcard-body" contenteditable="true"></div>';
         const b = d.querySelector('.bcard-body');
         b.textContent = rec.texto || 'Toca dos veces para escribir';
         if (rec.fuente) b.style.fontFamily = "'" + rec.fuente + "'";
@@ -800,8 +800,10 @@
       try {
         const b = card.dataset.borde || 'solido';
         const f = card.dataset.fondo || 'oscuro';
-        card.style.border = b === 'grueso' ? '4px solid #b14dff'
-          : b === 'punteado' ? '3px dashed #b14dff' : '2px solid #b14dff';
+        const col = boardColor();
+        card.style.setProperty('--bc', col);
+        card.style.border = b === 'grueso' ? '4px solid ' + col
+          : b === 'punteado' ? '3px dashed ' + col : '2px solid ' + col;
         const cuerpo = card.querySelector('.bcard-body');
         if (f === 'claro') {
           card.style.background = 'linear-gradient(#f4efe2, #e2d7bd)';
@@ -845,12 +847,12 @@
     function agregarCaja() {
       const c = centroVista();
       const el = crearTarjeta({ id: uidCard(), tipo: 'caja', x: Math.round(c.x - 110), y: Math.round(c.y - 40) });
-      boardGuardar(); flashCard(el);
+      syncBoard(); boardGuardar(); flashCard(el);
     }
     function agregarTexto() {
       const c = centroVista();
       const el = crearTarjeta({ id: uidCard(), tipo: 'texto', texto: 'Toca dos veces para escribir', x: Math.round(c.x - 110), y: Math.round(c.y - 20) });
-      boardGuardar(); flashCard(el);
+      syncBoard(); boardGuardar(); flashCard(el);
     }
     function buildBoard() {
       if (boardHecho) return;
@@ -886,6 +888,9 @@
       });
       cv.addEventListener('focusout', () => { try { boardGuardar(); } catch (e) {} });
       cv.addEventListener('dblclick', e => {
+        try {
+          if (!window.matchMedia('(max-width: 640px)').matches) return;
+        } catch (err) {}
         const cj = e.target.closest ? e.target.closest('.bcard[data-tipo="caja"]') : null;
         if (cj) { abrirEstiloCaja(cj); return; }
         const card = e.target.closest ? e.target.closest('.texto-card') : null;
