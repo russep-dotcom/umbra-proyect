@@ -1001,12 +1001,6 @@
       if (!ES_MOVIL) return;
       cazaActiva = false;
       clearTimeout(toqueApaga);
-      try {
-        if (document.getElementById('vista-board').classList.contains('pantalla')) {
-          if (persigueRaf) { cancelAnimationFrame(persigueRaf); persigueRaf = null; }
-          return;
-        }
-      } catch (e) {}
       toqueApaga = setTimeout(() => {
         const r = document.getElementById('reflector');
         if (!r) return;
