@@ -183,7 +183,12 @@
     #vista-board.pantalla #board-vp { flex: 1; height: auto; min-height: 0; }
     /* + y − solo en pantalla completa para no amontonar */
     #vista-board #btn-mas, #vista-board #btn-menos { display: none; }
-    #vista-board.pantalla #btn-mas, #vista-board.pantalla #btn-menos { display: inline-block; }
+    /* Menú de ajustes del tablero: ⚙ despliega las opciones, ⛶/✕ siempre afuera */
+    #vista-board .board-bar .opcion { display: none; }
+    #vista-board .board-bar.abierto .opcion { display: inline-block; }
+    #vista-board.pantalla .board-bar.abierto #btn-mas,
+    #vista-board.pantalla .board-bar.abierto #btn-menos { display: inline-block; }
+    #vista-board .board-bar.abierto #btn-opciones { background: var(--priv); color: #000; }
     footer { color: #3a3a3a; font-size: 12px; padding: 25px; text-align: center; }
     :focus-visible { outline: 2px solid var(--alfa); outline-offset: 3px; }
     /* Celular tal cual la portada: todo respira en pantalla chica */
@@ -290,12 +295,13 @@
           <button id="modo-board-btn" onclick="modoTablero('board')">TABLERO</button>
         </div>
         <div id="vista-board" style="display:none;">
-          <div class="board-bar">
-            <button id="btn-mas" onclick="zoomBoard(1.2)" title="Acercar">+</button>
-            <button id="btn-menos" onclick="zoomBoard(1 / 1.2)" title="Alejar">−</button>
-            <button onclick="zoomReset()" title="Centrar">CENTRAR</button>
+          <div class="board-bar" id="board-bar">
+            <button onclick="document.getElementById('board-bar').classList.toggle('abierto')" id="btn-opciones" title="Ajustes">⚙</button>
             <button onclick="pantallaBoard()" id="btn-pantalla" title="Pantalla completa">⛶</button>
-            <button onclick="modoTablero('form')">PASAR A FORMULARIO</button>
+            <button class="opcion" onclick="zoomReset()" title="Centrar">CENTRAR</button>
+            <button class="opcion" id="btn-mas" onclick="zoomBoard(1.2)" title="Acercar">+</button>
+            <button class="opcion" id="btn-menos" onclick="zoomBoard(1 / 1.2)" title="Alejar">−</button>
+            <button class="opcion" onclick="modoTablero('form')">PASAR A FORMULARIO</button>
             <span id="zoom-num">100%</span>
           </div>
           <div id="board-vp"><div id="board-cv"></div></div>
@@ -705,6 +711,8 @@
       const vb = document.getElementById('vista-board');
       const bf = document.getElementById('modo-form-btn');
       const bb = document.getElementById('modo-board-btn');
+      const barra = document.getElementById('board-bar');
+      if (barra) barra.classList.remove('abierto');
       if (m === 'board') {
         vf.style.display = 'none';
         vb.style.display = vb.classList.contains('pantalla') ? 'flex' : 'block';
