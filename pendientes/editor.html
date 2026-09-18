@@ -234,6 +234,7 @@
         radial-gradient(ellipse 75% 45% at 50% 48%, rgba(255,42,26,0.9), rgba(150,20,60,0.5) 45%, rgba(26,5,51,0.9) 75%, #0d0218 100%); }
       html, body { background: #0d0218; }
       .logo { width: 90px; height: 90px; }
+      .logo .anillo2 { inset: 7px; }
       .logo .ojo { inset: 22px; }
       .logo .pupila { width: 20px; height: 20px; }
       h1 { letter-spacing: 4px; }
@@ -250,6 +251,17 @@
       .tabs button { font-size: 11px; padding: 10px 4px; margin-top: 8px; }
       /* El mensaje bajo el tablero no va en celular: lo tapa el pie */
       .board-tip { display: none; }
+      /* Linterna que sí se nota sobre el fondo vivo */
+      .reflector {
+        background: radial-gradient(circle 300px at var(--mx, 50%) var(--my, 40%),
+          rgba(230,200,255,0.55), rgba(140,70,220,0.25) 55%, transparent 78%); }
+      .reflector.modo-rojo {
+        background: radial-gradient(circle 320px at var(--mx, 50%) var(--my, 40%),
+          rgba(255,60,60,0.65), rgba(180,20,20,0.3) 55%, transparent 78%); }
+      /* Rendimiento en celular: fuera grano y vela quieta */
+      .grano { display: none; }
+      .vela { animation: none; opacity: 0.7; }
+      #board-cv { will-change: transform; }
       #puerta input, #puerta button { width: 100%; box-sizing: border-box; }
       /* Luna de sangre mejorada también en computador (en celular más recogida) */
       .luna { width: 220px !important; height: 220px !important; top: -70px !important; right: -60px !important; opacity: 0.9; }
