@@ -107,6 +107,22 @@
     details.caja summary::-webkit-details-marker { display: none; }
     details.caja .cuerpo { margin-top: 12px; border-top: 1px dashed #4a0505; padding-top: 12px; }
     .badge { display: inline-block; padding: 2px 14px; border-radius: 4px; letter-spacing: 3px; font-size: 13px; border: 1px solid; }
+    /* Expediente combinado: color de clasificación + dossier mecanografiado + ficha UMBRA */
+    details.caja { overflow: hidden; }
+    details.caja .cinta { margin: -18px -18px 12px; padding: 5px 8px; text-align: center;
+      background: repeating-linear-gradient(45deg, #c9a227 0 14px, #141414 14px 28px); }
+    details.caja .cinta span { background: #c9a227; color: #111; font-size: 11px; letter-spacing: 4px; padding: 2px 12px; }
+    details.caja .cuerpo {
+      background:
+        radial-gradient(ellipse at 20% 10%, rgba(120,90,40,0.25), transparent 50%),
+        radial-gradient(ellipse at 85% 90%, rgba(120,90,40,0.2), transparent 50%),
+        linear-gradient(#d8c690, #cbb37e);
+      color: #1a1512; border-radius: 6px; padding: 14px; }
+    details.caja .cuerpo p { margin: 8px 0; }
+    details.caja .sello-clas { display: inline-block; padding: 4px 16px; border: 3px double; border-radius: 4px;
+      font-family: 'Metal Mania', 'Impact', cursive; letter-spacing: 3px; transform: rotate(-6deg); opacity: 0.92; }
+    details.caja .foto-hueco { border: 2px dashed #5a4a2a; border-radius: 4px; text-align: center;
+      padding: 22px 10px; color: #5a4a2a; font-size: 12px; letter-spacing: 2px; margin: 10px 0; }
     input, textarea, select { width: 95%; background: #111; border: 1px solid #4a0505; color: var(--hueso);
       padding: 10px; margin: 6px 0; border-radius: 4px; font-family: inherit; }
     button { background: #141414; color: #ded6c2; border: 1px solid #ded6c2; border-radius: 6px;
@@ -386,7 +402,7 @@
   <audio id="aud-almas" src="audio/almas.wav" preload="auto"></audio>
   <audio id="aud-glitch" preload="auto"></audio>
   <div id="crash"><div class="fondo-opulento"><i></i><i></i><i></i></div><div class="hud"><div class="ticks"></div><div class="barrido"></div><div class="r1"></div><div class="r2"></div><div class="nucleo"></div></div><h2>⚠ SEÑAL PERDIDA ⚠</h2><p style="letter-spacing:3px;position:relative;z-index:1;">UMBRA TIENE UNOS PROBLEMAS TÉCNICOS, VOLVEMOS EN CORTO…</p><p id="sync-pct" style="position:relative;z-index:1;"></p></div>
-  <footer>☠ UMBRA · Archivo clasificado · Solo personal autorizado · v4.33 ☠</footer>
+  <footer>☠ UMBRA · Archivo clasificado · Solo personal autorizado · v4.34 ☠</footer>
 
   <script>
     // Campanada del archivo (misma familia que la portada)
@@ -408,7 +424,7 @@
     // El aviso de versión también sube con campana, como los demás
     document.head.insertAdjacentHTML('beforeend', '<style>#aviso-update{left:50% !important;right:auto !important;margin-left:0 !important;margin-right:0 !important;transform:translateX(-50%);max-width:640px !important;width:92vw !important;font-size:17px !important;padding:30px 28px !important;}#aviso-update.subiendo{animation:aviso-sube 1.8s cubic-bezier(0.22,1,0.36,1) forwards;}@keyframes aviso-sube{from{top:110vh;transform:translate(-50%,0);}to{top:50%;transform:translate(-50%,-50%);}}#aviso-update.listo{animation:aviso-late 2.2s ease-in-out infinite;box-shadow:0 0 60px rgba(255,122,26,0.5);}@keyframes aviso-late{0%,100%{box-shadow:0 0 30px rgba(255,122,26,0.3);}50%{box-shadow:0 0 70px rgba(255,122,26,0.6);}}html,body{overflow-x:hidden;}</style>');
     // Versión de ESTA página: si version.json trae otra, se avisa UNA vez y se calla
-    const UMBRA_VERSION = '4.33';
+    const UMBRA_VERSION = '4.34';
     // En celular el navegador duerme el audio: suena ya, y si nació dormido repite al primer toque
     function chimeAviso(fn) {
       try { fn(); } catch (e) {}
@@ -741,6 +757,10 @@
     // Se repintan SOLOS cuando publicas otro (sin recargar): el navegador avisa
     // a las pestañas abiertas y también se revisa al volver a esta ventana.
     const COLORES = { ALFA: '#ff1a1a', DELTA: '#b14dff', BETA: '#ff8c1a', GAMMA: '#1affc4', OMEGA: '#2a4bff' };
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
     function pintarCustom() {
       try {
         const lista = JSON.parse(localStorage.getItem('umbra_custom') || '[]');
@@ -749,13 +769,15 @@
         lista.forEach((r, i) => {
           const c = COLORES[r.clas] || '#ff1a1a';
           const d = document.createElement('details');
-          d.className = 'caja ' + r.clas.toLowerCase();
-          d.innerHTML = '<summary><small>REGISTRO ' + String(i + 2).padStart(3, '0') + ' · CLASIFICACIÓN ' + r.clas + '</small>' +
-            '<h3>' + r.titulo.toUpperCase() + '</h3>' +
+          d.className = 'caja ' + String(r.clas || 'alfa').toLowerCase();
+          d.innerHTML = '<div class="cinta"><span>◉ EVIDENCIA · UMBRA</span></div>' +
+            '<summary><small>REGISTRO ' + String(i + 2).padStart(3, '0') + ' · CLASIFICACIÓN ' + esc(r.clas) + '</small>' +
+            '<h3>' + esc(r.titulo).toUpperCase() + '</h3>' +
             '<small>Toca para desclasificar</small></summary>' +
-            '<div class="cuerpo"><p><span class="badge" style="color:' + c + ';border-color:' + c + ';">' + r.clas + '</span></p>' +
-            '<p><b>Altura:</b> ' + r.altura + ' · <b>Hábitat:</b> ' + r.habitat + ' · <b>Avistamientos:</b> ' + r.avist + '</p>' +
-            '<p>' + r.desc + '</p><p><b>Teorías:</b> ' + r.teorias + '</p><p><b>Notas:</b> ' + r.notas + '</p></div>';
+            '<div class="cuerpo"><p><span class="sello-clas" style="color:' + c + ';border-color:' + c + ';">' + esc(r.clas) + '</span></p>' +
+            '<div class="foto-hueco">▣ FOTO SIN RECUPERAR · ESPACIO PARA EL DIBUJO</div>' +
+            '<p><b>Altura:</b> ' + (esc(r.altura) || '—') + ' · <b>Hábitat:</b> ' + (esc(r.habitat) || '—') + ' · <b>Avistamientos:</b> ' + (esc(r.avist) || '—') + '</p>' +
+            '<p>' + (esc(r.desc) || '—') + '</p><p><b>Teorías:</b> ' + (esc(r.teorias) || '—') + '</p><p><b>Notas:</b> ' + (esc(r.notas) || '—') + '</p></div>';
           box.appendChild(d);
         });
       } catch (e) {}
