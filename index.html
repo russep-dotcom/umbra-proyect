@@ -303,6 +303,7 @@
     body { animation: encender 1.1s ease-out backwards; }
     body { user-select: none; -webkit-user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
     input, textarea { user-select: text; -webkit-user-select: text; }
+    [contenteditable="true"]:focus { user-select: text; -webkit-user-select: text; }
     @keyframes encender { from { opacity: 0; } to { opacity: 1; } }
     footer { color: #3a3a3a; font-size: 12px; padding: 30px; letter-spacing: 2px; }
     /* ===== TRANSICIÓN: solo letras temblando con RGB ===== */
@@ -543,6 +544,18 @@
     ['contextmenu', 'copy', 'cut', 'dragstart'].forEach(ev =>
       document.addEventListener(ev, e => e.preventDefault())
     );
+    // Sin sombrear textos en ninguna página UMBRA (solo se escribe en campos con foco)
+    document.addEventListener('selectstart', e => {
+      try {
+        const t = e.target;
+        if (t && t.closest) {
+          if (t.closest('input, textarea')) return;
+          const ed = t.closest('[contenteditable="true"]');
+          if (ed && ed.contains(document.activeElement)) return;
+        }
+        e.preventDefault();
+      } catch (err) {}
+    });
     // Zoom fijo SOLO en celular: frena el pellizco en iOS y el zoom con Ctrl + rueda
     document.addEventListener('gesturestart', e => { try { if (window.matchMedia('(max-width: 640px)').matches) e.preventDefault(); } catch (e2) {} });
     document.addEventListener('wheel', e => { try { if (e.ctrlKey && window.matchMedia('(max-width: 640px)').matches) e.preventDefault(); } catch (e2) {} }, { passive: false });

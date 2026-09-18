@@ -219,6 +219,7 @@
     .rh-sw { bottom: -9px; left: -9px; cursor: nesw-resize; }
     .rh-se { bottom: -9px; right: -9px; cursor: nwse-resize; }
     .bcard.sel { outline: 2px dashed var(--priv); outline-offset: 3px; }
+    .bcard.sel .rh { display: block; }
     /* Mini barra de estilo para recuadros: borde y fondo */
     #estilo-caja { display: none; position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 96;
       background: rgba(8,0,0,0.96); border: 1px solid var(--priv); border-radius: 12px; padding: 10px 12px;
@@ -1161,7 +1162,7 @@
         if (puntos.size === 0) {
           if (modo === 'tarjeta' || modo === 'lienzo' || modo === 'redim') boardGuardar();
           try {
-            if (window.matchMedia('(max-width: 640px)').matches && e.clientX !== undefined) {
+            if (true) {
               const mov = Math.hypot(e.clientX - dx0, e.clientY - dy0);
               if (mov < 10) {
                 const card = e.target.closest ? e.target.closest('.bcard[data-tipo="caja"], .bcard[data-tipo="texto"]') : null;
@@ -1430,6 +1431,18 @@
       const r = document.getElementById('reflector');
       if (!r) return;
       r.classList.toggle('apagada');
+    });
+    // Sin sombrear textos en ninguna página UMBRA (solo se escribe en campos con foco)
+    document.addEventListener('selectstart', e => {
+      try {
+        const t = e.target;
+        if (t && t.closest) {
+          if (t.closest('input, textarea')) return;
+          const ed = t.closest('[contenteditable="true"]');
+          if (ed && ed.contains(document.activeElement)) return;
+        }
+        e.preventDefault();
+      } catch (err) {}
     });
   </script>
 </body>

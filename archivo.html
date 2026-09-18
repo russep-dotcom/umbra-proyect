@@ -202,6 +202,7 @@
     /* Sin selección de texto (la linterna no sombrea nada) + táctil sin retardos */
     body { user-select: none; -webkit-user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
     input, textarea { user-select: text; -webkit-user-select: text; }
+    [contenteditable="true"]:focus { user-select: text; -webkit-user-select: text; }
     @keyframes encender { from { opacity: 0; } to { opacity: 1; } }
     /* ===== Caída de señal: SOLO letras temblando con RGB ===== */
     #crash { display: none; position: fixed; inset: 0; z-index: 99; cursor: wait;
@@ -785,6 +786,18 @@
     pintarCustom();
     window.addEventListener('storage', e => { if (e.key === 'umbra_custom') pintarCustom(); });
     document.addEventListener('visibilitychange', () => { if (!document.hidden) pintarCustom(); });
+    // Sin sombrear textos en ninguna página UMBRA (solo se escribe en campos con foco)
+    document.addEventListener('selectstart', e => {
+      try {
+        const t = e.target;
+        if (t && t.closest) {
+          if (t.closest('input, textarea')) return;
+          const ed = t.closest('[contenteditable="true"]');
+          if (ed && ed.contains(document.activeElement)) return;
+        }
+        e.preventDefault();
+      } catch (err) {}
+    });
     window.addEventListener('focus', pintarCustom);
     // Sonido por categoría, FIJO para siempre (solo en transiciones a registros):
     // ALFA = almas · DELTA = falla1 · BETA = falla2 · GAMMA y OMEGA = falla3.
