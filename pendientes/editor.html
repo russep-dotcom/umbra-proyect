@@ -919,6 +919,7 @@
       initEstilo();
     }
     let estiloCard = null;
+    let estiloCajaCard = null;
     function abrirEstilo(card) {
       estiloCard = card;
       const b = card.querySelector('.bcard-body');
@@ -959,7 +960,6 @@
         }
         estiloCard = null;
       };
-      let estiloCajaCard = null;
       document.querySelectorAll('#estilo-caja .fbtn[data-b]').forEach(x => {
         x.onclick = () => {
           if (!estiloCajaCard) return;
@@ -1080,6 +1080,23 @@
           return;
         }
         dx0 = e.clientX; dy0 = e.clientY;
+        const esTactil = e.pointerType && e.pointerType !== 'mouse';
+        if (esTactil) {
+          const cardSel = e.target.closest ? e.target.closest('.bcard.sel') : null;
+          if (cardSel && !(e.target.closest && e.target.closest('.bdel'))) {
+            const bbSel = cardSel.querySelector('.bcard-body');
+            if (!(bbSel && document.activeElement === bbSel)) {
+              const bdSel = bordesCarta(cardSel, e.clientX, e.clientY);
+              if (!bdSel) {
+                tarjeta = cardSel;
+                modo = 'tarjeta';
+                sx = e.clientX; sy = e.clientY;
+                stx = parseFloat(cardSel.dataset.x || 0); sty = parseFloat(cardSel.dataset.y || 0);
+                return;
+              }
+            }
+          }
+        }
         if (e.target && e.target.closest) {
           const tb = e.target.closest('.texto-card');
           if (tb) {
