@@ -203,7 +203,8 @@
       background: rgba(8,0,0,0.96); border: 1px solid var(--priv); border-radius: 10px; padding: 8px;
       flex-direction: column; gap: 6px; min-width: 210px; box-shadow: 0 0 24px rgba(177,77,255,0.35); }
     .menu-wrap.abierto #menu-opciones { display: flex; }
-    #menu-opciones { max-height: 55vh; overflow-y: auto; }
+    #menu-opciones { max-height: 55vh; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none; }
+    #menu-opciones::-webkit-scrollbar { display: none; }
     .menu-sep { font-size: 10px; letter-spacing: 3px; color: #5a5a5a; text-align: center; padding: 4px 0 0; }
     /* Tarjetas nuevas: recuadro vacío y texto libre */
     .bcard .bdel { background: none; border: none; color: #5a5a5a; font-size: 12px; padding: 2px 6px;
