@@ -52,7 +52,7 @@
     .reflector { position: fixed; inset: 0; z-index: 58; pointer-events: none;
       transition: opacity 0.8s ease-out;
       background: radial-gradient(circle 240px at var(--mx, 50%) var(--my, 40%),
-        rgba(177,77,255,0.3), rgba(60,20,120,0.1) 55%, transparent 76%); }
+        var(--lc1, rgba(177,77,255,0.3)), var(--lc2, rgba(60,20,120,0.1)) 55%, transparent 76%); }
     .reflector.fantasma-off { opacity: 0; }
     .reflector.toque-glitch { animation: toque-glitch 0.45s steps(3); }
     @keyframes toque-glitch {
@@ -60,7 +60,7 @@
       80% { opacity: 1; } 100% { opacity: 1; } }
     .reflector.modo-rojo {
       background: radial-gradient(circle 280px at var(--mx, 50%) var(--my, 40%),
-        rgba(255,26,26,0.55), rgba(150,8,8,0.2) 55%, transparent 76%); }
+        var(--lc1, rgba(255,26,26,0.55)), var(--lc2, rgba(150,8,8,0.2)) 55%, transparent 76%); }
     .reflector.apagada { display: none; }
     /* ===== Vuelta suave: la misma de la página normal ===== */
     #suave { display: none; position: fixed; inset: 0; z-index: 99; background: #000;
@@ -203,6 +203,26 @@
       background: rgba(8,0,0,0.96); border: 1px solid var(--priv); border-radius: 10px; padding: 8px;
       flex-direction: column; gap: 6px; min-width: 210px; box-shadow: 0 0 24px rgba(177,77,255,0.35); }
     .menu-wrap.abierto #menu-opciones { display: flex; }
+    #menu-opciones { max-height: 55vh; overflow-y: auto; }
+    .menu-sep { font-size: 10px; letter-spacing: 3px; color: #5a5a5a; text-align: center; padding: 4px 0 0; }
+    /* Tarjetas nuevas: recuadro vacío y texto libre */
+    .bcard .bdel { background: none; border: none; color: #5a5a5a; font-size: 12px; padding: 2px 6px;
+      min-height: 0; margin: 0; cursor: pointer; font-family: Arial, sans-serif; }
+    .bcard .bdel:hover { color: #ff1a1a; background: none; border: none; box-shadow: none; transform: none; }
+    .texto-card { border: none; background: none; box-shadow: none; width: auto; max-width: 320px; cursor: move; }
+    .texto-card .bcard-body { font-size: 20px; padding: 4px 8px; min-height: 0; }
+    .texto-card .bdel { position: absolute; top: -10px; right: -6px; background: #000; border-radius: 50%; opacity: 0.7; }
+    #board-vacio { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      color: #5a5a5a; font-size: 13px; letter-spacing: 2px; text-align: center; pointer-events: none; }
+    /* Mini barra de estilo para el texto libre */
+    #estilo-pop { display: none; position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 96;
+      background: rgba(8,0,0,0.96); border: 1px solid var(--priv); border-radius: 12px; padding: 10px 12px;
+      flex-direction: row; gap: 8px; align-items: center; box-shadow: 0 0 24px rgba(177,77,255,0.4); max-width: 94vw; }
+    #estilo-pop.abierta { display: flex; }
+    #estilo-pop .fbtn { font-size: 15px; padding: 6px 10px; margin: 0; min-height: 0; }
+    #estilo-pop .fbtn.sel { background: var(--priv); color: #000; }
+    #estilo-pop .cdot { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #555; padding: 0; margin: 0; min-height: 0; }
+    #estilo-pop .cdot.sel { border-color: #fff; }
     #menu-opciones button { margin-top: 0; width: 100%; font-size: 13px; padding: 10px 14px; }
     #vista-board.pantalla .menu-wrap.abierto #btn-mas,
     #vista-board.pantalla .menu-wrap.abierto #btn-menos { display: block; }
@@ -254,10 +274,10 @@
       /* Linterna chiquita que sí se nota sobre el fondo vivo */
       .reflector {
         background: radial-gradient(circle 180px at var(--mx, 50%) var(--my, 40%),
-          rgba(230,200,255,0.55), rgba(140,70,220,0.25) 55%, transparent 78%); }
+          var(--lc1, rgba(230,200,255,0.55)), var(--lc2, rgba(140,70,220,0.25)) 55%, transparent 78%); }
       .reflector.modo-rojo {
         background: radial-gradient(circle 200px at var(--mx, 50%) var(--my, 40%),
-          rgba(255,60,60,0.65), rgba(180,20,20,0.3) 55%, transparent 78%); }
+          var(--lc1, rgba(255,60,60,0.65)), var(--lc2, rgba(180,20,20,0.3)) 55%, transparent 78%); }
       /* Botones del tablero un poco más grandes sin amontonarse */
       #vista-board .board-bar button { font-size: 14px; padding: 10px 12px; }
       #menu-opciones button { font-size: 14px; padding: 12px 14px; }
@@ -343,8 +363,18 @@
               <button onclick="event.stopPropagation();document.getElementById('menu-wrap').classList.toggle('abierto');document.getElementById('btn-opciones').classList.toggle('encendida')" id="btn-opciones" title="Ajustes">⚙</button>
               <div id="menu-opciones">
                 <button onclick="menuAccion(() => zoomReset())">CENTRAR</button>
-                <button id="btn-mas" onclick="menuAccion(() => zoomBoard(1.2))">ACERCAR +</button>
-                <button id="btn-menos" onclick="menuAccion(() => zoomBoard(1 / 1.2))">ALEJAR −</button>
+                <button id="btn-mas" onclick="zoomBoard(1.2)">ACERCAR +</button>
+                <button id="btn-menos" onclick="zoomBoard(1 / 1.2)">ALEJAR −</button>
+                <div class="menu-sep">AGREGAR</div>
+                <button onclick="menuAccion(() => agregarCampo('r-titulo'))">FICHA · TÍTULO</button>
+                <button onclick="menuAccion(() => agregarCampo('r-desc'))">FICHA · DESCRIPCIÓN</button>
+                <button onclick="menuAccion(() => agregarCampo('r-avist'))">FICHA · AVISTAMIENTOS</button>
+                <button onclick="menuAccion(() => agregarCampo('r-habitat'))">FICHA · HÁBITAT</button>
+                <button onclick="menuAccion(() => agregarCampo('r-altura'))">FICHA · ALTURA</button>
+                <button onclick="menuAccion(() => agregarCampo('r-teorias'))">FICHA · TEORÍAS</button>
+                <button onclick="menuAccion(() => agregarCampo('r-notas'))">FICHA · NOTAS</button>
+                <button onclick="menuAccion(agregarCaja)">RECUADRO VACÍO</button>
+                <button onclick="menuAccion(agregarTexto)">TEXTO LIBRE</button>
               </div>
             </div>
             <button onclick="pantallaBoard()" id="btn-pantalla" title="Pantalla completa">⛶</button>
@@ -360,7 +390,20 @@
             </div>
             <span id="zoom-num">100%</span>
           </div>
-          <div id="board-vp"><div id="board-cv"></div></div>
+          <div id="board-vp"><div id="board-cv"></div><div id="board-vacio">Usa ⚙ para agregar tarjetas</div></div>
+          <div id="estilo-pop">
+            <button class="fbtn" data-f="Special Elite" style="font-family:'Special Elite'">Ag</button>
+            <button class="fbtn" data-f="Metal Mania" style="font-family:'Metal Mania'">Ag</button>
+            <button class="fbtn" data-f="Creepster" style="font-family:'Creepster'">Ag</button>
+            <button class="fbtn" data-f="Cinzel" style="font-family:'Cinzel'">Ag</button>
+            <button class="cdot" data-c="#e8e8e8" style="background:#e8e8e8"></button>
+            <button class="cdot" data-c="#ff1a1a" style="background:#ff1a1a"></button>
+            <button class="cdot" data-c="#b14dff" style="background:#b14dff"></button>
+            <button class="cdot" data-c="#ff8c1a" style="background:#ff8c1a"></button>
+            <button class="cdot" data-c="#1affc4" style="background:#1affc4"></button>
+            <button class="cdot" data-c="#2a4bff" style="background:#2a4bff"></button>
+            <button class="fbtn" id="estilo-ok">LISTO</button>
+          </div>
           <p class="board-tip">Arrastra por el título · toca el texto para editarlo · pellizca o rueda para zoom</p>
           <div style="text-align:center;"><button onclick="guardarRegistro()">GUARDAR REGISTRO</button></div>
         </div>
@@ -644,71 +687,214 @@
     }
     function boardGuardar() {
       try {
-        const t = {};
-        BOARD_CAMPOS.forEach(c => {
-          const el = document.getElementById(c.id);
-          if (el) t[c.id] = { x: parseFloat(el.dataset.x || c.x), y: parseFloat(el.dataset.y || c.y) };
+        const t = [];
+        document.querySelectorAll('#board-cv .bcard').forEach(el => {
+          const r = { id: el.dataset.id, tipo: el.dataset.tipo || 'campo', x: parseFloat(el.dataset.x || 0), y: parseFloat(el.dataset.y || 0) };
+          if (r.tipo === 'campo') r.campo = el.dataset.campo;
+          const b = el.querySelector('.bcard-body');
+          if (r.tipo === 'caja' && b) r.texto = b.innerText;
+          if (r.tipo === 'texto' && b) {
+            r.texto = b.innerText;
+            r.fuente = b.dataset.fuente || '';
+            r.color = b.dataset.color || '';
+          }
+          t.push(r);
         });
         localStorage.setItem('umbra_board', JSON.stringify({ tarjetas: t, vista: boardVista }));
+        refreshVacio();
       } catch (e) {}
+    }
+    function refreshVacio() {
+      try {
+        const n = document.querySelectorAll('#board-cv .bcard').length;
+        document.getElementById('board-vacio').style.display = n ? 'none' : 'block';
+      } catch (e) {}
+    }
+    function crearTarjeta(rec) {
+      const cv = document.getElementById('board-cv');
+      const d = document.createElement('div');
+      if (rec.tipo === 'texto') {
+        d.className = 'bcard texto-card';
+        d.innerHTML = '<button class="bdel" title="Quitar">✕</button><div class="bcard-body"></div>';
+        const b = d.querySelector('.bcard-body');
+        b.textContent = rec.texto || 'Toca dos veces para escribir';
+        if (rec.fuente) b.style.fontFamily = "'" + rec.fuente + "'";
+        const col = rec.color || '#e8e8e8';
+        b.style.color = col; b.dataset.fuente = rec.fuente || ''; b.dataset.color = col;
+        d.style.setProperty('--bc', col);
+      } else {
+        const esCampo = rec.tipo === 'campo';
+        const c = esCampo ? BOARD_CAMPOS.find(k => k.campo === rec.campo || k.id === rec.id) : null;
+        const titulo = esCampo ? (c ? c.titulo : 'FICHA') : 'RECUADRO';
+        d.className = 'bcard';
+        d.innerHTML = '<div class="bcard-head"><span>' + titulo + '</span>' +
+          '<span style="display:flex;gap:4px;align-items:center;">' +
+          (esCampo ? '<span class="bcard-clas"></span>' : '') +
+          '<button class="bdel" title="Quitar">✕</button></span></div>' +
+          '<div class="bcard-body" contenteditable="true"' +
+          (esCampo && c ? ' data-campo="' + c.campo + '"' : '') + '></div>';
+      }
+      d.id = rec.id; d.dataset.id = rec.id; d.dataset.tipo = rec.tipo || 'campo';
+      if (rec.campo) d.dataset.campo = rec.campo;
+      d.dataset.x = rec.x; d.dataset.y = rec.y;
+      d.style.left = rec.x + 'px'; d.style.top = rec.y + 'px';
+      cv.appendChild(d);
+      d.querySelector('.bdel').onclick = e => { e.stopPropagation(); d.remove(); boardGuardar(); };
+      return d;
+    }
+    function centroVista() {
+      const vp = document.getElementById('board-vp');
+      const r = vp.getBoundingClientRect();
+      return {
+        x: (r.width / 2 - boardVista.x) / boardVista.k + (Math.random() * 120 - 60),
+        y: (r.height / 2 - boardVista.y) / boardVista.k + (Math.random() * 120 - 60)
+      };
+    }
+    function uidCard() { return 'c' + Date.now().toString(36) + Math.floor(Math.random() * 999); }
+    function flashCard(el) {
+      try {
+        el.style.transition = 'box-shadow 0.15s';
+        const old = el.style.boxShadow;
+        el.style.boxShadow = '0 0 26px #b14dff';
+        setTimeout(() => { el.style.boxShadow = old; }, 600);
+      } catch (e) {}
+    }
+    function agregarCampo(campo) {
+      const ex = document.querySelector('#board-cv .bcard[data-campo="' + campo + '"]');
+      if (ex) { flashCard(ex); return; }
+      const c = centroVista();
+      const el = crearTarjeta({ id: uidCard(), tipo: 'campo', campo, x: Math.round(c.x - 110), y: Math.round(c.y - 40) });
+      syncBoard(); boardGuardar(); flashCard(el);
+    }
+    function agregarCaja() {
+      const c = centroVista();
+      const el = crearTarjeta({ id: uidCard(), tipo: 'caja', x: Math.round(c.x - 110), y: Math.round(c.y - 40) });
+      boardGuardar(); flashCard(el);
+    }
+    function agregarTexto() {
+      const c = centroVista();
+      const el = crearTarjeta({ id: uidCard(), tipo: 'texto', texto: 'Toca dos veces para escribir', x: Math.round(c.x - 110), y: Math.round(c.y - 20) });
+      boardGuardar(); flashCard(el);
     }
     function buildBoard() {
       if (boardHecho) return;
       boardHecho = true;
-      const cv = document.getElementById('board-cv');
-      let pos = {}, vista = null;
+      let lista = null;
       try {
         const g = JSON.parse(localStorage.getItem('umbra_board') || 'null');
-        if (g) { pos = g.tarjetas || {}; vista = g.vista || null; }
-      } catch (e) {}
-      boardVista = vista || vistaInicial();
-      BOARD_CAMPOS.forEach(c => {
-        const d = document.createElement('div');
-        d.className = 'bcard';
-        d.id = c.id;
-        const p = pos[c.id] || { x: c.x, y: c.y };
-        d.dataset.x = p.x; d.dataset.y = p.y;
-        d.style.left = p.x + 'px'; d.style.top = p.y + 'px';
-        d.innerHTML = '<div class="bcard-head"><span>' + c.titulo + '</span>' +
-          (c.clas ? '<span class="bcard-clas"></span>' : '') + '</div>' +
-          '<div class="bcard-body" contenteditable="true" data-campo="' + c.campo + '"></div>';
-        cv.appendChild(d);
-      });
+        if (g) {
+          if (Array.isArray(g.tarjetas)) lista = g.tarjetas;
+          else if (g.tarjetas) {
+            lista = [];
+            Object.keys(g.tarjetas).forEach(id => {
+              const p = g.tarjetas[id];
+              const c = BOARD_CAMPOS.find(k => k.id === id);
+              if (c) lista.push({ id, tipo: 'campo', campo: c.campo, x: p.x, y: p.y });
+            });
+          }
+          boardVista = g.vista || vistaInicial();
+        } else boardVista = vistaInicial();
+      } catch (e) { boardVista = vistaInicial(); }
+      (lista || []).forEach(crearTarjeta);
       aplicarVista();
+      refreshVacio();
       syncBoard();
       document.getElementById('vista-form').addEventListener('input', syncBoard);
       document.getElementById('vista-form').addEventListener('change', syncBoard);
+      const cv = document.getElementById('board-cv');
       cv.addEventListener('input', e => {
         const b = e.target && e.target.closest ? e.target.closest('.bcard-body') : null;
-        if (!b) return;
+        if (!b || !b.dataset.campo) return;
         const f = document.getElementById(b.dataset.campo);
         if (f) f.value = b.innerText;
       });
+      cv.addEventListener('focusout', () => { try { boardGuardar(); } catch (e) {} });
+      cv.addEventListener('dblclick', e => {
+        const card = e.target.closest ? e.target.closest('.texto-card') : null;
+        if (!card) return;
+        const b = card.querySelector('.bcard-body');
+        b.contentEditable = 'true';
+        b.focus();
+        abrirEstilo(card);
+      });
       initBoardGestos();
+      initEstilo();
+    }
+    let estiloCard = null;
+    function abrirEstilo(card) {
+      estiloCard = card;
+      const b = card.querySelector('.bcard-body');
+      const f = b.dataset.fuente || 'Special Elite';
+      const c = (b.dataset.color || '#e8e8e8').toLowerCase();
+      document.querySelectorAll('#estilo-pop .fbtn[data-f]').forEach(x => x.classList.toggle('sel', x.dataset.f === f));
+      document.querySelectorAll('#estilo-pop .cdot').forEach(x => x.classList.toggle('sel', x.dataset.c.toLowerCase() === c));
+      document.getElementById('estilo-pop').classList.add('abierta');
+    }
+    function initEstilo() {
+      document.querySelectorAll('#estilo-pop .fbtn[data-f]').forEach(x => {
+        x.onclick = () => {
+          if (!estiloCard) return;
+          const b = estiloCard.querySelector('.bcard-body');
+          b.style.fontFamily = "'" + x.dataset.f + "'";
+          b.dataset.fuente = x.dataset.f;
+          document.querySelectorAll('#estilo-pop .fbtn[data-f]').forEach(y => y.classList.toggle('sel', y === x));
+          boardGuardar();
+        };
+      });
+      document.querySelectorAll('#estilo-pop .cdot').forEach(x => {
+        x.onclick = () => {
+          if (!estiloCard) return;
+          const b = estiloCard.querySelector('.bcard-body');
+          b.style.color = x.dataset.c;
+          b.dataset.color = x.dataset.c;
+          estiloCard.style.setProperty('--bc', x.dataset.c);
+          document.querySelectorAll('#estilo-pop .cdot').forEach(y => y.classList.toggle('sel', y === x));
+          boardGuardar();
+        };
+      });
+      document.getElementById('estilo-ok').onclick = () => {
+        document.getElementById('estilo-pop').classList.remove('abierta');
+        if (estiloCard) {
+          const b = estiloCard.querySelector('.bcard-body');
+          try { b.blur(); } catch (e) {}
+          b.contentEditable = 'false';
+        }
+        estiloCard = null;
+      };
     }
     function syncBoard() {
       if (!boardHecho) return;
       const col = boardColor();
       const clas = titularClas();
-      BOARD_CAMPOS.forEach(c => {
-        const card = document.getElementById(c.id);
-        if (!card) return;
+      document.querySelectorAll('#board-cv .bcard').forEach(card => {
+        if (card.dataset.tipo === 'texto') return;
+        if (card.dataset.tipo === 'caja') { card.style.setProperty('--bc', '#b14dff'); return; }
         card.style.setProperty('--bc', col);
         const badge = card.querySelector('.bcard-clas');
         if (badge) badge.textContent = clas;
         const body = card.querySelector('.bcard-body');
         if (body && document.activeElement !== body) {
-          const f = document.getElementById(c.campo);
+          const f = document.getElementById(card.dataset.campo);
           const txt = f ? f.value.trim() : '';
           body.textContent = txt || '…';
         }
       });
     }
-    function zoomBoard(f) {
-      boardVista.k = Math.max(0.4, Math.min(2, boardVista.k * f));
+    function zoomHacia(f, cx, cy) {
+      const vp = document.getElementById('board-vp');
+      if (cx === undefined || cy === undefined) {
+        const r = vp.getBoundingClientRect();
+        cx = r.width / 2; cy = r.height / 2;
+      }
+      const k2 = Math.max(0.4, Math.min(2, boardVista.k * f));
+      const s = k2 / boardVista.k;
+      boardVista.x = cx - (cx - boardVista.x) * s;
+      boardVista.y = cy - (cy - boardVista.y) * s;
+      boardVista.k = k2;
       aplicarVista();
       boardGuardar();
     }
+    function zoomBoard(f) { zoomHacia(f); }
     function zoomReset() {
       boardVista = vistaInicial();
       aplicarVista();
@@ -736,7 +922,21 @@
           modo = 'pellizco'; tarjeta = null;
           return;
         }
-        if (e.target && e.target.closest && e.target.closest('.bcard-body')) { modo = null; return; }
+        if (e.target && e.target.closest && e.target.closest('.bdel')) { modo = null; return; }
+        if (e.target && e.target.closest) {
+          const tb = e.target.closest('.texto-card');
+          if (tb) {
+            const bb = tb.querySelector('.bcard-body');
+            if (bb && document.activeElement === bb) { modo = null; return; }
+            tarjeta = tb;
+            modo = 'tarjeta';
+            sx = e.clientX; sy = e.clientY;
+            stx = parseFloat(tb.dataset.x || 0); sty = parseFloat(tb.dataset.y || 0);
+            try { vp.setPointerCapture(e.pointerId); } catch (err) {}
+            return;
+          }
+          if (e.target.closest('.bcard-body')) { modo = null; return; }
+        }
         try { vp.setPointerCapture(e.pointerId); } catch (err) {}
         const head = e.target && e.target.closest ? e.target.closest('.bcard-head') : null;
         if (head) {
@@ -756,9 +956,12 @@
         if (modo === 'pellizco' && puntos.size >= 2) {
           const p = [...puntos.values()];
           const dist = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y) || 1;
-          boardVista.k = Math.max(0.4, Math.min(2, k0 * dist / (dist0 || 1)));
+          const k2 = Math.max(0.4, Math.min(2, k0 * dist / (dist0 || 1)));
+          const s = k2 / boardVista.k;
           const mx = (p[0].x + p[1].x) / 2, my = (p[0].y + p[1].y) / 2;
-          boardVista.x = svx + (mx - sx); boardVista.y = svy + (my - sy);
+          boardVista.x = mx - (mx - boardVista.x) * s;
+          boardVista.y = my - (my - boardVista.y) * s;
+          boardVista.k = k2;
           aplicarVista();
           return;
         }
@@ -916,10 +1119,29 @@
         rr.style.setProperty('--my', (baseMY + Math.sin(t * 1.3) * 12) + 'px');
       }, 50);
     }
+    function hexA(hex, a) {
+      try {
+        let h = String(hex || '').replace('#', '');
+        if (h.length === 3) h = h.split('').map(x => x + x).join('');
+        const n = parseInt(h, 16);
+        return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+      } catch (e) { return 'rgba(177,77,255,' + a + ')'; }
+    }
     function pintaLuz(r, x, y) {
       try {
         const el = document.elementFromPoint(x, y);
-        r.classList.toggle('modo-rojo', !!(el && el.closest && (el.closest('.bcard') || el.closest('button'))));
+        const card = el && el.closest ? el.closest('.bcard') : null;
+        if (card) {
+          const c = getComputedStyle(card).getPropertyValue('--bc').trim() || '#b14dff';
+          r.style.setProperty('--lc1', hexA(c, 0.45));
+          r.style.setProperty('--lc2', hexA(c, 0.18));
+          r.classList.add('modo-rojo');
+          return;
+        }
+        const btn = el && el.closest ? el.closest('button') : null;
+        r.style.removeProperty('--lc1');
+        r.style.removeProperty('--lc2');
+        r.classList.toggle('modo-rojo', !!btn);
       } catch (e) {}
     }
     function moverLuz(x, y) {
