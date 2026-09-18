@@ -181,6 +181,9 @@
     #vista-board.pantalla { position: fixed; inset: 0; z-index: 80; background: #050505; padding: 10px;
       display: flex; flex-direction: column; }
     #vista-board.pantalla #board-vp { flex: 1; height: auto; min-height: 0; }
+    /* + y − solo en pantalla completa para no amontonar */
+    #vista-board #btn-mas, #vista-board #btn-menos { display: none; }
+    #vista-board.pantalla #btn-mas, #vista-board.pantalla #btn-menos { display: inline-block; }
     footer { color: #3a3a3a; font-size: 12px; padding: 25px; text-align: center; }
     :focus-visible { outline: 2px solid var(--alfa); outline-offset: 3px; }
     /* Celular tal cual la portada: todo respira en pantalla chica */
@@ -286,8 +289,8 @@
         </div>
         <div id="vista-board" style="display:none;">
           <div class="board-bar">
-            <button onclick="zoomBoard(1.2)" title="Acercar">+</button>
-            <button onclick="zoomBoard(1 / 1.2)" title="Alejar">−</button>
+            <button id="btn-mas" onclick="zoomBoard(1.2)" title="Acercar">+</button>
+            <button id="btn-menos" onclick="zoomBoard(1 / 1.2)" title="Alejar">−</button>
             <button onclick="zoomReset()" title="Centrar">CENTRAR</button>
             <button onclick="pantallaBoard()" id="btn-pantalla" title="Pantalla completa">⛶</button>
             <button onclick="modoTablero('form')">PASAR A FORMULARIO</button>
@@ -625,6 +628,7 @@
       const vb = document.getElementById('vista-board');
       const b = document.getElementById('btn-pantalla');
       const on = vb.classList.toggle('pantalla');
+      vb.style.display = on ? 'flex' : 'block';
       if (b) b.textContent = on ? '✕' : '⛶';
     }
     function initBoardGestos() {
@@ -700,7 +704,8 @@
       const bf = document.getElementById('modo-form-btn');
       const bb = document.getElementById('modo-board-btn');
       if (m === 'board') {
-        vf.style.display = 'none'; vb.style.display = 'block';
+        vf.style.display = 'none';
+        vb.style.display = vb.classList.contains('pantalla') ? 'flex' : 'block';
         if (bf) bf.classList.remove('activo');
         if (bb) bb.classList.add('activo');
         buildBoard();
