@@ -209,6 +209,9 @@
     .bcard .bdel { background: none; border: none; color: #5a5a5a; font-size: 12px; padding: 2px 6px;
       min-height: 0; margin: 0; cursor: pointer; font-family: Arial, sans-serif; }
     .bcard .bdel:hover { color: #ff1a1a; background: none; border: none; box-shadow: none; transform: none; }
+    /* Fichas en blanco como hoja de papel */
+    .bcard[data-tipo="campo"] { background: linear-gradient(#f4efe2, #e2d7bd); }
+    .bcard[data-tipo="campo"] .bcard-body { color: #1a1512; }
     .texto-card { border: none; background: none; box-shadow: none; width: 260px; max-width: 78vw; cursor: move; }
     .texto-card .bcard-body { font-size: 20px; padding: 4px 8px; min-height: 0; overflow-wrap: anywhere; }
     .bcard-body { overflow-wrap: anywhere; }
@@ -290,6 +293,10 @@
       .grano { display: none; }
       .vela { animation: none; opacity: 0.7; }
       #board-cv { will-change: transform; }
+      /* Textos que no se salgan de sus botones */
+      #menu-opciones button, .clas-lista button {
+        font-size: 12px; letter-spacing: 1px; line-height: 1.5;
+        white-space: normal; overflow-wrap: anywhere; }
       #puerta input, #puerta button { width: 100%; box-sizing: border-box; }
       /* Luna de sangre mejorada también en computador (en celular más recogida) */
       .luna { width: 220px !important; height: 220px !important; top: -70px !important; right: -60px !important; opacity: 0.9; }
