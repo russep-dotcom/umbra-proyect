@@ -177,6 +177,10 @@
     .bcard-body { padding: 8px 10px; min-height: 40px; font-size: 13px; line-height: 1.6; outline: none; word-break: break-word; }
     .bcard-body:focus { background: rgba(177,77,255,0.08); }
     .board-tip { font-size: 12px; color: #5a5a5a; letter-spacing: 1px; text-align: center; }
+    /* Tablero en pantalla completa */
+    #vista-board.pantalla { position: fixed; inset: 0; z-index: 80; background: #050505; padding: 10px;
+      display: flex; flex-direction: column; }
+    #vista-board.pantalla #board-vp { flex: 1; height: auto; min-height: 0; }
     footer { color: #3a3a3a; font-size: 12px; padding: 25px; text-align: center; }
     :focus-visible { outline: 2px solid var(--alfa); outline-offset: 3px; }
     /* Celular tal cual la portada: todo respira en pantalla chica */
@@ -285,6 +289,8 @@
             <button onclick="zoomBoard(1.2)" title="Acercar">+</button>
             <button onclick="zoomBoard(1 / 1.2)" title="Alejar">−</button>
             <button onclick="zoomReset()" title="Centrar">CENTRAR</button>
+            <button onclick="pantallaBoard()" id="btn-pantalla" title="Pantalla completa">⛶</button>
+            <button onclick="modoTablero('form')">PASAR A FORMULARIO</button>
             <span id="zoom-num">100%</span>
           </div>
           <div id="board-vp"><div id="board-cv"></div></div>
@@ -614,6 +620,12 @@
       boardVista = vistaInicial();
       aplicarVista();
       boardGuardar();
+    }
+    function pantallaBoard() {
+      const vb = document.getElementById('vista-board');
+      const b = document.getElementById('btn-pantalla');
+      const on = vb.classList.toggle('pantalla');
+      if (b) b.textContent = on ? '✕' : '⛶';
     }
     function initBoardGestos() {
       const vp = document.getElementById('board-vp');
