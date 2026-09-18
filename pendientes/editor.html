@@ -211,6 +211,21 @@
       min-height: 0; margin: 0; cursor: pointer; font-family: Arial, sans-serif; }
     .bcard .bdel:hover { color: #ff1a1a; background: none; border: none; box-shadow: none; transform: none; }
     .texto-card { border: none; background: none; box-shadow: none; width: 260px; max-width: 78vw; cursor: move; }
+    /* Puntos de redimensión: ocultos hasta seleccionar en celular */
+    .rh { display: none; position: absolute; width: 16px; height: 16px; border-radius: 50%;
+      background: var(--priv); border: 2px solid #fff; box-shadow: 0 0 8px var(--priv); z-index: 5; }
+    .rh-nw { top: -9px; left: -9px; cursor: nwse-resize; }
+    .rh-ne { top: -9px; right: -9px; cursor: nesw-resize; }
+    .rh-sw { bottom: -9px; left: -9px; cursor: nesw-resize; }
+    .rh-se { bottom: -9px; right: -9px; cursor: nwse-resize; }
+    .bcard.sel { outline: 2px dashed var(--priv); outline-offset: 3px; }
+    /* Mini barra de estilo para recuadros: borde y fondo */
+    #estilo-caja { display: none; position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 96;
+      background: rgba(8,0,0,0.96); border: 1px solid var(--priv); border-radius: 12px; padding: 10px 12px;
+      flex-direction: row; gap: 8px; align-items: center; box-shadow: 0 0 24px rgba(177,77,255,0.4); max-width: 94vw; }
+    #estilo-caja.abierta { display: flex; }
+    #estilo-caja .fbtn { font-size: 12px; padding: 8px 10px; margin: 0; min-height: 0; }
+    #estilo-caja .fbtn.sel { background: var(--priv); color: #000; }
     .texto-card .bcard-body { font-size: 20px; padding: 4px 8px; min-height: 0; overflow-wrap: anywhere; }
     .bcard-body { overflow-wrap: anywhere; }
     /* Botones del menú en blanco (no morados) */
@@ -226,6 +241,7 @@
     #estilo-pop.abierta { display: flex; }
     #estilo-pop .fbtn { font-size: 15px; padding: 6px 10px; margin: 0; min-height: 0; }
     #estilo-pop .fbtn.sel { background: var(--priv); color: #000; }
+    #estilo-caja .fbtn.sel { background: var(--priv); color: #000; }
     #estilo-pop .cdot { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #555; padding: 0; margin: 0; min-height: 0; }
     #estilo-pop .cdot.sel { border-color: #fff; }
     #menu-opciones button { margin-top: 0; width: 100%; font-size: 13px; padding: 10px 14px; }
@@ -276,6 +292,8 @@
       .tabs button { font-size: 11px; padding: 10px 4px; margin-top: 8px; }
       /* El mensaje bajo el tablero no va en celular: lo tapa el pie */
       .board-tip { display: none; }
+      /* En celular la tarjeta elegida muestra sus puntos */
+      .bcard.sel .rh { display: block; }
       /* Linterna chiquita que sí se nota sobre el fondo vivo */
       .reflector {
         background: radial-gradient(circle 180px at var(--mx, 50%) var(--my, 40%),
@@ -393,6 +411,15 @@
             <span id="zoom-num">100%</span>
           </div>
           <div id="board-vp"><div id="board-cv"></div><div id="board-vacio">Usa ⚙ para agregar tarjetas</div></div>
+          <div id="estilo-caja">
+            <button class="fbtn" data-b="solido">BORDE FINO</button>
+            <button class="fbtn" data-b="grueso">BORDE GRUESO</button>
+            <button class="fbtn" data-b="punteado">BORDE PUNTOS</button>
+            <button class="fbtn" data-f="oscuro">FONDO OSCURO</button>
+            <button class="fbtn" data-f="claro">FONDO CLARO</button>
+            <button class="fbtn" data-f="nada">SIN FONDO</button>
+            <button class="fbtn" id="estilo-caja-ok">LISTO</button>
+          </div>
           <div id="estilo-pop">
             <button class="fbtn" data-f="Special Elite" style="font-family:'Special Elite'">Ag</button>
             <button class="fbtn" data-f="Metal Mania" style="font-family:'Metal Mania'">Ag</button>
@@ -406,7 +433,7 @@
             <button class="cdot" data-c="#2a4bff" style="background:#2a4bff"></button>
             <button class="fbtn" id="estilo-ok">LISTO</button>
           </div>
-          <p class="board-tip">Arrastra por el título · toca el texto para editarlo · pellizca o rueda para zoom</p>
+          <p class="board-tip">Arrastra por títulos y bordes · doble clic en textos y recuadros para estilo · rueda para zoom</p>
           <div style="text-align:center;"><button onclick="guardarRegistro()">GUARDAR REGISTRO</button></div>
         </div>
         <div id="vista-form" style="display:none;">
@@ -693,8 +720,14 @@
         document.querySelectorAll('#board-cv .bcard').forEach(el => {
           const r = { id: el.dataset.id, tipo: el.dataset.tipo || 'campo', x: parseFloat(el.dataset.x || 0), y: parseFloat(el.dataset.y || 0) };
           if (r.tipo === 'campo') r.campo = el.dataset.campo;
+          if (el.style.width) r.w = Math.round(parseFloat(el.style.width));
+          if (el.style.height) r.h = Math.round(parseFloat(el.style.height));
           const b = el.querySelector('.bcard-body');
-          if (r.tipo === 'caja' && b) r.texto = b.innerText;
+          if (r.tipo === 'caja') {
+            if (b) r.texto = b.innerText;
+            r.borde = el.dataset.borde || 'solido';
+            r.fondo = el.dataset.fondo || 'oscuro';
+          }
           if (r.tipo === 'texto' && b) {
             r.texto = b.innerText;
             r.fuente = b.dataset.fuente || '';
@@ -717,15 +750,29 @@
       const d = document.createElement('div');
       if (rec.tipo === 'texto') {
         d.className = 'bcard texto-card';
-        d.innerHTML = '<button class="bdel" title="Quitar">✕</button><div class="bcard-body"></div>';
+        d.innerHTML = '<button class="bdel" title="Quitar">✕</button>' +
+          '<span class="rh rh-nw" data-rh="nw"></span><span class="rh rh-ne" data-rh="ne"></span>' +
+          '<span class="rh rh-sw" data-rh="sw"></span><span class="rh rh-se" data-rh="se"></span>' +
+          '<div class="bcard-body"></div>';
         const b = d.querySelector('.bcard-body');
         b.textContent = rec.texto || 'Toca dos veces para escribir';
         if (rec.fuente) b.style.fontFamily = "'" + rec.fuente + "'";
         const col = rec.color || '#e8e8e8';
         b.style.color = col; b.dataset.fuente = rec.fuente || ''; b.dataset.color = col;
         d.style.setProperty('--bc', col);
+      } else if (rec.tipo === 'caja') {
+        d.className = 'bcard';
+        d.innerHTML = '<button class="bdel" title="Quitar" style="position:absolute;top:-10px;right:-6px;background:#000;border-radius:50%;opacity:0.7;">✕</button>' +
+          '<span class="rh rh-nw" data-rh="nw"></span><span class="rh rh-ne" data-rh="ne"></span>' +
+          '<span class="rh rh-sw" data-rh="sw"></span><span class="rh rh-se" data-rh="se"></span>' +
+          '<div class="bcard-body" contenteditable="true"></div>';
+        d.dataset.borde = rec.borde || 'solido';
+        d.dataset.fondo = rec.fondo || 'oscuro';
+        if (rec.texto !== undefined) {
+          const bc = d.querySelector('.bcard-body');
+          if (bc) bc.textContent = rec.texto;
+        }
       } else {
-        const esCampo = rec.tipo === 'campo';
         const c = esCampo ? BOARD_CAMPOS.find(k => k.campo === rec.campo || k.id === rec.id) : null;
         const titulo = esCampo ? (c ? c.titulo : 'FICHA') : 'RECUADRO';
         d.className = 'bcard';
@@ -740,9 +787,34 @@
       if (rec.campo) d.dataset.campo = rec.campo;
       d.dataset.x = rec.x; d.dataset.y = rec.y;
       d.style.left = rec.x + 'px'; d.style.top = rec.y + 'px';
+      if (rec.w) d.style.width = rec.w + 'px';
+      if (rec.h) d.style.height = rec.h + 'px';
+      if (rec.tipo === 'caja') pintarCaja(d);
       cv.appendChild(d);
       d.querySelector('.bdel').onclick = e => { e.stopPropagation(); d.remove(); boardGuardar(); };
       return d;
+    }
+    function pintarCaja(card) {
+      try {
+        const b = card.dataset.borde || 'solido';
+        const f = card.dataset.fondo || 'oscuro';
+        card.style.border = b === 'grueso' ? '4px solid #b14dff'
+          : b === 'punteado' ? '3px dashed #b14dff' : '2px solid #b14dff';
+        const cuerpo = card.querySelector('.bcard-body');
+        if (f === 'claro') {
+          card.style.background = 'linear-gradient(#f4efe2, #e2d7bd)';
+          card.style.boxShadow = '';
+          if (cuerpo) cuerpo.style.color = '#1a1512';
+        } else if (f === 'nada') {
+          card.style.background = 'transparent';
+          card.style.boxShadow = 'none';
+          if (cuerpo) cuerpo.style.color = '';
+        } else {
+          card.style.background = 'rgba(10,0,0,0.93)';
+          card.style.boxShadow = '';
+          if (cuerpo) cuerpo.style.color = '';
+        }
+      } catch (e) {}
     }
     function centroVista() {
       const vp = document.getElementById('board-vp');
@@ -812,8 +884,21 @@
       });
       cv.addEventListener('focusout', () => { try { boardGuardar(); } catch (e) {} });
       cv.addEventListener('dblclick', e => {
+        const cj = e.target.closest ? e.target.closest('.bcard[data-tipo="caja"]') : null;
+        if (cj) { abrirEstiloCaja(cj); return; }
         const card = e.target.closest ? e.target.closest('.texto-card') : null;
         if (!card) return;
+        const b = card.querySelector('.bcard-body');
+        if (b.textContent === 'Toca dos veces para escribir') b.textContent = '';
+        b.contentEditable = 'true';
+        b.focus();
+        abrirEstilo(card);
+      });
+      cv.addEventListener('contextmenu', e => {
+        const card = e.target.closest ? (e.target.closest('.texto-card') || e.target.closest('.bcard[data-tipo="caja"]')) : null;
+        if (!card) return;
+        e.preventDefault();
+        if (card.dataset.tipo === 'caja') { abrirEstiloCaja(card); return; }
         const b = card.querySelector('.bcard-body');
         if (b.textContent === 'Toca dos veces para escribir') b.textContent = '';
         b.contentEditable = 'true';
@@ -864,6 +949,37 @@
         }
         estiloCard = null;
       };
+      let estiloCajaCard = null;
+      document.querySelectorAll('#estilo-caja .fbtn[data-b]').forEach(x => {
+        x.onclick = () => {
+          if (!estiloCajaCard) return;
+          estiloCajaCard.dataset.borde = x.dataset.b;
+          pintarCaja(estiloCajaCard);
+          document.querySelectorAll('#estilo-caja .fbtn[data-b]').forEach(y => y.classList.toggle('sel', y === x));
+          boardGuardar();
+        };
+      });
+      document.querySelectorAll('#estilo-caja .fbtn[data-f]').forEach(x => {
+        x.onclick = () => {
+          if (!estiloCajaCard) return;
+          estiloCajaCard.dataset.fondo = x.dataset.f;
+          pintarCaja(estiloCajaCard);
+          document.querySelectorAll('#estilo-caja .fbtn[data-f]').forEach(y => y.classList.toggle('sel', y === x));
+          boardGuardar();
+        };
+      });
+      document.getElementById('estilo-caja-ok').onclick = () => {
+        document.getElementById('estilo-caja').classList.remove('abierta');
+        estiloCajaCard = null;
+      };
+    }
+    function abrirEstiloCaja(card) {
+      estiloCajaCard = card;
+      const b = card.dataset.borde || 'solido';
+      const f = card.dataset.fondo || 'oscuro';
+      document.querySelectorAll('#estilo-caja .fbtn[data-b]').forEach(x => x.classList.toggle('sel', x.dataset.b === b));
+      document.querySelectorAll('#estilo-caja .fbtn[data-f]').forEach(x => x.classList.toggle('sel', x.dataset.f === f));
+      document.getElementById('estilo-caja').classList.add('abierta');
     }
     function syncBoard() {
       if (!boardHecho) return;
@@ -871,7 +987,7 @@
       const clas = titularClas();
       document.querySelectorAll('#board-cv .bcard').forEach(card => {
         if (card.dataset.tipo === 'texto') return;
-        if (card.dataset.tipo === 'caja') { card.style.setProperty('--bc', '#b14dff'); return; }
+        if (card.dataset.tipo === 'caja') { pintarCaja(card); return; }
         card.style.setProperty('--bc', col);
         const badge = card.querySelector('.bcard-clas');
         if (badge) badge.textContent = clas;
@@ -915,6 +1031,19 @@
       const puntos = new Map();
       let modo = null, tarjeta = null;
       let sx = 0, sy = 0, stx = 0, sty = 0, svx = 0, svy = 0, dist0 = 0, k0 = 1;
+      let ow = 0, oh = 0, bordes = null, dx0 = 0, dy0 = 0;
+    function bordesCarta(el, x, y) {
+      try {
+        const r = el.getBoundingClientRect();
+        const m = 14;
+        const b = { n: y - r.top < m, s: r.bottom - y < m, w: x - r.left < m, e: r.right - x < m };
+        return (b.n || b.s || b.w || b.e) ? b : null;
+      } catch (e) { return null; }
+    }
+    function capTarjeta(el) {
+      el.style.width = (el.offsetWidth / boardVista.k) + 'px';
+      el.style.height = (el.offsetHeight / boardVista.k) + 'px';
+    }
       vp.addEventListener('pointerdown', e => {
         puntos.set(e.pointerId, { x: e.clientX, y: e.clientY });
         if (puntos.size === 2) {
@@ -926,6 +1055,22 @@
           return;
         }
         if (e.target && e.target.closest && e.target.closest('.bdel')) { modo = null; return; }
+        const tEl = e.target;
+        const qc = tEl && tEl.closest ? tEl.closest.bind(tEl) : null;
+        const rh = qc ? tEl.closest('.rh') : null;
+        if (rh) {
+          tarjeta = rh.closest('.bcard');
+          modo = 'redim';
+          const pos = rh.dataset.rh || 'se';
+          bordes = { n: pos[0] === 'n', s: pos[0] === 's', w: pos[1] === 'w', e: pos[1] === 'e' };
+          sx = e.clientX; sy = e.clientY;
+          capTarjeta(tarjeta);
+          ow = parseFloat(tarjeta.style.width); oh = parseFloat(tarjeta.style.height);
+          stx = parseFloat(tarjeta.dataset.x || 0); sty = parseFloat(tarjeta.dataset.y || 0);
+          try { vp.setPointerCapture(e.pointerId); } catch (err) {}
+          return;
+        }
+        dx0 = e.clientX; dy0 = e.clientY;
         if (e.target && e.target.closest) {
           const tb = e.target.closest('.texto-card');
           if (tb) {
@@ -938,7 +1083,25 @@
             try { vp.setPointerCapture(e.pointerId); } catch (err) {}
             return;
           }
-          if (e.target.closest('.bcard-body')) { modo = null; return; }
+          const cbody = e.target.closest('.bcard-body');
+          if (cbody) {
+            const card = cbody.closest('.bcard');
+            if (card && card.dataset.tipo === 'caja') {
+              const bd = bordesCarta(card, e.clientX, e.clientY);
+              if (bd) {
+                tarjeta = card;
+                modo = 'redim';
+                bordes = bd;
+                sx = e.clientX; sy = e.clientY;
+                capTarjeta(card);
+                ow = parseFloat(card.style.width); oh = parseFloat(card.style.height);
+                stx = parseFloat(card.dataset.x || 0); sty = parseFloat(card.dataset.y || 0);
+                try { vp.setPointerCapture(e.pointerId); } catch (err) {}
+                return;
+              }
+            }
+            modo = null; return;
+          }
         }
         try { vp.setPointerCapture(e.pointerId); } catch (err) {}
         const head = e.target && e.target.closest ? e.target.closest('.bcard-head') : null;
@@ -973,6 +1136,19 @@
           const ny = sty + (e.clientY - sy) / boardVista.k;
           tarjeta.dataset.x = nx; tarjeta.dataset.y = ny;
           tarjeta.style.left = nx + 'px'; tarjeta.style.top = ny + 'px';
+        } else if (modo === 'redim' && tarjeta && bordes) {
+          const dx = (e.clientX - sx) / boardVista.k;
+          const dy = (e.clientY - sy) / boardVista.k;
+          let nx = stx, ny = sty, nw = ow, nh = oh;
+          if (bordes.e) nw = ow + dx;
+          if (bordes.s) nh = oh + dy;
+          if (bordes.w) { nx = stx + dx; nw = ow - dx; }
+          if (bordes.n) { ny = sty + dy; nh = oh - dy; }
+          if (nw < 80) { if (bordes.w) nx = stx + ow - 80; nw = 80; }
+          if (nh < 40) { if (bordes.n) ny = sty + oh - 40; nh = 40; }
+          tarjeta.dataset.x = nx; tarjeta.dataset.y = ny;
+          tarjeta.style.left = nx + 'px'; tarjeta.style.top = ny + 'px';
+          tarjeta.style.width = nw + 'px'; tarjeta.style.height = nh + 'px';
         } else if (modo === 'lienzo') {
           boardVista.x = svx + (e.clientX - sx);
           boardVista.y = svy + (e.clientY - sy);
@@ -983,8 +1159,18 @@
         puntos.delete(e.pointerId);
         if (puntos.size < 2 && modo === 'pellizco') modo = null;
         if (puntos.size === 0) {
-          if (modo === 'tarjeta' || modo === 'lienzo') boardGuardar();
-          modo = null; tarjeta = null;
+          if (modo === 'tarjeta' || modo === 'lienzo' || modo === 'redim') boardGuardar();
+          try {
+            if (window.matchMedia('(max-width: 640px)').matches && e.clientX !== undefined) {
+              const mov = Math.hypot(e.clientX - dx0, e.clientY - dy0);
+              if (mov < 10) {
+                const card = e.target.closest ? e.target.closest('.bcard[data-tipo="caja"], .bcard[data-tipo="texto"]') : null;
+                document.querySelectorAll('#board-cv .bcard.sel').forEach(x => { if (x !== card || !document.contains(x)) x.classList.remove('sel'); });
+                if (card && document.contains(card)) card.classList.toggle('sel');
+              }
+            }
+          } catch (err) {}
+          modo = null; tarjeta = null; bordes = null;
         }
       };
       vp.addEventListener('pointerup', fin);
