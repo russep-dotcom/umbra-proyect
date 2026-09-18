@@ -211,15 +211,8 @@
       min-height: 0; margin: 0; cursor: pointer; font-family: Arial, sans-serif; }
     .bcard .bdel:hover { color: #ff1a1a; background: none; border: none; box-shadow: none; transform: none; }
     .texto-card { border: none; background: none; box-shadow: none; width: 260px; max-width: 78vw; cursor: move; }
-    /* Puntos de redimensión: ocultos hasta seleccionar en celular */
-    .rh { display: none; position: absolute; width: 16px; height: 16px; border-radius: 50%;
-      background: var(--priv); border: 2px solid #fff; box-shadow: 0 0 8px var(--priv); z-index: 5; }
-    .rh-nw { top: -9px; left: -9px; cursor: nwse-resize; }
-    .rh-ne { top: -9px; right: -9px; cursor: nesw-resize; }
-    .rh-sw { bottom: -9px; left: -9px; cursor: nesw-resize; }
-    .rh-se { bottom: -9px; right: -9px; cursor: nwse-resize; }
+    /* Puntos de redimensión: solo con tarjeta elegida */
     .bcard.sel { outline: 2px dashed var(--bc, #b14dff); outline-offset: 3px; }
-    .bcard.sel .rh { display: block; }
     .bcard-body:focus-visible { outline: none; }
     /* Mini barra de estilo para recuadros: borde y fondo */
     #estilo-caja { display: none; position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 96;
@@ -292,6 +285,8 @@
       button { min-height: 48px; }
       .tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
       .tabs button { font-size: 11px; padding: 10px 4px; margin-top: 8px; }
+      /* En celular se empieza a escribir desde el centro */
+      .bcard-body { text-align: center; }
       /* El mensaje bajo el tablero no va en celular: lo tapa el pie */
       .board-tip { display: none; }
       /* En celular la tarjeta elegida muestra sus puntos */
@@ -396,7 +391,6 @@
                 <button id="btn-menos" onclick="zoomBoard(1 / 1.2)">ALEJAR −</button>
                 <div class="menu-sep">AGREGAR</div>
                 <button onclick="menuAccion(agregarCaja)">RECUADRO VACÍO</button>
-                <button onclick="menuAccion(agregarTexto)">TEXTO LIBRE</button>
               </div>
             </div>
             <button onclick="pantallaBoard()" id="btn-pantalla" title="Pantalla completa">⛶</button>
@@ -435,7 +429,7 @@
             <button class="cdot" data-c="#2a4bff" style="background:#2a4bff"></button>
             <button class="fbtn" id="estilo-ok">LISTO</button>
           </div>
-          <p class="board-tip">Arrastra por títulos y bordes · doble clic en textos y recuadros para estilo · rueda para zoom</p>
+          <p class="board-tip">Arrastra por títulos y bordes · doble clic en el vacío para escribir · clic derecho para estilo · rueda para zoom</p>
           <div style="text-align:center;"><button onclick="guardarRegistro()">GUARDAR REGISTRO</button></div>
         </div>
         <div id="vista-form" style="display:none;">
@@ -753,9 +747,7 @@
       if (rec.tipo === 'texto') {
         d.className = 'bcard texto-card';
         d.innerHTML = '<button class="bdel" title="Quitar">✕</button>' +
-          '<span class="rh rh-nw" data-rh="nw"></span><span class="rh rh-ne" data-rh="ne"></span>' +
-          '<span class="rh rh-sw" data-rh="sw"></span><span class="rh rh-se" data-rh="se"></span>' +
-          '<div class="bcard-body" contenteditable="true"></div>';
+          '<div class="bcard-body"></div>';
         const b = d.querySelector('.bcard-body');
         b.textContent = rec.texto || 'Clic para escribir';
         if (rec.fuente) b.style.fontFamily = "'" + rec.fuente + "'";
@@ -765,8 +757,6 @@
       } else if (rec.tipo === 'caja') {
         d.className = 'bcard';
         d.innerHTML = '<button class="bdel" title="Quitar" style="position:absolute;top:-10px;right:-6px;background:#000;border-radius:50%;opacity:0.7;">✕</button>' +
-          '<span class="rh rh-nw" data-rh="nw"></span><span class="rh rh-ne" data-rh="ne"></span>' +
-          '<span class="rh rh-sw" data-rh="sw"></span><span class="rh rh-se" data-rh="se"></span>' +
           '<div class="bcard-body" contenteditable="true"></div>';
         d.dataset.borde = rec.borde || 'solido';
         d.dataset.fondo = rec.fondo || 'oscuro';
@@ -888,18 +878,31 @@
       });
       cv.addEventListener('focusout', () => { try { boardGuardar(); } catch (e) {} });
       cv.addEventListener('dblclick', e => {
-        try {
-          if (!window.matchMedia('(max-width: 640px)').matches) return;
-        } catch (err) {}
+        let isMobile = false;
+        try { isMobile = window.matchMedia('(max-width: 640px)').matches; } catch (err) {}
         const cj = e.target.closest ? e.target.closest('.bcard[data-tipo="caja"]') : null;
-        if (cj) { abrirEstiloCaja(cj); return; }
+        if (cj) { if (isMobile) abrirEstiloCaja(cj); return; }
         const card = e.target.closest ? e.target.closest('.texto-card') : null;
-        if (!card) return;
-        const b = card.querySelector('.bcard-body');
-        if (b.textContent === 'Clic para escribir') b.textContent = '';
-        b.contentEditable = 'true';
-        b.focus();
-        abrirEstilo(card);
+        if (card) {
+          if (!isMobile) return;
+          const b = card.querySelector('.bcard-body');
+          if (b.textContent === 'Clic para escribir') b.textContent = '';
+          b.contentEditable = 'true';
+          b.focus();
+          abrirEstilo(card);
+          return;
+        }
+        const vp2 = document.getElementById('board-vp');
+        const r = vp2.getBoundingClientRect();
+        const cx = (e.clientX - r.left - boardVista.x) / boardVista.k;
+        const cy = (e.clientY - r.top - boardVista.y) / boardVista.k;
+        const el = crearTarjeta({ id: uidCard(), tipo: 'texto', texto: '', x: Math.round(cx - 110), y: Math.round(cy - 20) });
+        boardGuardar();
+        const nb = el.querySelector('.bcard-body');
+        if (nb.textContent === 'Clic para escribir') nb.textContent = '';
+        nb.contentEditable = 'true';
+        nb.focus();
+        if (isMobile) abrirEstilo(el);
       });
       cv.addEventListener('contextmenu', e => {
         const card = e.target.closest ? (e.target.closest('.texto-card') || e.target.closest('.bcard[data-tipo="caja"]')) : null;
@@ -1173,10 +1176,6 @@
                 document.querySelectorAll('#board-cv .bcard.sel').forEach(x => { if (x !== card || !document.contains(x)) x.classList.remove('sel'); });
                 if (card && document.contains(card)) {
                   card.classList.toggle('sel');
-                  const bd = card.querySelector('.bcard-body');
-                  if (bd && bd.isContentEditable && document.activeElement !== bd) {
-                    try { bd.focus(); } catch (err2) {}
-                  }
                 }
               }
             }
