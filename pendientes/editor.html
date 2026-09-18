@@ -700,7 +700,7 @@
           }
           t.push(r);
         });
-        localStorage.setItem('umbra_board', JSON.stringify({ tarjetas: t, vista: boardVista }));
+        localStorage.setItem('umbra_board2', JSON.stringify({ tarjetas: t, vista: boardVista }));
         refreshVacio();
       } catch (e) {}
     }
@@ -781,7 +781,7 @@
       boardHecho = true;
       let lista = null;
       try {
-        const g = JSON.parse(localStorage.getItem('umbra_board') || 'null');
+        const g = JSON.parse(localStorage.getItem('umbra_board2') || 'null');
         if (g) {
           if (Array.isArray(g.tarjetas)) lista = g.tarjetas;
           else if (g.tarjetas) {
