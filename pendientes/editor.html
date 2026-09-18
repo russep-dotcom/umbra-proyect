@@ -48,6 +48,20 @@
     @keyframes grano { 0%{transform:translate(0,0)} 25%{transform:translate(-30px,20px)} 50%{transform:translate(20px,-25px)} 75%{transform:translate(-15px,-10px)} 100%{transform:translate(0,0)} }
     .vineta { position: fixed; inset: 0; z-index: 59; pointer-events: none;
       background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.65) 100%); }
+    /* ===== Linterna igual que las páginas normales ===== */
+    .reflector { position: fixed; inset: 0; z-index: 58; pointer-events: none;
+      transition: opacity 0.8s ease-out;
+      background: radial-gradient(circle 240px at var(--mx, 50%) var(--my, 40%),
+        rgba(177,77,255,0.3), rgba(60,20,120,0.1) 55%, transparent 76%); }
+    .reflector.fantasma-off { opacity: 0; }
+    .reflector.toque-glitch { animation: toque-glitch 0.45s steps(3); }
+    @keyframes toque-glitch {
+      0% { opacity: 0; } 30% { opacity: 1; } 55% { opacity: 0.25; }
+      80% { opacity: 1; } 100% { opacity: 1; } }
+    .reflector.modo-rojo {
+      background: radial-gradient(circle 280px at var(--mx, 50%) var(--my, 40%),
+        rgba(255,26,26,0.55), rgba(150,8,8,0.2) 55%, transparent 76%); }
+    .reflector.apagada { display: none; }
     /* ===== Vuelta suave: la misma de la página normal ===== */
     #suave { display: none; position: fixed; inset: 0; z-index: 99; background: #000;
       align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 24px; }
@@ -307,11 +321,7 @@
       <div class="tab" id="t-registro">
         <h2>Crear registro</h2>
         <p style="font-size:14px;color:#8a8a8a;">Aparece en el archivo como desplegable hasta que Infy le hace su página.</p>
-        <div class="modo-btns">
-          <button id="modo-form-btn" class="activo" onclick="modoTablero('form')">FORMULARIO</button>
-          <button id="modo-board-btn" onclick="modoTablero('board')">TABLERO</button>
-        </div>
-        <div id="vista-board" style="display:none;">
+        <div id="vista-board">
           <div class="board-bar" id="board-bar">
             <div class="menu-wrap" id="menu-wrap">
               <button onclick="event.stopPropagation();document.getElementById('menu-wrap').classList.toggle('abierto');document.getElementById('btn-opciones').classList.toggle('encendida')" id="btn-opciones" title="Ajustes">⚙</button>
@@ -319,7 +329,6 @@
                 <button onclick="menuAccion(() => zoomReset())">CENTRAR</button>
                 <button id="btn-mas" onclick="menuAccion(() => zoomBoard(1.2))">ACERCAR +</button>
                 <button id="btn-menos" onclick="menuAccion(() => zoomBoard(1 / 1.2))">ALEJAR −</button>
-                <button onclick="modoTablero('form')">PASAR A FORMULARIO</button>
               </div>
             </div>
             <button onclick="pantallaBoard()" id="btn-pantalla" title="Pantalla completa">⛶</button>
@@ -337,8 +346,9 @@
           </div>
           <div id="board-vp"><div id="board-cv"></div></div>
           <p class="board-tip">Arrastra por el título · toca el texto para editarlo · pellizca o rueda para zoom</p>
+          <div style="text-align:center;"><button onclick="guardarRegistro()">GUARDAR REGISTRO</button></div>
         </div>
-        <div id="vista-form">
+        <div id="vista-form" style="display:none;">
         <label>TÍTULO DE LA CRIATURA</label>
         <input id="r-titulo" placeholder="EL MÍMICO">
         <label>CLASIFICACIÓN</label>
@@ -366,7 +376,6 @@
         <textarea id="r-teorias" rows="2"></textarea>
         <label>NOTAS</label>
         <textarea id="r-notas" rows="2"></textarea>
-        <button onclick="guardarRegistro()">GUARDAR REGISTRO</button>
         </div>
         <div id="lista"></div>
       </div>
@@ -389,6 +398,7 @@
   <audio id="aud-vuelta" src="../audio/vuelta.wav" preload="auto"></audio>
   <audio id="aud-crash" src="../audio/glitch-alfa.wav" preload="auto"></audio>
   <div class="grano" aria-hidden="true"></div>
+  <div class="reflector" id="reflector" aria-hidden="true"></div>
   <div class="vineta" aria-hidden="true"></div>
   <footer>☠ UMBRA · Esta página no existe para el público ☠</footer>
 
@@ -514,6 +524,8 @@
             document.getElementById('crash').classList.remove('abierto');
             document.getElementById('herramientas').style.display = 'block';
             tab('t-interfaz');
+            buildBoard();
+            syncBoard();
           }, 3000);
           return;
         }
@@ -547,6 +559,8 @@
           document.getElementById('paso-portal').classList.remove('abierto');
           document.getElementById('herramientas').style.display = 'block';
           tab('t-interfaz');
+          buildBoard();
+          syncBoard();
         }, 3600);
       } catch (e) {
         document.getElementById('herramientas').style.display = 'block';
@@ -785,29 +799,6 @@
         syncBoard();
       } catch (e) {}
     }
-    function modoTablero(m) {
-      const vf = document.getElementById('vista-form');
-      const vb = document.getElementById('vista-board');
-      const bf = document.getElementById('modo-form-btn');
-      const bb = document.getElementById('modo-board-btn');
-      try {
-        document.getElementById('menu-wrap').classList.remove('abierto');
-        document.getElementById('btn-opciones').classList.remove('encendida');
-        document.querySelectorAll('.clas-lista.abierta').forEach(l => l.classList.remove('abierta'));
-      } catch (e) {}
-      if (m === 'board') {
-        vf.style.display = 'none';
-        vb.style.display = vb.classList.contains('pantalla') ? 'flex' : 'block';
-        if (bf) bf.classList.remove('activo');
-        if (bb) bb.classList.add('activo');
-        buildBoard();
-        syncBoard();
-      } else {
-        vb.style.display = 'none'; vf.style.display = 'block';
-        if (bb) bb.classList.remove('activo');
-        if (bf) bf.classList.add('activo');
-      }
-    }
     // ===== INTERFAZ =====
     function guardarUI() {
       const ui = {
@@ -894,6 +885,113 @@
         box.appendChild(d);
       });
     }
+    // ===== LINTERNA (igual que las páginas normales: PC conmuta, móvil persigue) =====
+    let baseMX = window.innerWidth / 2, baseMY = window.innerHeight * 0.4;
+    let idleEspera = null, idleDeriva = null;
+    if ('ontouchstart' in window) { idleEspera = setTimeout(empezarDeriva, 800); }
+    function empezarDeriva() {
+      const t0 = performance.now();
+      clearInterval(idleDeriva);
+      idleDeriva = setInterval(() => {
+        const rr = document.getElementById('reflector');
+        if (!rr) { clearInterval(idleDeriva); return; }
+        const t = (performance.now() - t0) / 1000;
+        rr.style.setProperty('--mx', (baseMX + Math.cos(t * 0.9) * 16) + 'px');
+        rr.style.setProperty('--my', (baseMY + Math.sin(t * 1.3) * 12) + 'px');
+      }, 50);
+    }
+    function pintaLuz(r, x, y) {
+      try {
+        const el = document.elementFromPoint(x, y);
+        r.classList.toggle('modo-rojo', !!(el && el.closest && (el.closest('.bcard') || el.closest('button'))));
+      } catch (e) {}
+    }
+    function moverLuz(x, y) {
+      const r = document.getElementById('reflector');
+      if (!r) return;
+      r.style.setProperty('--mx', x + 'px');
+      r.style.setProperty('--my', y + 'px');
+      pintaLuz(r, x, y);
+      baseMX = x; baseMY = y;
+      clearTimeout(idleEspera);
+      clearInterval(idleDeriva);
+      idleEspera = setTimeout(empezarDeriva, 1500);
+    }
+    // PC: solo el ratón la mueve directo
+    document.addEventListener('pointermove', e => {
+      if (e.pointerType && e.pointerType !== 'mouse') return;
+      moverLuz(e.clientX, e.clientY);
+    }, { passive: true });
+    // MÓVIL: la luz te persigue con retardo y se apaga lento al soltar
+    const ES_MOVIL = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window);
+    let curLX = baseMX, curLY = baseMY, objLX = baseMX, objLY = baseMY;
+    let persigueRaf = null, toqueApaga = null, cazaActiva = false, cazaIniciada = false;
+    function pasoCaza() {
+      const r = document.getElementById('reflector');
+      if (!r) { persigueRaf = null; return; }
+      curLX += (objLX - curLX) * 0.08;
+      curLY += (objLY - curLY) * 0.08;
+      r.style.setProperty('--mx', curLX + 'px');
+      r.style.setProperty('--my', curLY + 'px');
+      baseMX = curLX; baseMY = curLY;
+      pintaLuz(r, curLX, curLY);
+      if (cazaActiva || Math.abs(objLX - curLX) > 0.4 || Math.abs(objLY - curLY) > 0.4) {
+        persigueRaf = requestAnimationFrame(pasoCaza);
+      } else {
+        persigueRaf = null;
+      }
+    }
+    function arrancarCaza() {
+      if (persigueRaf) return;
+      persigueRaf = requestAnimationFrame(pasoCaza);
+    }
+    document.addEventListener('touchstart', e => {
+      if (!ES_MOVIL) return;
+      const r = document.getElementById('reflector');
+      if (!r || r.classList.contains('apagada')) return;
+      const t = e.touches && e.touches[0];
+      if (t) {
+        objLX = t.clientX; objLY = t.clientY;
+        if (!cazaIniciada) { curLX = objLX; curLY = objLY; cazaIniciada = true; }
+      }
+      cazaActiva = true;
+      r.style.transition = 'opacity 0.3s';
+      r.classList.remove('fantasma-off', 'toque-glitch');
+      void r.offsetWidth;
+      r.classList.add('toque-glitch');
+      clearTimeout(toqueApaga);
+      clearTimeout(idleEspera);
+      clearInterval(idleDeriva);
+      arrancarCaza();
+    }, { passive: true });
+    document.addEventListener('touchmove', e => {
+      if (!ES_MOVIL) return;
+      const t = e.touches && e.touches[0];
+      if (t) { objLX = t.clientX; objLY = t.clientY; arrancarCaza(); }
+    }, { passive: true });
+    document.addEventListener('touchend', () => {
+      if (!ES_MOVIL) return;
+      cazaActiva = false;
+      clearTimeout(toqueApaga);
+      toqueApaga = setTimeout(() => {
+        const r = document.getElementById('reflector');
+        if (!r) return;
+        r.classList.remove('toque-glitch');
+        void r.offsetWidth;
+        if (persigueRaf) { cancelAnimationFrame(persigueRaf); persigueRaf = null; }
+        r.style.transition = 'opacity 2.5s ease-out';
+        void r.offsetWidth;
+        r.classList.add('fantasma-off');
+      }, 350);
+    });
+    // PC: clic en el fondo = interruptor (sin sonido en el editor)
+    document.addEventListener('click', e => {
+      if (window.matchMedia('(pointer: coarse)').matches && ('ontouchstart' in window)) return;
+      if (e.target.closest && e.target.closest('a, button, input, textarea, select, summary, .bcard, #board-vp')) return;
+      const r = document.getElementById('reflector');
+      if (!r) return;
+      r.classList.toggle('apagada');
+    });
   </script>
 </body>
 </html>
