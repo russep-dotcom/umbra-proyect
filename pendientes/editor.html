@@ -218,8 +218,9 @@
     .rh-ne { top: -9px; right: -9px; cursor: nesw-resize; }
     .rh-sw { bottom: -9px; left: -9px; cursor: nesw-resize; }
     .rh-se { bottom: -9px; right: -9px; cursor: nwse-resize; }
-    .bcard.sel { outline: 2px dashed var(--priv); outline-offset: 3px; }
+    .bcard.sel { outline: 2px dashed var(--bc, #b14dff); outline-offset: 3px; }
     .bcard.sel .rh { display: block; }
+    .bcard-body:focus-visible { outline: none; }
     /* Mini barra de estilo para recuadros: borde y fondo */
     #estilo-caja { display: none; position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 96;
       background: rgba(8,0,0,0.96); border: 1px solid var(--priv); border-radius: 12px; padding: 10px 12px;
@@ -1068,7 +1069,6 @@
           capTarjeta(tarjeta);
           ow = parseFloat(tarjeta.style.width); oh = parseFloat(tarjeta.style.height);
           stx = parseFloat(tarjeta.dataset.x || 0); sty = parseFloat(tarjeta.dataset.y || 0);
-          try { vp.setPointerCapture(e.pointerId); } catch (err) {}
           return;
         }
         dx0 = e.clientX; dy0 = e.clientY;
@@ -1081,7 +1081,6 @@
             modo = 'tarjeta';
             sx = e.clientX; sy = e.clientY;
             stx = parseFloat(tb.dataset.x || 0); sty = parseFloat(tb.dataset.y || 0);
-            try { vp.setPointerCapture(e.pointerId); } catch (err) {}
             return;
           }
           const cbody = e.target.closest('.bcard-body');
@@ -1097,14 +1096,12 @@
                 capTarjeta(card);
                 ow = parseFloat(card.style.width); oh = parseFloat(card.style.height);
                 stx = parseFloat(card.dataset.x || 0); sty = parseFloat(card.dataset.y || 0);
-                try { vp.setPointerCapture(e.pointerId); } catch (err) {}
                 return;
               }
             }
             modo = null; return;
           }
         }
-        try { vp.setPointerCapture(e.pointerId); } catch (err) {}
         const head = e.target && e.target.closest ? e.target.closest('.bcard-head') : null;
         if (head) {
           tarjeta = head.closest('.bcard');
@@ -1176,6 +1173,8 @@
       };
       vp.addEventListener('pointerup', fin);
       vp.addEventListener('pointercancel', fin);
+      window.addEventListener('pointerup', fin);
+      window.addEventListener('pointercancel', fin);
       vp.addEventListener('wheel', e => {
         e.preventDefault();
         zoomBoard(e.deltaY < 0 ? 1.1 : 1 / 1.1);
