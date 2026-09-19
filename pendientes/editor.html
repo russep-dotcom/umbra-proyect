@@ -817,6 +817,20 @@
         el.classList.add('escribiendo');
         const cuerpo = el.querySelector('.bcard-body');
         if (!cuerpo) return;
+        // La rayita debe nacer justo bajo el dedo: se mide en pantalla y se corrige (solo celular; en computador intacto)
+        try {
+          if (esTactil()) {
+            const kk = boardVista.k || 1;
+            const cr0 = el.getBoundingClientRect();
+            const ox = (cx - 8 * kk) - cr0.left, oy = (cy - 14 * kk) - cr0.top;
+            if (Math.abs(ox) > 4 || Math.abs(oy) > 4) {
+              t.x = Math.round(t.x + ox / kk);
+              t.y = Math.round(t.y + oy / kk);
+              el.style.left = t.x + 'px';
+              el.style.top = t.y + 'px';
+            }
+          }
+        } catch (errA) {}
         cuerpo.addEventListener('blur', () => {
           try {
             t.txt = cuerpo.textContent || '';
@@ -848,6 +862,19 @@
             requestAnimationFrame(() => { try { if (document.activeElement !== cuerpo) enfocarCuerpo(); } catch (e2) {} });
           }
         } catch (err2) {}
+        // Si al abrir el teclado el navegador mueve la página, la rayita se muestra con el movimiento mínimo (solo celular)
+        try {
+          if (esTactil()) {
+            const revelar = () => {
+              try {
+                const n = cv.querySelector('[data-id="' + id + '"]') || el;
+                n.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+              } catch (e3) {}
+            };
+            if (window.visualViewport) window.visualViewport.addEventListener('resize', revelar, { once: true });
+            else window.addEventListener('resize', revelar, { once: true });
+          }
+        } catch (err4) {}
       } catch (e) {}
     }
     function pantallaBoard() {
