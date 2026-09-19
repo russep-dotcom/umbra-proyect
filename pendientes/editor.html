@@ -402,7 +402,21 @@
         <p style="font-size:14px;color:#8a8a8a;">Aparece en el archivo como desplegable hasta que Infy le hace su página.</p>
         <div id="vista-board">
           <button id="btn-pantalla" type="button" onclick="pantallaBoard()" aria-label="Ver tablero en pantalla completa">⛶</button>
-          <div id="board-vp"><div id="board-cv"></div></div>
+          <div class="board-bar" id="board-bar">
+            <div class="menu-wrap" id="menu-wrap">
+              <button id="btn-opciones" type="button" onclick="toggleMenuBoard(event)" aria-label="Ajustes del tablero">⚙</button>
+              <div id="menu-opciones">
+                <button type="button" onclick="centrarBoard()">CENTRAR</button>
+                <button type="button" onclick="acercarBoard()">ACERCAR +</button>
+                <button type="button" onclick="alejarBoard()">ALEJAR −</button>
+                <div class="menu-sep">AGREGAR</div>
+                <button type="button" onclick="crearCajaBoard()">RECUADRO VACÍO</button>
+                <button type="button" onclick="crearTextoBoard()">TEXTO LIBRE</button>
+              </div>
+            </div>
+            <span id="zoom-num">100%</span>
+          </div>
+          <div id="board-vp"><div id="board-cv"></div><div id="board-vacio">TABLERO VACÍO… AGREGA DESDE ⚙</div></div>
         </div>
       </div>
 
@@ -619,13 +633,15 @@
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('activa'));
       document.getElementById(id).classList.add('activa');
     }
-    // ===== TABLERO limpio: solo vista (mover y zoom), sin botones todavía =====
+    // ===== TABLERO: vista + barra (mover, zoom, tarjetas) =====
     let boardVista = { x: -600, y: -800, k: 1 };
     function aplicarVista() {
       const cv = document.getElementById('board-cv');
       if (cv) {
         cv.style.transform = 'translate(' + boardVista.x + 'px,' + boardVista.y + 'px) scale(' + boardVista.k + ')';
       }
+      const zn = document.getElementById('zoom-num');
+      if (zn) zn.textContent = Math.round(boardVista.k * 100) + '%';
       const vp = document.getElementById('board-vp');
       if (vp) {
         const paso = 28;
@@ -656,6 +672,7 @@
       const puntos = new Map();
       let sx = 0, sy = 0, svx = 0, svy = 0, dist0 = 0, k0 = 1, moviendo = false;
       vp.addEventListener('pointerdown', e => {
+        if (e.target.closest && e.target.closest('.bcard')) return;
         puntos.set(e.pointerId, { x: e.clientX, y: e.clientY });
         if (puntos.size === 2) {
           const p = [...puntos.values()];
@@ -701,6 +718,15 @@
         e.preventDefault();
         zoomHacia(e.deltaY < 0 ? 1.1 : 1 / 1.1);
       }, { passive: false });
+      vp.addEventListener('pointerdown', e => {
+        try {
+          if (!e.target.closest || !e.target.closest('.bcard')) {
+            document.querySelectorAll('#board-cv .bcard.sel').forEach(n => n.classList.remove('sel'));
+          }
+        } catch (err) {}
+      });
+      try { boardTarjetas = leeBoard(); } catch (err) { boardTarjetas = []; }
+      pintarBoard();
     }
     function pantallaBoard() {
       const vb = document.getElementById('vista-board');
@@ -711,6 +737,187 @@
         btn.textContent = grande ? '✕' : '⛶';
         btn.setAttribute('aria-label', grande ? 'Salir de pantalla completa' : 'Ver tablero en pantalla completa');
       }
+    }
+    // ===== TABLERO: barra + tarjetas (solo umbra_board3) =====
+    let boardTarjetas = [];
+    function toggleMenuBoard(e) {
+      try { if (e && e.stopPropagation) e.stopPropagation(); } catch (err) {}
+      try {
+        const mw = document.getElementById('menu-wrap');
+        if (!mw) return;
+        mw.classList.toggle('abierto');
+        const bo = document.getElementById('btn-opciones');
+        if (bo) bo.classList.toggle('encendida', mw.classList.contains('abierto'));
+      } catch (err) {}
+    }
+    function cerrarMenuBoard() {
+      try {
+        const mw = document.getElementById('menu-wrap');
+        if (mw) mw.classList.remove('abierto');
+        const bo = document.getElementById('btn-opciones');
+        if (bo) bo.classList.remove('encendida');
+      } catch (err) {}
+    }
+    function centrarBoard() {
+      boardVista.x = -600; boardVista.y = -800; boardVista.k = 1;
+      aplicarVista(); cerrarMenuBoard();
+    }
+    function acercarBoard() { zoomHacia(1.2); cerrarMenuBoard(); }
+    function alejarBoard() { zoomHacia(1 / 1.2); cerrarMenuBoard(); }
+    function leeBoard() {
+      try {
+        const a = JSON.parse(localStorage.getItem('umbra_board3') || '[]');
+        if (!Array.isArray(a)) return [];
+        return a.filter(Boolean).map((o, i) => {
+          if (!o || typeof o !== 'object') return null;
+          return {
+            id: String(o.id || ('b' + i + '_' + Date.now().toString(36))),
+            tipo: o.tipo === 'texto' ? 'texto' : 'caja',
+            x: +o.x || 0, y: +o.y || 0,
+            w: Math.max(80, +o.w || (o.tipo === 'texto' ? 260 : 220)),
+            h: Math.max(40, +o.h || 120),
+            txt: (o.txt !== undefined ? String(o.txt) : (o.text !== undefined ? String(o.text) : '')),
+            bc: o.bc || o.c || o.color || '#b14dff'
+          };
+        }).filter(Boolean);
+      } catch (e) { return []; }
+    }
+    function guardaBoard() {
+      try { localStorage.setItem('umbra_board3', JSON.stringify(boardTarjetas)); } catch (e) {}
+      try {
+        const v = document.getElementById('board-vacio');
+        if (v) v.style.display = boardTarjetas.length ? 'none' : 'block';
+      } catch (e) {}
+    }
+    function centroBoard() {
+      let cx = 200, cy = 200;
+      try {
+        const r = document.getElementById('board-vp').getBoundingClientRect();
+        cx = r.width / 2; cy = r.height / 2;
+      } catch (e) {}
+      return { x: (cx - boardVista.x) / boardVista.k, y: (cy - boardVista.y) / boardVista.k };
+    }
+    function crearCajaBoard() {
+      const c = centroBoard();
+      boardTarjetas.push({ id: 'b' + Date.now().toString(36) + Math.floor(Math.random() * 90 + 10), tipo: 'caja', x: Math.round(c.x - 110), y: Math.round(c.y - 60), w: 220, h: 120, txt: '', bc: '#b14dff' });
+      guardaBoard(); pintarBoard(); cerrarMenuBoard();
+    }
+    function crearTextoBoard() {
+      const c = centroBoard();
+      boardTarjetas.push({ id: 'b' + Date.now().toString(36) + Math.floor(Math.random() * 90 + 10), tipo: 'texto', x: Math.round(c.x - 130), y: Math.round(c.y - 20), w: 260, h: 60, txt: 'Texto libre', bc: '#b14dff' });
+      guardaBoard(); pintarBoard(); cerrarMenuBoard();
+    }
+    function pintarBoard() {
+      const cv = document.getElementById('board-cv');
+      if (!cv) return;
+      cv.querySelectorAll('.bcard').forEach(n => n.remove());
+      boardTarjetas.forEach(t => { try { cv.appendChild(nodoTarjeta(t)); } catch (e) {} });
+      try {
+        const v = document.getElementById('board-vacio');
+        if (v) v.style.display = boardTarjetas.length ? 'none' : 'block';
+      } catch (e) {}
+    }
+    function nodoTarjeta(t) {
+      const esTexto = t.tipo === 'texto';
+      const el = document.createElement('div');
+      el.className = 'bcard' + (esTexto ? ' texto-card' : '');
+      el.dataset.id = t.id;
+      el.style.setProperty('--bc', t.bc || '#b14dff');
+      el.style.left = (t.x || 0) + 'px';
+      el.style.top = (t.y || 0) + 'px';
+      el.style.width = (t.w || (esTexto ? 260 : 220)) + 'px';
+      el.style.touchAction = 'none';
+      if (esTexto) {
+        el.innerHTML = '<button class="bdel" type="button" aria-label="Quitar">✕</button><div class="bcard-body" contenteditable="true"></div><span class="rh rh-nw" data-rh="nw"></span><span class="rh rh-ne" data-rh="ne"></span><span class="rh rh-sw" data-rh="sw"></span><span class="rh rh-se" data-rh="se"></span>';
+      } else {
+        el.innerHTML = '<div class="bcard-head"><span>RECUADRO</span><button class="bdel" type="button" aria-label="Quitar">✕</button></div><div class="bcard-body" contenteditable="true"></div><span class="rh rh-nw" data-rh="nw"></span><span class="rh rh-ne" data-rh="ne"></span><span class="rh rh-sw" data-rh="sw"></span><span class="rh rh-se" data-rh="se"></span>';
+      }
+      const cuerpo = el.querySelector('.bcard-body');
+      cuerpo.textContent = t.txt || '';
+      if (!esTexto && t.h) cuerpo.style.minHeight = Math.max(20, t.h - 48) + 'px';
+      cuerpo.addEventListener('input', () => {
+        t.txt = cuerpo.textContent || '';
+        clearTimeout(cuerpo._gt);
+        cuerpo._gt = setTimeout(guardaBoard, 400);
+      });
+      cuerpo.addEventListener('blur', () => { t.txt = cuerpo.textContent || ''; guardaBoard(); });
+      el.querySelector('.bdel').addEventListener('click', e => {
+        try { if (e && e.stopPropagation) e.stopPropagation(); } catch (err) {}
+        boardTarjetas = boardTarjetas.filter(o => o.id !== t.id);
+        guardaBoard(); pintarBoard();
+      });
+      el.addEventListener('pointerdown', e => {
+        if (e.target.closest && (e.target.closest('.rh') || e.target.closest('.bdel'))) return;
+        try {
+          document.querySelectorAll('#board-cv .bcard.sel').forEach(n => { if (n !== el) n.classList.remove('sel'); });
+          el.classList.add('sel');
+        } catch (err) {}
+        try { if (e.stopPropagation) e.stopPropagation(); } catch (err) {}
+        const pid = e.pointerId, x0 = e.clientX, y0 = e.clientY, ox = t.x, oy = t.y;
+        let arr = false;
+        const mv = ev => {
+          if (ev.pointerId !== pid) return;
+          if (!arr && Math.hypot(ev.clientX - x0, ev.clientY - y0) < 4) return;
+          arr = true;
+          t.x = Math.round(ox + (ev.clientX - x0) / boardVista.k);
+          t.y = Math.round(oy + (ev.clientY - y0) / boardVista.k);
+          el.style.left = t.x + 'px'; el.style.top = t.y + 'px';
+        };
+        const up = ev => {
+          if (ev.pointerId !== pid) return;
+          window.removeEventListener('pointermove', mv);
+          window.removeEventListener('pointerup', up);
+          window.removeEventListener('pointercancel', up);
+          if (arr) guardaBoard();
+        };
+        window.addEventListener('pointermove', mv);
+        window.addEventListener('pointerup', up);
+        window.addEventListener('pointercancel', up);
+      });
+      el.querySelectorAll('.rh').forEach(h => {
+        h.addEventListener('pointerdown', e => {
+          try { if (e.stopPropagation) e.stopPropagation(); if (e.preventDefault) e.preventDefault(); } catch (err) {}
+          const dir = h.dataset.rh || 'se';
+          const pid = e.pointerId, sx = e.clientX, sy = e.clientY;
+          const ox = t.x, oy = t.y, ow = t.w || (esTexto ? 260 : 220), oh = t.h || 120;
+          const mv = ev => {
+            if (ev.pointerId !== pid) return;
+            const dx = (ev.clientX - sx) / boardVista.k, dy = (ev.clientY - sy) / boardVista.k;
+            let nw = ow, nh = oh, nx = ox, ny = oy;
+            if (dir.indexOf('e') >= 0) nw = ow + dx;
+            if (dir.indexOf('w') >= 0) { nw = ow - dx; nx = ox + dx; }
+            if (dir.indexOf('s') >= 0) nh = oh + dy;
+            if (dir.indexOf('n') >= 0) { nh = oh - dy; ny = oy + dy; }
+            nw = Math.max(120, nw);
+            if (dir.indexOf('w') >= 0) nx = ox + (ow - nw);
+            if (esTexto) {
+              t.w = Math.round(nw);
+              t.x = Math.round(nx);
+              el.style.width = t.w + 'px';
+              el.style.left = t.x + 'px';
+            } else {
+              nh = Math.max(60, nh);
+              if (dir.indexOf('n') >= 0) ny = oy + (oh - nh);
+              t.x = Math.round(nx); t.y = Math.round(ny);
+              t.w = Math.round(nw); t.h = Math.round(nh);
+              el.style.left = t.x + 'px'; el.style.top = t.y + 'px';
+              el.style.width = t.w + 'px';
+              cuerpo.style.minHeight = Math.max(20, t.h - 48) + 'px';
+            }
+          };
+          const up = ev => {
+            if (ev.pointerId !== pid) return;
+            window.removeEventListener('pointermove', mv);
+            window.removeEventListener('pointerup', up);
+            window.removeEventListener('pointercancel', up);
+            guardaBoard();
+          };
+          window.addEventListener('pointermove', mv);
+          window.addEventListener('pointerup', up);
+          window.addEventListener('pointercancel', up);
+        });
+      });
+      return el;
     }
     // ===== INTERFAZ =====
     function guardarUI() {
