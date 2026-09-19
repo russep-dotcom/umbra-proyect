@@ -23,7 +23,9 @@ Aplica a las 2 páginas: normal (portada + cajón) y editor.
 - Fondo degradado + luna de sangre mejorada (220px, anillo orbital) + sello morado reforzado.
 - Título en Creepster; fundido puerta→panel al entrar.
 - Nota ♪ flotante; ajustes flotantes; pie visible.
-- Tablero: pantalla completa ⛶/✕, puntos al elegir tarjeta, tap para elegir, borde 14px táctil, `board-tip` oculto.
+- Tablero: pantalla completa ⛶/✕, puntos al elegir tarjeta, `board-tip` oculto, aviso «TOCA LA A Y LUEGO EL TABLERO».
+- Herramienta de texto estilo excalidraw (botón A en la barra, no existe en computador): A y luego tablero para escribir solo la barrita, sin recuadro ni ✕; si se toca otro lado sin escribir se anula; si hay texto se queda y al tocarlo sale margen con puntos sin ✕ (el texto en celular no se borra con ✕).
+- Umbral de toque 14px; foco en toque + clic + cuadro siguiente; purga de vacías al entrar.
 - Recuadros y textos centrados; puntos solo en tarjeta elegida.
 
 ## REGLA

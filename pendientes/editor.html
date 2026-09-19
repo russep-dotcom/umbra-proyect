@@ -172,6 +172,8 @@
     .board-bar { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
     .board-bar button { font-size: 14px; padding: 6px 14px; margin-top: 0; min-height: 0; }
     #zoom-num { font-size: 12px; letter-spacing: 2px; color: var(--priv); margin-left: auto; }
+    /* Botón A de texto: solo existe en celular (ver bloque móvil) */
+    #btn-texto { display: none; font-weight: bold; font-family: Georgia, 'Times New Roman', serif; }
     #board-vp { height: 60vh; min-height: 380px; overflow: hidden; position: relative;
       border: 1px solid #4a0505; border-radius: 12px; touch-action: none; background: #050505;
       background-image: radial-gradient(rgba(177,77,255,0.18) 1.2px, transparent 1.7px);
@@ -325,6 +327,10 @@
           var(--lc1, rgba(255,60,60,0.65)), var(--lc2, rgba(180,20,20,0.3)) 55%, transparent 78%); }
       /* Botones del tablero un poco más grandes sin amontonarse */
       #vista-board .board-bar button { font-size: 14px; padding: 10px 12px; }
+      /* Herramienta de texto estilo excalidraw solo en celular: botón A, sin recuadros ni ✕ en el texto */
+      #btn-texto { display: inline-block; }
+      #btn-texto.encendida { background: var(--priv); color: #000; }
+      .texto-card .bdel { display: none !important; }
       #menu-opciones button { font-size: 14px; padding: 12px 14px; }
       #board-bar .clas-drop-btn.mini { font-size: 13px; padding: 10px 14px; }
       /* Rendimiento en celular: fuera grano y vela quieta */
@@ -425,6 +431,7 @@
                 <button type="button" onclick="crearCajaBoard()">RECUADRO VACÍO</button>
               </div>
             </div>
+            <button id="btn-texto" type="button" onclick="toggleTextoMovil(event)" aria-label="Escribir texto en el tablero">A</button>
             <div class="clas-wrap" id="rango-wrap">
               <button id="btn-rango" type="button" class="clas-drop-btn mini" onclick="toggleRangoBoard(event)">RANGO ▾</button>
               <div class="clas-lista" id="lista-rangos">
@@ -726,7 +733,7 @@
           tapPinza = true;
           return;
         }
-        if (e.pointerId === tapId && Math.hypot(e.clientX - tapX, e.clientY - tapY) > 8) tapMovido = true;
+        if (e.pointerId === tapId && Math.hypot(e.clientX - tapX, e.clientY - tapY) > (esTactil() ? 14 : 8)) tapMovido = true;
         if (!moviendo) return;
         boardVista.x = svx + (e.clientX - sx);
         boardVista.y = svy + (e.clientY - sy);
@@ -744,10 +751,16 @@
       vp.addEventListener('pointerup', e => {
         try {
           if (tapId === null || e.pointerId !== tapId) return;
-          const fueTap = !tapPinza && !tapMovido && Math.hypot(e.clientX - tapX, e.clientY - tapY) <= 8;
+          const fueTap = !tapPinza && !tapMovido && Math.hypot(e.clientX - tapX, e.clientY - tapY) <= (esTactil() ? 14 : 8);
           tapId = null;
           if (!fueTap) return;
           if (e.target.closest && e.target.closest('.bcard')) return;
+          if (esTactil()) {
+            // Celular estilo excalidraw: sin la herramienta A el toque no crea nada
+            if (!textoToolMovil) return;
+            // Con pendiente el toque solo anula: si sigue vacía desaparece; si ya tiene texto se queda y se apaga la herramienta
+            if (pendienteMovil) { desactivarTextoMovil(); return; }
+          }
           escribirTextoEn(e.clientX, e.clientY);
         } catch (err) {}
       });
@@ -763,6 +776,19 @@
         } catch (err) {}
       });
       try { boardTarjetas = leeBoard(); } catch (err) { boardTarjetas = []; }
+      // FIX táctil: al arrancar se retiran las tarjetas de texto vacías (basura de toques sin texto, no contienen nada)
+      try {
+        const n0 = boardTarjetas.length;
+        boardTarjetas = boardTarjetas.filter(o => !(o && o.tipo === 'texto' && !(o.txt || '').trim()));
+        if (boardTarjetas.length !== n0) guardaBoard();
+      } catch (err2) {}
+      // Herramienta A solo en celular: el aviso lo dice claro
+      try {
+        if (esTactil()) {
+          const av = document.getElementById('board-vacio');
+          if (av) av.textContent = 'TOCA LA A Y LUEGO EL TABLERO';
+        }
+      } catch (err3) {}
       pintarBoard();
     }
     function escribirTextoEn(cx, cy) {
@@ -776,6 +802,7 @@
         const id = 'b' + Date.now().toString(36) + Math.floor(Math.random() * 90 + 10);
         const t = { id: id, tipo: 'texto', x: Math.round(bx - 8), y: Math.round(by - 14), w: 260, h: 60, txt: '', bc: '#b14dff' };
         boardTarjetas.push(t);
+        pendienteMovil = id;
         guardaBoard(); pintarBoard();
         const el = cv.querySelector('[data-id="' + id + '"]');
         if (!el) return;
@@ -785,16 +812,27 @@
         cuerpo.addEventListener('blur', () => {
           try {
             t.txt = cuerpo.textContent || '';
+            if (pendienteMovil === t.id) pendienteMovil = null;
             if (!t.txt.trim()) {
               boardTarjetas = boardTarjetas.filter(o => o.id !== t.id);
               guardaBoard(); pintarBoard();
               return;
             }
             el.classList.remove('escribiendo');
+            try { desactivarTextoMovil(); } catch (err3) {}
             guardaBoard();
           } catch (err) {}
         }, { once: true });
         try { cuerpo.focus(); } catch (err) {}
+        // FIX táctil: el foco programado a veces no abre el teclado en celular; se intenta en el toque, en el clic de compatibilidad y en el siguiente cuadro
+        try {
+          if (document.activeElement !== cuerpo) {
+            vp.addEventListener('click', function alClic() {
+              try { if (document.activeElement !== cuerpo) cuerpo.focus(); } catch (e1) {}
+            }, { once: true });
+            requestAnimationFrame(() => { try { if (document.activeElement !== cuerpo) cuerpo.focus(); } catch (e2) {} });
+          }
+        } catch (err2) {}
       } catch (e) {}
     }
     function pantallaBoard() {
@@ -815,6 +853,13 @@
     }
     // ===== TABLERO: barra + tarjetas (solo umbra_board3) =====
     let boardTarjetas = [];
+    // Herramienta de texto estilo excalidraw (solo celular): botón A + pendiente que se anula si queda vacía
+    let textoToolMovil = false;
+    let pendienteMovil = null;
+    function esTactil() {
+      try { return (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || ('ontouchstart' in window); }
+      catch (e) { return false; }
+    }
     function toggleMenuBoard(e) {
       try { if (e && e.stopPropagation) e.stopPropagation(); } catch (err) {}
       try {
@@ -833,6 +878,33 @@
         if (mw) mw.classList.remove('abierto');
         const bo = document.getElementById('btn-opciones');
         if (bo) bo.classList.remove('encendida');
+      } catch (err) {}
+    }
+    // Herramienta de texto estilo excalidraw (solo celular): A y luego tablero
+    function toggleTextoMovil(e) {
+      try { if (e && e.stopPropagation) e.stopPropagation(); } catch (err) {}
+      try {
+        cerrarMenuBoard();
+        if (textoToolMovil) { desactivarTextoMovil(); return; }
+        textoToolMovil = true;
+        const b = document.getElementById('btn-texto');
+        if (b) b.classList.add('encendida');
+      } catch (err) {}
+    }
+    function desactivarTextoMovil() {
+      try {
+        textoToolMovil = false;
+        const b = document.getElementById('btn-texto');
+        if (b) b.classList.remove('encendida');
+        if (pendienteMovil) {
+          const p = boardTarjetas.find(o => o && o.id === pendienteMovil);
+          pendienteMovil = null;
+          if (p && !(p.txt || '').trim()) {
+            boardTarjetas = boardTarjetas.filter(o => !o || o.id !== p.id);
+            guardaBoard(); pintarBoard();
+          }
+        }
+        try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch (err2) {}
       } catch (err) {}
     }
     let rangoBoardSel = null;
