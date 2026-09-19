@@ -180,7 +180,7 @@
     .bcard { position: absolute; width: 220px; background: rgba(10,0,0,0.93);
       border: 2px solid var(--bc, #ff1a1a);
       border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-      box-shadow: 0 0 18px rgba(0,0,0,0.7); }
+      box-shadow: 0 0 18px rgba(0,0,0,0.7), 0 0 22px var(--bc, #ff1a1a); }
     .bcard:nth-child(odd) { transform: rotate(-0.4deg); }
     .bcard-head { font-family: 'Metal Mania', 'Impact', cursive; letter-spacing: 2px; font-size: 15px;
       padding: 8px 10px; cursor: grab; color: var(--bc, #ff1a1a); border-bottom: 1px dashed #4a0505;
@@ -275,7 +275,7 @@
       color: var(--bc, #ff1a1a); border-color: var(--bc, #ff1a1a); }
     .clas-lista button:hover { background: var(--bc, #ff1a1a); color: #000; }
     #board-bar .clas-wrap { margin-top: 0; }
-    #board-bar .clas-lista { left: auto; right: 0; min-width: 210px; }
+    #board-bar .clas-lista { left: 0; right: auto; min-width: min(210px, calc(100vw - 48px)); max-width: calc(100vw - 32px); }
     footer { color: #3a3a3a; font-size: 12px; padding: 25px; text-align: center; }
     :focus-visible { outline: 2px solid var(--alfa); outline-offset: 3px; }
     /* Celular tal cual la portada: todo respira en pantalla chica */
@@ -792,6 +792,14 @@
         }
         const l = document.getElementById('lista-rangos');
         if (l) l.classList.remove('abierta');
+        try {
+          boardTarjetas.forEach(t => { if (t.tipo === 'caja') t.bc = color; });
+          document.querySelectorAll('#board-cv .bcard').forEach(el => {
+            if (el.dataset.tipo === 'texto') return;
+            el.style.setProperty('--bc', color);
+          });
+          guardaBoard();
+        } catch (err2) {}
       } catch (err) {}
     }
     function centrarBoard() {
@@ -835,7 +843,7 @@
     }
     function crearCajaBoard() {
       const c = centroBoard();
-      const bcRango = (typeof rangoBoardSel !== 'undefined' && rangoBoardSel && rangoBoardSel.color) || '#b14dff';
+      const bcRango = (rangoBoardSel && rangoBoardSel.color) ? String(rangoBoardSel.color) : '#b14dff';
       boardTarjetas.push({ id: 'b' + Date.now().toString(36) + Math.floor(Math.random() * 90 + 10), tipo: 'caja', x: Math.round(c.x - 110), y: Math.round(c.y - 60), w: 220, h: 120, txt: '', bc: bcRango });
       guardaBoard(); pintarBoard(); cerrarMenuBoard();
     }
