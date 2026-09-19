@@ -823,14 +823,21 @@
             guardaBoard();
           } catch (err) {}
         }, { once: true });
-        try { cuerpo.focus(); } catch (err) {}
+        // En celular el foco nunca mueve la página (si el navegador la desplaza al abrir el teclado, la rayita quedaba en otro lado); en computador foco normal intacto
+        function enfocarCuerpo() {
+          try {
+            if (esTactil()) cuerpo.focus({ preventScroll: true });
+            else cuerpo.focus();
+          } catch (err) { try { cuerpo.focus(); } catch (e0) {} }
+        }
+        enfocarCuerpo();
         // FIX táctil: el foco programado a veces no abre el teclado en celular; se intenta en el toque, en el clic de compatibilidad y en el siguiente cuadro
         try {
           if (document.activeElement !== cuerpo) {
             vp.addEventListener('click', function alClic() {
-              try { if (document.activeElement !== cuerpo) cuerpo.focus(); } catch (e1) {}
+              try { if (document.activeElement !== cuerpo) enfocarCuerpo(); } catch (e1) {}
             }, { once: true });
-            requestAnimationFrame(() => { try { if (document.activeElement !== cuerpo) cuerpo.focus(); } catch (e2) {} });
+            requestAnimationFrame(() => { try { if (document.activeElement !== cuerpo) enfocarCuerpo(); } catch (e2) {} });
           }
         } catch (err2) {}
       } catch (e) {}
