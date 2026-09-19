@@ -617,7 +617,9 @@
       if (cv) {
         cv.style.transform = 'translate(' + boardVista.x + 'px,' + boardVista.y + 'px) scale(' + boardVista.k + ')';
         const paso = 28 / boardVista.k;
+        const radio = 1.2 / boardVista.k;
         cv.style.backgroundSize = paso + 'px ' + paso + 'px';
+        cv.style.backgroundImage = 'radial-gradient(rgba(177,77,255,0.18) ' + radio + 'px, transparent ' + (radio + 0.5) + 'px)';
       }
     }
     function zoomHacia(f, cx, cy) {
