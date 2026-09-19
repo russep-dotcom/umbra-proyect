@@ -173,10 +173,10 @@
     .board-bar button { font-size: 14px; padding: 6px 14px; margin-top: 0; min-height: 0; }
     #zoom-num { font-size: 12px; letter-spacing: 2px; color: var(--priv); margin-left: auto; }
     #board-vp { height: 60vh; min-height: 380px; overflow: hidden; position: relative;
-      border: 1px solid #4a0505; border-radius: 12px; touch-action: none; background: #050505; }
-    #board-cv { position: absolute; width: 2000px; height: 2000px; transform-origin: 0 0;
-      background-image: radial-gradient(rgba(177,77,255,0.18) 1px, transparent 1.5px);
+      border: 1px solid #4a0505; border-radius: 12px; touch-action: none; background: #050505;
+      background-image: radial-gradient(rgba(177,77,255,0.18) 1.2px, transparent 1.7px);
       background-size: 28px 28px; }
+    #board-cv { position: absolute; width: 2000px; height: 2000px; transform-origin: 0 0; }
     .bcard { position: absolute; width: 220px; background: rgba(10,0,0,0.93);
       border: 2px solid var(--bc, #ff1a1a);
       border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
@@ -625,10 +625,13 @@
       const cv = document.getElementById('board-cv');
       if (cv) {
         cv.style.transform = 'translate(' + boardVista.x + 'px,' + boardVista.y + 'px) scale(' + boardVista.k + ')';
-        const paso = 28 / boardVista.k;
-        const radio = 1.2 / boardVista.k;
-        cv.style.backgroundSize = paso + 'px ' + paso + 'px';
-        cv.style.backgroundImage = 'radial-gradient(rgba(177,77,255,0.18) ' + radio + 'px, transparent ' + (radio + 0.5) + 'px)';
+      }
+      const vp = document.getElementById('board-vp');
+      if (vp) {
+        const paso = 28;
+        const ox = ((boardVista.x % paso) + paso) % paso;
+        const oy = ((boardVista.y % paso) + paso) % paso;
+        vp.style.backgroundPosition = ox + 'px ' + oy + 'px';
       }
     }
     function zoomHacia(f, cx, cy) {
