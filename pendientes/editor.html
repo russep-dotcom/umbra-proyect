@@ -338,6 +338,12 @@
       #puerta input, #puerta button { width: 100%; box-sizing: border-box; }
       /* Luna de sangre mejorada también en computador (en celular más recogida) */
       .luna { width: 220px !important; height: 220px !important; top: -70px !important; right: -60px !important; opacity: 0.9; }
+      /* Escritura con toque: solo la rayita, sin banda ni caja morada */
+      .bcard-body { -webkit-tap-highlight-color: transparent; }
+      .bcard-body:focus { background: none !important; }
+      .texto-card .bcard-body, .texto-card.escribiendo .bcard-body,
+      .texto-card.escribiendo .bcard-body:focus { background: none !important; box-shadow: none !important; outline: none !important; -webkit-tap-highlight-color: transparent; }
+      .texto-card.escribiendo, .bcard.texto-card.escribiendo.sel { outline: none !important; box-shadow: none !important; }
     }
     body { animation: encender 1.1s ease-out backwards; }
     @keyframes encender { from { opacity: 0; } to { opacity: 1; } }
@@ -800,6 +806,12 @@
         btn.textContent = grande ? '✕' : '⛶';
         btn.setAttribute('aria-label', grande ? 'Salir de pantalla completa' : 'Ver tablero en pantalla completa');
       }
+      try {
+        if (window.matchMedia('(max-width: 640px)').matches) {
+          const pie = document.querySelector('footer');
+          if (pie) pie.style.display = grande ? 'none' : '';
+        }
+      } catch (e) {}
     }
     // ===== TABLERO: barra + tarjetas (solo umbra_board3) =====
     let boardTarjetas = [];
