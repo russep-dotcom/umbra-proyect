@@ -246,6 +246,11 @@
     #menu-opciones button { color: #e8e8e8; border-color: #e8e8e8; }
     #menu-opciones button:hover { background: #e8e8e8; color: #000; box-shadow: 0 0 14px rgba(232,232,232,0.4); }
     .texto-card .bdel { position: absolute; top: -10px; right: -6px; background: #000; border-radius: 50%; opacity: 0.7; }
+    /* Escritura directa: sin recuadro, sin botones, sin puntos */
+    .texto-card.escribiendo, .bcard.texto-card.escribiendo.sel { border: none; background: none; box-shadow: none; outline: none; }
+    .texto-card.escribiendo .bdel, .texto-card.escribiendo .rh { display: none !important; }
+    .texto-card.escribiendo .bcard-body { background: none; border: none; box-shadow: none; outline: none; }
+    .texto-card.escribiendo .bcard-body:focus { background: none; }
     .bcard:not(.texto-card) .bdel { position: absolute; top: -10px; right: -6px; background: #000; border-radius: 50%; opacity: 0.7; z-index: 6; }
     #board-vacio { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
       color: #5a5a5a; font-size: 13px; letter-spacing: 2px; text-align: center; pointer-events: none; }
@@ -426,7 +431,7 @@
             </div>
             <span id="zoom-num">100%</span>
           </div>
-          <div id="board-vp"><div id="board-cv"></div><div id="board-vacio">TABLERO VACÍO… AGREGA DESDE ⚙</div></div>
+          <div id="board-vp"><div id="board-cv"></div><div id="board-vacio">TOCA PARA ESCRIBIR · O AGREGA DESDE ⚙</div></div>
         </div>
       </div>
 
@@ -681,6 +686,7 @@
       aplicarVista();
       const puntos = new Map();
       let sx = 0, sy = 0, svx = 0, svy = 0, dist0 = 0, k0 = 1, moviendo = false;
+      let tapX = 0, tapY = 0, tapId = null, tapPinza = false, tapMovido = false;
       vp.addEventListener('pointerdown', e => {
         if (e.target.closest && e.target.closest('.bcard')) return;
         puntos.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -689,11 +695,13 @@
           dist0 = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y);
           k0 = boardVista.k;
           moviendo = false;
+          tapPinza = true;
           return;
         }
         moviendo = true;
         sx = e.clientX; sy = e.clientY;
         svx = boardVista.x; svy = boardVista.y;
+        tapX = e.clientX; tapY = e.clientY; tapId = e.pointerId; tapPinza = false; tapMovido = false;
       });
       vp.addEventListener('pointermove', e => {
         if (!puntos.has(e.pointerId)) return;
@@ -709,8 +717,10 @@
           boardVista.k = k2;
           aplicarVista();
           moviendo = false;
+          tapPinza = true;
           return;
         }
+        if (e.pointerId === tapId && Math.hypot(e.clientX - tapX, e.clientY - tapY) > 8) tapMovido = true;
         if (!moviendo) return;
         boardVista.x = svx + (e.clientX - sx);
         boardVista.y = svy + (e.clientY - sy);
@@ -719,11 +729,22 @@
       const fin = e => {
         puntos.delete(e.pointerId);
         if (puntos.size === 0) moviendo = false;
+        if (e.type === 'pointercancel') tapId = null;
       };
       vp.addEventListener('pointerup', fin);
       vp.addEventListener('pointercancel', fin);
       window.addEventListener('pointerup', fin);
       window.addEventListener('pointercancel', fin);
+      vp.addEventListener('pointerup', e => {
+        try {
+          if (tapId === null || e.pointerId !== tapId) return;
+          const fueTap = !tapPinza && !tapMovido && Math.hypot(e.clientX - tapX, e.clientY - tapY) <= 8;
+          tapId = null;
+          if (!fueTap) return;
+          if (e.target.closest && e.target.closest('.bcard')) return;
+          escribirTextoEn(e.clientX, e.clientY);
+        } catch (err) {}
+      });
       vp.addEventListener('wheel', e => {
         e.preventDefault();
         zoomHacia(e.deltaY < 0 ? 1.1 : 1 / 1.1);
@@ -737,6 +758,38 @@
       });
       try { boardTarjetas = leeBoard(); } catch (err) { boardTarjetas = []; }
       pintarBoard();
+    }
+    function escribirTextoEn(cx, cy) {
+      try {
+        const vp = document.getElementById('board-vp');
+        const cv = document.getElementById('board-cv');
+        if (!vp || !cv) return;
+        const r = vp.getBoundingClientRect();
+        const bx = (cx - r.left - boardVista.x) / boardVista.k;
+        const by = (cy - r.top - boardVista.y) / boardVista.k;
+        const id = 'b' + Date.now().toString(36) + Math.floor(Math.random() * 90 + 10);
+        const t = { id: id, tipo: 'texto', x: Math.round(bx - 8), y: Math.round(by - 14), w: 260, h: 60, txt: '', bc: '#b14dff' };
+        boardTarjetas.push(t);
+        guardaBoard(); pintarBoard();
+        const el = cv.querySelector('[data-id="' + id + '"]');
+        if (!el) return;
+        el.classList.add('escribiendo');
+        const cuerpo = el.querySelector('.bcard-body');
+        if (!cuerpo) return;
+        cuerpo.addEventListener('blur', () => {
+          try {
+            t.txt = cuerpo.textContent || '';
+            if (!t.txt.trim()) {
+              boardTarjetas = boardTarjetas.filter(o => o.id !== t.id);
+              guardaBoard(); pintarBoard();
+              return;
+            }
+            el.classList.remove('escribiendo');
+            guardaBoard();
+          } catch (err) {}
+        }, { once: true });
+        try { cuerpo.focus(); } catch (err) {}
+      } catch (e) {}
     }
     function pantallaBoard() {
       const vb = document.getElementById('vista-board');
