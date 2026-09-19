@@ -246,6 +246,7 @@
     #menu-opciones button { color: #e8e8e8; border-color: #e8e8e8; }
     #menu-opciones button:hover { background: #e8e8e8; color: #000; box-shadow: 0 0 14px rgba(232,232,232,0.4); }
     .texto-card .bdel { position: absolute; top: -10px; right: -6px; background: #000; border-radius: 50%; opacity: 0.7; }
+    .bcard:not(.texto-card) .bdel { position: absolute; top: -10px; right: -6px; background: #000; border-radius: 50%; opacity: 0.7; z-index: 6; }
     #board-vacio { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
       color: #5a5a5a; font-size: 13px; letter-spacing: 2px; text-align: center; pointer-events: none; }
     /* Mini barra de estilo para el texto libre */
@@ -411,7 +412,16 @@
                 <button type="button" onclick="alejarBoard()">ALEJAR −</button>
                 <div class="menu-sep">AGREGAR</div>
                 <button type="button" onclick="crearCajaBoard()">RECUADRO VACÍO</button>
-                <button type="button" onclick="crearTextoBoard()">TEXTO LIBRE</button>
+              </div>
+            </div>
+            <div class="clas-wrap" id="rango-wrap">
+              <button id="btn-rango" type="button" class="clas-drop-btn mini" onclick="toggleRangoBoard(event)">RANGO ▾</button>
+              <div class="clas-lista" id="lista-rangos">
+                <button type="button" style="--bc:#ff1a1a" onclick="elegirRangoBoard(event,'ALFA','#ff1a1a')">ALFA</button>
+                <button type="button" style="--bc:#b14dff" onclick="elegirRangoBoard(event,'DELTA','#b14dff')">DELTA</button>
+                <button type="button" style="--bc:#ff8c1a" onclick="elegirRangoBoard(event,'BETA','#ff8c1a')">BETA</button>
+                <button type="button" style="--bc:#1affc4" onclick="elegirRangoBoard(event,'GAMMA','#1affc4')">GAMMA</button>
+                <button type="button" style="--bc:#2a4bff" onclick="elegirRangoBoard(event,'OMEGA','#2a4bff')">OMEGA</button>
               </div>
             </div>
             <span id="zoom-num">100%</span>
@@ -743,6 +753,8 @@
     function toggleMenuBoard(e) {
       try { if (e && e.stopPropagation) e.stopPropagation(); } catch (err) {}
       try {
+        const lr = document.getElementById('lista-rangos');
+        if (lr) lr.classList.remove('abierta');
         const mw = document.getElementById('menu-wrap');
         if (!mw) return;
         mw.classList.toggle('abierto');
@@ -756,6 +768,30 @@
         if (mw) mw.classList.remove('abierto');
         const bo = document.getElementById('btn-opciones');
         if (bo) bo.classList.remove('encendida');
+      } catch (err) {}
+    }
+    let rangoBoardSel = null;
+    function toggleRangoBoard(e) {
+      try { if (e && e.stopPropagation) e.stopPropagation(); } catch (err) {}
+      try {
+        cerrarMenuBoard();
+        const l = document.getElementById('lista-rangos');
+        if (l) l.classList.toggle('abierta');
+      } catch (err) {}
+    }
+    function elegirRangoBoard(e, nombre, color) {
+      try { if (e && e.stopPropagation) e.stopPropagation(); } catch (err) {}
+      try {
+        rangoBoardSel = { nombre: nombre, color: color };
+        const b = document.getElementById('btn-rango');
+        if (b) {
+          b.textContent = nombre + ' ▾';
+          b.style.setProperty('--bc', color);
+          b.style.color = color;
+          b.style.borderColor = color;
+        }
+        const l = document.getElementById('lista-rangos');
+        if (l) l.classList.remove('abierta');
       } catch (err) {}
     }
     function centrarBoard() {
@@ -799,7 +835,8 @@
     }
     function crearCajaBoard() {
       const c = centroBoard();
-      boardTarjetas.push({ id: 'b' + Date.now().toString(36) + Math.floor(Math.random() * 90 + 10), tipo: 'caja', x: Math.round(c.x - 110), y: Math.round(c.y - 60), w: 220, h: 120, txt: '', bc: '#b14dff' });
+      const bcRango = (typeof rangoBoardSel !== 'undefined' && rangoBoardSel && rangoBoardSel.color) || '#b14dff';
+      boardTarjetas.push({ id: 'b' + Date.now().toString(36) + Math.floor(Math.random() * 90 + 10), tipo: 'caja', x: Math.round(c.x - 110), y: Math.round(c.y - 60), w: 220, h: 120, txt: '', bc: bcRango });
       guardaBoard(); pintarBoard(); cerrarMenuBoard();
     }
     function crearTextoBoard() {
@@ -830,11 +867,11 @@
       if (esTexto) {
         el.innerHTML = '<button class="bdel" type="button" aria-label="Quitar">✕</button><div class="bcard-body" contenteditable="true"></div><span class="rh rh-nw" data-rh="nw"></span><span class="rh rh-ne" data-rh="ne"></span><span class="rh rh-sw" data-rh="sw"></span><span class="rh rh-se" data-rh="se"></span>';
       } else {
-        el.innerHTML = '<div class="bcard-head"><span>RECUADRO</span><button class="bdel" type="button" aria-label="Quitar">✕</button></div><div class="bcard-body" contenteditable="true"></div><span class="rh rh-nw" data-rh="nw"></span><span class="rh rh-ne" data-rh="ne"></span><span class="rh rh-sw" data-rh="sw"></span><span class="rh rh-se" data-rh="se"></span>';
+        el.innerHTML = '<button class="bdel" type="button" aria-label="Quitar">✕</button><div class="bcard-body" contenteditable="true"></div><span class="rh rh-nw" data-rh="nw"></span><span class="rh rh-ne" data-rh="ne"></span><span class="rh rh-sw" data-rh="sw"></span><span class="rh rh-se" data-rh="se"></span>';
       }
       const cuerpo = el.querySelector('.bcard-body');
       cuerpo.textContent = t.txt || '';
-      if (!esTexto && t.h) cuerpo.style.minHeight = Math.max(20, t.h - 48) + 'px';
+      if (!esTexto && t.h) cuerpo.style.minHeight = Math.max(20, t.h - 20) + 'px';
       cuerpo.addEventListener('input', () => {
         t.txt = cuerpo.textContent || '';
         clearTimeout(cuerpo._gt);
@@ -902,7 +939,7 @@
               t.w = Math.round(nw); t.h = Math.round(nh);
               el.style.left = t.x + 'px'; el.style.top = t.y + 'px';
               el.style.width = t.w + 'px';
-              cuerpo.style.minHeight = Math.max(20, t.h - 48) + 'px';
+              cuerpo.style.minHeight = Math.max(20, t.h - 20) + 'px';
             }
           };
           const up = ev => {
