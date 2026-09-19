@@ -614,7 +614,11 @@
     let boardVista = { x: -600, y: -800, k: 1 };
     function aplicarVista() {
       const cv = document.getElementById('board-cv');
-      if (cv) cv.style.transform = 'translate(' + boardVista.x + 'px,' + boardVista.y + 'px) scale(' + boardVista.k + ')';
+      if (cv) {
+        cv.style.transform = 'translate(' + boardVista.x + 'px,' + boardVista.y + 'px) scale(' + boardVista.k + ')';
+        const paso = 28 / boardVista.k;
+        cv.style.backgroundSize = paso + 'px ' + paso + 'px';
+      }
     }
     function zoomHacia(f, cx, cy) {
       const vp = document.getElementById('board-vp');
