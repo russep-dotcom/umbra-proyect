@@ -24,7 +24,7 @@ Aplica a las 2 páginas: normal (portada + cajón) y editor.
 - Título en Creepster; fundido puerta→panel al entrar.
 - Nota ♪ flotante; ajustes flotantes; pie visible.
 - Tablero: pantalla completa ⛶/✕, puntos al elegir tarjeta, `board-tip` oculto, aviso «TOCA LA A Y LUEGO EL TABLERO».
-- Herramienta de texto estilo excalidraw (botón A en la barra, no existe en computador): A y luego tablero para escribir solo la barrita, sin recuadro ni ✕; si se toca otro lado sin escribir se anula; si hay texto se queda y al tocarlo sale margen con puntos sin ✕ (el texto en celular no se borra con ✕).
+- Herramienta de texto estilo excalidraw (botón A en la barra, no existe en computador): A y luego tablero para escribir solo la barrita, sin recuadro ni ✕; cada toque reubica la barra en el dedo (la vacía anterior desaparece); si ya hay texto se queda y la herramienta se apaga (también se apaga con la A); al tocar texto escrito sale margen con puntos sin ✕ (el texto en celular no se borra con ✕).
 - Umbral de toque 14px; foco en toque + clic + cuadro siguiente; purga de vacías al entrar.
 - Recuadros y textos centrados; puntos solo en tarjeta elegida.
 

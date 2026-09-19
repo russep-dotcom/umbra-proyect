@@ -758,8 +758,16 @@
           if (esTactil()) {
             // Celular estilo excalidraw: sin la herramienta A el toque no crea nada
             if (!textoToolMovil) return;
-            // Con pendiente el toque solo anula: si sigue vacía desaparece; si ya tiene texto se queda y se apaga la herramienta
-            if (pendienteMovil) { desactivarTextoMovil(); return; }
+            // Con pendiente el toque la reubica: si sigue vacía se retira y se crea en el dedo; si ya tiene texto se queda y se apaga la herramienta
+            if (pendienteMovil) {
+              const p = boardTarjetas.find(o => o && o.id === pendienteMovil);
+              pendienteMovil = null;
+              if (p && (p.txt || '').trim()) { desactivarTextoMovil(); return; }
+              if (p) {
+                boardTarjetas = boardTarjetas.filter(o => !o || o.id !== p.id);
+                guardaBoard();
+              }
+            }
           }
           escribirTextoEn(e.clientX, e.clientY);
         } catch (err) {}
