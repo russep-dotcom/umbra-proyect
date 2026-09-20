@@ -331,6 +331,9 @@
       #btn-texto { display: inline-block; }
       #btn-texto.encendida { background: var(--priv); color: #000; }
       .texto-card .bdel { display: none !important; }
+      /* Caja flexible: abraza el texto exacto y solo envuelve al borde de pantalla */
+      .texto-card { width: auto; }
+      .texto-card .bcard-body { white-space: nowrap; }
       #menu-opciones button { font-size: 14px; padding: 12px 14px; }
       #board-bar .clas-drop-btn.mini { font-size: 13px; padding: 10px 14px; }
       /* Rendimiento en celular: fuera grano y vela quieta */
@@ -841,17 +844,6 @@
               return;
             }
             el.classList.remove('escribiendo');
-            // En celular la margen se ajusta al largo del texto (adiós recuadro gigante)
-            try {
-              if (esTactil() && t.tipo === 'texto') {
-                const lineas = (cuerpo.innerText || t.txt || '').split('\n');
-                let max = 0;
-                lineas.forEach(l => { max = Math.max(max, l.length); });
-                const tope = Math.min(260, Math.floor(window.innerWidth * 0.78));
-                t.w = Math.max(120, Math.min(tope, Math.round(max * 11 + 28)));
-                el.style.width = t.w + 'px';
-              }
-            } catch (errF) {}
             try { desactivarTextoMovil(); } catch (err3) {}
             guardaBoard();
           } catch (err) {}
@@ -1011,6 +1003,7 @@
             w: Math.max(80, +o.w || (o.tipo === 'texto' ? 260 : 220)),
             h: Math.max(40, +o.h || 120),
             txt: (o.txt !== undefined ? String(o.txt) : (o.text !== undefined ? String(o.text) : '')),
+            mw: o.mw === true,
             bc: o.bc || o.c || o.color || '#b14dff'
           };
         }).filter(Boolean);
@@ -1060,7 +1053,9 @@
       el.style.setProperty('--bc', t.bc || '#b14dff');
       el.style.left = (t.x || 0) + 'px';
       el.style.top = (t.y || 0) + 'px';
-      el.style.width = (t.w || (esTexto ? 260 : 220)) + 'px';
+      // En celular el texto es flexible (ancho automático pegado al contenido); el ajuste manual manda
+      if (esTactil() && esTexto && !t.mw) el.style.width = '';
+      else el.style.width = (t.w || (esTexto ? 260 : 220)) + 'px';
       el.style.touchAction = 'none';
       if (esTexto) {
         el.innerHTML = '<button class="bdel" type="button" aria-label="Quitar">✕</button><div class="bcard-body" contenteditable="true"></div><span class="rh rh-nw" data-rh="nw"></span><span class="rh rh-ne" data-rh="ne"></span><span class="rh rh-sw" data-rh="sw"></span><span class="rh rh-se" data-rh="se"></span>';
@@ -1075,7 +1070,11 @@
         clearTimeout(cuerpo._gt);
         cuerpo._gt = setTimeout(guardaBoard, 400);
       });
-      cuerpo.addEventListener('blur', () => { t.txt = cuerpo.textContent || ''; guardaBoard(); });
+      cuerpo.addEventListener('blur', () => {
+        t.txt = cuerpo.textContent || '';
+        try { if (esTactil() && esTexto && !t.mw) t.w = Math.round(el.offsetWidth); } catch (e4) {}
+        guardaBoard();
+      });
       el.querySelector('.bdel').addEventListener('click', e => {
         try { if (e && e.stopPropagation) e.stopPropagation(); } catch (err) {}
         boardTarjetas = boardTarjetas.filter(o => o.id !== t.id);
@@ -1116,7 +1115,7 @@
           try { if (e.stopPropagation) e.stopPropagation(); if (e.preventDefault) e.preventDefault(); } catch (err) {}
           const dir = h.dataset.rh || 'se';
           const pid = e.pointerId, sx = e.clientX, sy = e.clientY;
-          const ox = t.x, oy = t.y, ow = t.w || (esTexto ? 260 : 220), oh = t.h || 120;
+          const ox = t.x, oy = t.y, ow = (esTactil() && esTexto && !t.mw) ? Math.round(el.offsetWidth) : (t.w || (esTexto ? 260 : 220)), oh = t.h || 120;
           const mv = ev => {
             if (ev.pointerId !== pid) return;
             const dx = (ev.clientX - sx) / boardVista.k, dy = (ev.clientY - sy) / boardVista.k;
@@ -1147,6 +1146,7 @@
             window.removeEventListener('pointermove', mv);
             window.removeEventListener('pointerup', up);
             window.removeEventListener('pointercancel', up);
+            if (esTactil() && esTexto) { t.mw = true; t.w = Math.round(el.offsetWidth); }
             guardaBoard();
           };
           window.addEventListener('pointermove', mv);
