@@ -285,6 +285,11 @@
     #board-bar .clas-wrap { margin-top: 0; }
     #board-bar .clas-lista { left: 0; right: auto; min-width: min(210px, calc(100vw - 48px)); max-width: calc(100vw - 32px); }
     footer { color: #3a3a3a; font-size: 12px; padding: 25px; text-align: center; }
+    /* Aviso de update propio del editor (ambas pantallas) */
+    #aviso-editor { display: none; position: fixed; left: 50%; bottom: 70px; transform: translateX(-50%); z-index: 97;
+      background: rgba(8,0,0,0.96); border: 1px solid var(--priv); border-radius: 12px; padding: 12px 16px;
+      max-width: 92vw; text-align: center; box-shadow: 0 0 24px rgba(177,77,255,0.4); font-size: 13px; letter-spacing: 1px; }
+    #aviso-editor button { margin-top: 8px; font-size: 12px; padding: 8px 18px; min-height: 0; }
     :focus-visible { outline: 2px solid var(--alfa); outline-offset: 3px; }
     /* Celular tal cual la portada: todo respira en pantalla chica */
     @media (max-width: 640px) {
@@ -493,6 +498,7 @@
   <div class="grano" aria-hidden="true"></div>
   <div class="reflector" id="reflector" aria-hidden="true"></div>
   <div class="vineta" aria-hidden="true"></div>
+  <div id="aviso-editor"><span id="aviso-editor-msg">Hay contenido nuevo en el editor.</span><br><button id="aviso-editor-btn" type="button">ACTUALIZAR</button></div>
   <footer>☠ UMBRA · Esta página no existe para el público ☠</footer>
 
   <script>
@@ -1473,6 +1479,47 @@
       if (!r) return;
       r.classList.toggle('apagada');
     });
+    // ===== UPDATE PROPIO DEL EDITOR (clave editor, ambas pantallas) =====
+    const EDITOR_VERSION = '1';
+    function mensajeEditor(j) {
+      try {
+        if (window.matchMedia('(max-width: 640px)').matches && j.editor_mensaje_movil) return j.editor_mensaje_movil;
+        if (!window.matchMedia('(max-width: 640px)').matches && j.editor_mensaje_pc) return j.editor_mensaje_pc;
+      } catch (e) {}
+      return j.editor_mensaje || 'Hay contenido nuevo en el editor.';
+    }
+    function avisoEditorVisto(v) {
+      try {
+        const g = JSON.parse(localStorage.getItem('umbra_editor_avistado') || 'null');
+        return !!(g && g.v === v && (Date.now() - (g.t || 0)) < 24 * 3600 * 1000);
+      } catch (e) { return false; }
+    }
+    function marcarEditorVisto(v) {
+      try { localStorage.setItem('umbra_editor_avistado', JSON.stringify({ v: v, t: Date.now() })); } catch (e) {}
+    }
+    async function chequearEditor() {
+      try {
+        const r = await fetch('../version.json?t=' + Date.now(), { cache: 'no-store' });
+        const j = await r.json();
+        if (j.editor && j.editor !== EDITOR_VERSION) {
+          if (avisoEditorVisto(j.editor)) return;
+          marcarEditorVisto(j.editor);
+          const mg = document.getElementById('aviso-editor-msg');
+          if (mg) mg.textContent = mensajeEditor(j);
+          const bt = document.getElementById('aviso-editor-btn');
+          if (bt) bt.onclick = () => { try { location.href = location.pathname + '?v=' + encodeURIComponent(j.editor); } catch (e) { location.reload(); } };
+          const av = document.getElementById('aviso-editor');
+          if (av) av.style.display = 'block';
+          try { clearInterval(editorTimer); } catch (e2) {}
+        } else {
+          const av2 = document.getElementById('aviso-editor');
+          if (av2) av2.style.display = 'none';
+        }
+      } catch (e) {}
+    }
+    const editorTimer = setInterval(chequearEditor, 20000);
+    setTimeout(chequearEditor, 3000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) chequearEditor(); });
     // Sin sombrear textos en ninguna página UMBRA (solo se escribe en campos con foco)
     document.addEventListener('selectstart', e => {
       try {

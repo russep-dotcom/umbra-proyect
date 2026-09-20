@@ -28,11 +28,12 @@ lo del tablero, donde se mezcló todo).
 - Expediente combinado: color de clasificación + dossier + sello + cinta
   EVIDENCIA + hueco de foto. Textos escapados.
 
-## Editor privado (sin versión, no enlazado)
+## Editor privado (sin versión pública, no enlazado)
 - Puerta con clave + intro + portal/suave/crash + INTERFAZ y PUBLICAR.
 - Exportar/importar registros entre aparatos (merge sin duplicados).
 - Cara UMBRA con detalles morados; linterna con color de tarjeta.
 - Tablero: el % de zoom lleva aire a la derecha para que el botón ⛶/✕ no lo tape (50px normal, 60px en pantalla completa).
+- Update propio con clave `editor` en `version.json` (mensajes por pantalla, aviso una vez por versión cada 24h, botón salta a `?v=` fresco): los cambios del editor suben `editor`, nunca `version`.
 
 ## REGLA DE ORO
 Lo compartido vive aquí. Lo distinto vive en su archivo. Al cambiar algo,
