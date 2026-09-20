@@ -334,6 +334,12 @@
       /* Caja flexible: abraza el texto exacto y solo envuelve al borde de pantalla */
       .texto-card { width: auto; }
       .texto-card .bcard-body { white-space: nowrap; }
+      /* Puntos de agarre grandes en celular (dedo, no ratón) */
+      .rh { width: 28px; height: 28px; }
+      .rh-nw { top: -15px; left: -15px; }
+      .rh-ne { top: -15px; right: -15px; }
+      .rh-sw { bottom: -15px; left: -15px; }
+      .rh-se { bottom: -15px; right: -15px; }
       #menu-opciones button { font-size: 14px; padding: 12px 14px; }
       #board-bar .clas-drop-btn.mini { font-size: 13px; padding: 10px 14px; }
       /* Rendimiento en celular: fuera grano y vela quieta */
@@ -1003,6 +1009,7 @@
             w: Math.max(80, +o.w || (o.tipo === 'texto' ? 260 : 220)),
             h: Math.max(40, +o.h || 120),
             txt: (o.txt !== undefined ? String(o.txt) : (o.text !== undefined ? String(o.text) : '')),
+            fs: Math.max(0, +o.fs || 0),
             mw: o.mw === true,
             bc: o.bc || o.c || o.color || '#b14dff'
           };
@@ -1064,6 +1071,7 @@
       }
       const cuerpo = el.querySelector('.bcard-body');
       cuerpo.textContent = t.txt || '';
+      if (esTexto && t.fs) cuerpo.style.fontSize = t.fs + 'px';
       if (!esTexto && t.h) cuerpo.style.minHeight = Math.max(20, t.h - 20) + 'px';
       cuerpo.addEventListener('input', () => {
         t.txt = cuerpo.textContent || '';
@@ -1116,8 +1124,26 @@
           const dir = h.dataset.rh || 'se';
           const pid = e.pointerId, sx = e.clientX, sy = e.clientY;
           const ox = t.x, oy = t.y, ow = (esTactil() && esTexto && !t.mw) ? Math.round(el.offsetWidth) : (t.w || (esTexto ? 260 : 220)), oh = t.h || 120;
+          // En celular el texto escala la letra con los puntos de arriba, abajo y esquinas; los lados siguen ajustando el ancho
+          const tactilTxt = esTactil() && esTexto;
+          let fs0 = 20, ccx = 0, ccy = 0, dd0 = 1, tocoAncho = false;
+          try {
+            if (tactilTxt) {
+              fs0 = parseFloat(getComputedStyle(cuerpo).fontSize) || 20;
+              const rr0 = el.getBoundingClientRect();
+              ccx = rr0.left + rr0.width / 2; ccy = rr0.top + rr0.height / 2;
+              dd0 = Math.hypot(sx - ccx, sy - ccy) || 1;
+            }
+          } catch (e9) {}
           const mv = ev => {
             if (ev.pointerId !== pid) return;
+            if (tactilTxt && dir !== 'e' && dir !== 'w') {
+              const dd = Math.hypot(ev.clientX - ccx, ev.clientY - ccy) || 1;
+              const fs = Math.max(10, Math.min(64, Math.round(fs0 * dd / dd0)));
+              t.fs = fs;
+              cuerpo.style.fontSize = fs + 'px';
+              return;
+            }
             const dx = (ev.clientX - sx) / boardVista.k, dy = (ev.clientY - sy) / boardVista.k;
             let nw = ow, nh = oh, nx = ox, ny = oy;
             if (dir.indexOf('e') >= 0) nw = ow + dx;
@@ -1127,6 +1153,7 @@
             nw = Math.max(120, nw);
             if (dir.indexOf('w') >= 0) nx = ox + (ow - nw);
             if (esTexto) {
+              tocoAncho = true;
               t.w = Math.round(nw);
               t.x = Math.round(nx);
               el.style.width = t.w + 'px';
@@ -1146,7 +1173,10 @@
             window.removeEventListener('pointermove', mv);
             window.removeEventListener('pointerup', up);
             window.removeEventListener('pointercancel', up);
-            if (esTactil() && esTexto) { t.mw = true; t.w = Math.round(el.offsetWidth); }
+            if (esTactil() && esTexto) {
+              try { t.w = Math.round(el.offsetWidth); } catch (e5) {}
+              if (tocoAncho) t.mw = true;
+            }
             guardaBoard();
           };
           window.addEventListener('pointermove', mv);
