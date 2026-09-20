@@ -32,6 +32,7 @@ lo del tablero, donde se mezcló todo).
 - Puerta con clave + intro + portal/suave/crash + INTERFAZ y PUBLICAR.
 - Exportar/importar registros entre aparatos (merge sin duplicados).
 - Cara UMBRA con detalles morados; linterna con color de tarjeta.
+- Tablero: el % de zoom lleva aire a la derecha para que el botón ⛶/✕ no lo tape (50px normal, 60px en pantalla completa).
 
 ## REGLA DE ORO
 Lo compartido vive aquí. Lo distinto vive en su archivo. Al cambiar algo,
