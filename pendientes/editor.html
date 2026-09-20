@@ -841,6 +841,17 @@
               return;
             }
             el.classList.remove('escribiendo');
+            // En celular la margen se ajusta al largo del texto (adiós recuadro gigante)
+            try {
+              if (esTactil() && t.tipo === 'texto') {
+                const lineas = (cuerpo.innerText || t.txt || '').split('\n');
+                let max = 0;
+                lineas.forEach(l => { max = Math.max(max, l.length); });
+                const tope = Math.min(260, Math.floor(window.innerWidth * 0.78));
+                t.w = Math.max(120, Math.min(tope, Math.round(max * 11 + 28)));
+                el.style.width = t.w + 'px';
+              }
+            } catch (errF) {}
             try { desactivarTextoMovil(); } catch (err3) {}
             guardaBoard();
           } catch (err) {}
@@ -1074,7 +1085,9 @@
         if (e.target.closest && (e.target.closest('.rh') || e.target.closest('.bdel'))) return;
         try {
           document.querySelectorAll('#board-cv .bcard.sel').forEach(n => { if (n !== el) n.classList.remove('sel'); });
-          el.classList.add('sel');
+          // En celular el texto vacío no muestra margen (la raya sola, sin puntos); con texto sí
+          const vacio = esTexto && !(t.txt || '').trim();
+          if (!(esTactil() && esTexto && vacio)) el.classList.add('sel');
         } catch (err) {}
         try { if (e.stopPropagation) e.stopPropagation(); } catch (err) {}
         const pid = e.pointerId, x0 = e.clientX, y0 = e.clientY, ox = t.x, oy = t.y;
