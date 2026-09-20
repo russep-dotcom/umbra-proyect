@@ -767,12 +767,11 @@
           if (esTactil()) {
             // Celular estilo excalidraw: sin la herramienta A el toque no crea nada
             if (!textoToolMovil) return;
-            // Con pendiente el toque la reubica: si sigue vacía se retira y se crea en el dedo; si ya tiene texto se queda y se apaga la herramienta
+            // Con pendiente el toque la reubica: si sigue vacía se retira y se crea en el dedo; si ya tiene texto se queda y se sigue en el dedo
             if (pendienteMovil) {
               const p = boardTarjetas.find(o => o && o.id === pendienteMovil);
               pendienteMovil = null;
-              if (p && (p.txt || '').trim()) { desactivarTextoMovil(); return; }
-              if (p) {
+              if (p && !(p.txt || '').trim()) {
                 boardTarjetas = boardTarjetas.filter(o => !o || o.id !== p.id);
                 guardaBoard();
               }
@@ -850,7 +849,6 @@
               return;
             }
             el.classList.remove('escribiendo');
-            try { desactivarTextoMovil(); } catch (err3) {}
             guardaBoard();
           } catch (err) {}
         }, { once: true });
