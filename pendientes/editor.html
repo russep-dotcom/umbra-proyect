@@ -348,6 +348,18 @@
       .rh-se { bottom: -15px; right: -15px; }
       /* Mini-menú de texto: cabe en pantalla chica */
       #estilo-pop.abierta { flex-wrap: wrap; justify-content: center; row-gap: 8px; }
+      /* Mini-menú arriba y sub-menús debajo, estilo excalidraw (solo celular) */
+      #estilo-pop { top: 12px; bottom: auto; }
+      #estilo-pop .fbtn.sel { background: var(--priv); color: #000; }
+      .sub-menu-texto { display: none; position: fixed; left: 50%; transform: translateX(-50%); top: 78px; z-index: 96;
+        background: rgba(8,0,0,0.96); border: 1px solid var(--priv); border-radius: 12px; padding: 10px 12px;
+        flex-direction: row; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap;
+        box-shadow: 0 0 24px rgba(177,77,255,0.4); max-width: 94vw; }
+      .sub-menu-texto.abierta { display: flex; }
+      .sub-menu-texto .fbtn { font-size: 13px; padding: 8px 10px; margin: 0; min-height: 0; }
+      .sub-menu-texto .fbtn.sel { background: var(--priv); color: #000; }
+      .sub-menu-texto .cdot { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #555; padding: 0; margin: 0; min-height: 0; }
+      .sub-menu-texto .cdot.sel { border-color: #fff; }
       #menu-opciones button { font-size: 14px; padding: 12px 14px; }
       #board-bar .clas-drop-btn.mini { font-size: 13px; padding: 10px 14px; }
       /* Rendimiento en celular: fuera grano y vela quieta */
@@ -466,9 +478,15 @@
         <div id="estilo-pop">
           <button class="fbtn" type="button" onclick="ajusteTexto({df:-2})" aria-label="Letra más pequeña">A−</button>
           <button class="fbtn" type="button" onclick="ajusteTexto({df:2})" aria-label="Letra más grande">A+</button>
+          <button class="fbtn" type="button" id="mt-fuente" onclick="toggleSubMenuTexto('fuente')">FUENTE</button>
+          <button class="fbtn" type="button" id="mt-color" onclick="toggleSubMenuTexto('color')">COLOR</button>
+        </div>
+        <div id="sub-fuente" class="sub-menu-texto">
           <button class="fbtn" type="button" id="mt-f1" onclick="ajusteTexto({ff:''})">NORMAL</button>
-          <button class="fbtn" type="button" id="mt-f2" onclick='ajusteTexto({ff:"Special Elite, monospace"})'>MÁQUINA</button>
+          <button class="fbtn" type="button" id="mt-f2" onclick="ajusteTexto({ff:'Courier New, monospace'})">MÁQUINA</button>
           <button class="fbtn" type="button" id="mt-f3" onclick='ajusteTexto({ff:"Creepster, cursive"})'>TERROR</button>
+        </div>
+        <div id="sub-color" class="sub-menu-texto">
           <button class="cdot" type="button" data-c="" title="Color normal" onclick="ajusteTexto({bc:''})"></button>
           <button class="cdot" type="button" data-c="#b14dff" title="Morado" style="background:#b14dff" onclick="ajusteTexto({bc:'#b14dff'})"></button>
           <button class="cdot" type="button" data-c="#ff1a1a" title="Rojo" style="background:#ff1a1a" onclick="ajusteTexto({bc:'#ff1a1a'})"></button>
@@ -867,10 +885,10 @@
           try {
             t.txt = cuerpo.textContent || '';
             if (!t.txt.trim()) {
-              // Si el foco se fue al menú de estilo, la pendiente se queda
+              // Si el foco se fue a los menús de estilo, la pendiente se queda
               try {
                 const ae = document.activeElement;
-                if (ae && ae.closest && ae.closest('#estilo-pop')) return;
+                if (ae && ae.closest && (ae.closest('#estilo-pop') || ae.closest('.sub-menu-texto'))) return;
               } catch (eM) {}
               if (pendienteMovil === t.id) pendienteMovil = null;
               boardTarjetas = boardTarjetas.filter(o => o.id !== t.id);
@@ -1001,14 +1019,42 @@
     }
     function syncMenuTexto() {
       try {
-        document.querySelectorAll('#estilo-pop .cdot').forEach(d => {
+        document.querySelectorAll('#sub-color .cdot').forEach(d => {
           d.classList.toggle('sel', (d.dataset.c || '') === (defTextoMovil.bc || ''));
         });
-        const mapaF = { '': 'mt-f1', 'Special Elite, monospace': 'mt-f2', 'Creepster, cursive': 'mt-f3' };
+        const mapaF = { '': 'mt-f1', 'Courier New, monospace': 'mt-f2', 'Creepster, cursive': 'mt-f3' };
         ['mt-f1', 'mt-f2', 'mt-f3'].forEach(x => {
           const b = document.getElementById(x);
           if (b) b.classList.toggle('sel', mapaF[defTextoMovil.ff || ''] === x);
         });
+      } catch (e) {}
+    }
+    function toggleSubMenuTexto(cual) {
+      try {
+        const f = document.getElementById('sub-fuente');
+        const c = document.getElementById('sub-color');
+        const bf = document.getElementById('mt-fuente');
+        const bc = document.getElementById('mt-color');
+        if (cual === 'fuente') {
+          const abrir = f && !f.classList.contains('abierta');
+          if (f) f.classList.toggle('abierta', !!abrir);
+          if (c) c.classList.remove('abierta');
+          if (bf) bf.classList.toggle('sel', !!abrir);
+          if (bc) bc.classList.remove('sel');
+        } else {
+          const abrir = c && !c.classList.contains('abierta');
+          if (c) c.classList.toggle('abierta', !!abrir);
+          if (f) f.classList.remove('abierta');
+          if (bc) bc.classList.toggle('sel', !!abrir);
+          if (bf) bf.classList.remove('sel');
+        }
+        syncMenuTexto();
+      } catch (e) {}
+    }
+    function cerrarSubMenusTexto() {
+      try {
+        ['sub-fuente', 'sub-color'].forEach(x => { const s = document.getElementById(x); if (s) s.classList.remove('abierta'); });
+        ['mt-fuente', 'mt-color'].forEach(x => { const b = document.getElementById(x); if (b) b.classList.remove('sel'); });
       } catch (e) {}
     }
     function abrirMenuTexto(id) {
@@ -1025,6 +1071,7 @@
         }
         const m = document.getElementById('estilo-pop');
         if (m) m.classList.add('abierta');
+        cerrarSubMenusTexto();
         syncMenuTexto();
       } catch (e) {}
     }
@@ -1033,6 +1080,7 @@
         menuTextoId = null;
         const m = document.getElementById('estilo-pop');
         if (m) m.classList.remove('abierta');
+        cerrarSubMenusTexto();
       } catch (e) {}
     }
     function ajusteTexto(o) {

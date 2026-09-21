@@ -25,9 +25,9 @@ Aplica a las 2 páginas: normal (portada + cajón) y editor.
 - Nota ♪ flotante; ajustes flotantes; pie visible.
 - Tablero: pantalla completa ⛶/✕, puntos al elegir tarjeta, `board-tip` oculto, aviso «TOCA LA A Y LUEGO EL TABLERO».
 - Herramienta de texto estilo excalidraw (botón A en la barra, no existe en computador): la A es el interruptor (morada = toco y escribo, gris = no pasa nada) y solo se apaga con la A; A y luego tablero para escribir solo la barrita, sin recuadro ni ✕; cada toque escribe en el dedo (la vacía anterior desaparece, la escrita se queda);
-- Mini-menú de texto (`#estilo-pop`: A−/A+ para tamaño 10–64px, NORMAL/MÁQUINA/TERROR para fuente, 6 colores incl. normal): abre con la A y al tocar texto escrito (sin margen jamás en celular); lo elegido aplica al texto y se hereda al siguiente; el texto en celular no se borra con ✕. el texto vacío nunca muestra margen y la caja es flexible (abraza el texto exacto, envuelve al borde de pantalla y solo existe margen al tocar texto escrito; el ajuste manual con puntos se respeta; el texto en celular no se borra con ✕).
+- Mini-menú de texto arriba (`#estilo-pop`: A−/A+ y botones FUENTE/COLOR) con sub-menús debajo (`#sub-fuente`: NORMAL/MÁQUINA/TERROR; `#sub-color`: 6 colores incl. normal): abre con la A y al tocar texto escrito, sin margen jamás en celular; lo elegido aplica al texto y se hereda al siguiente; tocar sus botones no mata la pendiente. NORMAL hereda la página y MÁQUINA es Courier New (toda la página ya es Special Elite, por eso se veían iguales).
 - Umbral de toque 14px; foco en toque + clic + cuadro siguiente sin mover la página; purga de vacías al entrar; la rayita nace bajo el dedo (auto-corrección) y se revela con movimiento mínimo si el teclado desplaza.
-- Puntos de agarre grandes (28px); en texto los puntos de arriba, abajo y esquinas escalan la letra (10–64px, viaja entre aparatos) y los lados ajustan el ancho.
+- Puntos de agarre grandes (28px) para recuadros; el tamaño de letra sale del mini-menú (10–64px, viaja entre aparatos).
 - Recuadros y textos centrados; puntos solo en tarjeta elegida.
 
 ## REGLA
