@@ -348,18 +348,22 @@
       .rh-se { bottom: -15px; right: -15px; }
       /* Mini-menú de texto: cabe en pantalla chica */
       #estilo-pop.abierta { flex-wrap: wrap; justify-content: center; row-gap: 8px; }
-      /* Mini-menú arriba y sub-menús debajo, estilo excalidraw (solo celular) */
-      #estilo-pop { top: 12px; bottom: auto; }
+      /* Mini-menú base abajo y paneles arriba, estilo excalidraw (solo celular) */
+      #estilo-pop { top: auto; bottom: 14px; }
       #estilo-pop .fbtn.sel { background: var(--priv); color: #000; }
-      .sub-menu-texto { display: none; position: fixed; left: 50%; transform: translateX(-50%); top: 78px; z-index: 96;
+      .sub-menu-texto { display: none; position: fixed; left: 50%; transform: translateX(-50%); bottom: 88px; z-index: 96;
         background: rgba(8,0,0,0.96); border: 1px solid var(--priv); border-radius: 12px; padding: 10px 12px;
-        flex-direction: row; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap;
         box-shadow: 0 0 24px rgba(177,77,255,0.4); max-width: 94vw; }
       .sub-menu-texto.abierta { display: flex; }
+      .sub-menu-texto.columna { flex-direction: column; align-items: stretch; gap: 8px; }
+      .sub-menu-texto .fila { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; }
+      .sub-tit { font-size: 11px; letter-spacing: 3px; color: #8a6db3; text-align: center; }
       .sub-menu-texto .fbtn { font-size: 13px; padding: 8px 10px; margin: 0; min-height: 0; }
       .sub-menu-texto .fbtn.sel { background: var(--priv); color: #000; }
-      .sub-menu-texto .cdot { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #555; padding: 0; margin: 0; min-height: 0; }
-      .sub-menu-texto .cdot.sel { border-color: #fff; }
+      .sub-menu-texto .fam { width: 38px; height: 38px; border-radius: 10px; border: 2px solid #555; padding: 0; margin: 0; min-height: 0; color: #e8e8e8; font-size: 15px; }
+      .sub-menu-texto .fam.sel { border-color: #fff; }
+      .sub-menu-texto .hash { color: #8a6db3; font-size: 16px; }
+      .sub-menu-texto #hex-color { width: 110px; background: #111; border: 1px solid #4a0505; border-radius: 8px; color: var(--hueso); padding: 8px 10px; font-size: 15px; letter-spacing: 2px; }
       #menu-opciones button { font-size: 14px; padding: 12px 14px; }
       #board-bar .clas-drop-btn.mini { font-size: 13px; padding: 10px 14px; }
       /* Rendimiento en celular: fuera grano y vela quieta */
@@ -481,18 +485,30 @@
           <button class="fbtn" type="button" id="mt-fuente" onclick="toggleSubMenuTexto('fuente')">FUENTE</button>
           <button class="fbtn" type="button" id="mt-color" onclick="toggleSubMenuTexto('color')">COLOR</button>
         </div>
-        <div id="sub-fuente" class="sub-menu-texto">
-          <button class="fbtn" type="button" id="mt-f1" onclick="ajusteTexto({ff:''})">NORMAL</button>
-          <button class="fbtn" type="button" id="mt-f2" onclick="ajusteTexto({ff:'Courier New, monospace'})">MÁQUINA</button>
-          <button class="fbtn" type="button" id="mt-f3" onclick='ajusteTexto({ff:"Creepster, cursive"})'>TERROR</button>
+        <div id="sub-fuente" class="sub-menu-texto columna">
+          <div class="sub-tit">FUENTE</div>
+          <div class="fila">
+            <button class="fbtn" type="button" id="mt-f1" onclick="ajusteTexto({ff:''})">NORMAL</button>
+            <button class="fbtn" type="button" id="mt-f2" onclick="ajusteTexto({ff:'Courier New, monospace'})">MÁQUINA</button>
+            <button class="fbtn" type="button" id="mt-f3" onclick='ajusteTexto({ff:"Creepster, cursive"})'>TERROR</button>
+          </div>
         </div>
-        <div id="sub-color" class="sub-menu-texto">
-          <button class="cdot" type="button" data-c="" title="Color normal" onclick="ajusteTexto({bc:''})"></button>
-          <button class="cdot" type="button" data-c="#b14dff" title="Morado" style="background:#b14dff" onclick="ajusteTexto({bc:'#b14dff'})"></button>
-          <button class="cdot" type="button" data-c="#ff1a1a" title="Rojo" style="background:#ff1a1a" onclick="ajusteTexto({bc:'#ff1a1a'})"></button>
-          <button class="cdot" type="button" data-c="#ff8c1a" title="Naranja" style="background:#ff8c1a" onclick="ajusteTexto({bc:'#ff8c1a'})"></button>
-          <button class="cdot" type="button" data-c="#1affc4" title="Turquesa" style="background:#1affc4" onclick="ajusteTexto({bc:'#1affc4'})"></button>
-          <button class="cdot" type="button" data-c="#2a4bff" title="Azul" style="background:#2a4bff" onclick="ajusteTexto({bc:'#2a4bff'})"></button>
+        <div id="sub-color" class="sub-menu-texto columna">
+          <div class="sub-tit">COLOR</div>
+          <div class="fila" id="fila-familias">
+            <button class="fam" type="button" data-c="" title="Normal" style="background:transparent" onclick="elegirFamilia('')">A</button>
+            <button class="fam" type="button" data-c="#ffffff" title="Blanco" style="background:#ffffff" onclick="elegirFamilia('#ffffff')"></button>
+            <button class="fam" type="button" data-c="#b14dff" title="Morado" style="background:#b14dff" onclick="elegirFamilia('#b14dff')"></button>
+            <button class="fam" type="button" data-c="#ff1a1a" title="Rojo" style="background:#ff1a1a" onclick="elegirFamilia('#ff1a1a')"></button>
+            <button class="fam" type="button" data-c="#ff8c1a" title="Naranja" style="background:#ff8c1a" onclick="elegirFamilia('#ff8c1a')"></button>
+            <button class="fam" type="button" data-c="#1affc4" title="Turquesa" style="background:#1affc4" onclick="elegirFamilia('#1affc4')"></button>
+            <button class="fam" type="button" data-c="#2a4bff" title="Azul" style="background:#2a4bff" onclick="elegirFamilia('#2a4bff')"></button>
+            <button class="fam" type="button" data-c="#2bd96a" title="Verde" style="background:#2bd96a" onclick="elegirFamilia('#2bd96a')"></button>
+          </div>
+          <div class="sub-tit">TONOS</div>
+          <div class="fila" id="fila-tonos"></div>
+          <div class="sub-tit">CÓDIGO</div>
+          <div class="fila"><span class="hash">#</span><input id="hex-color" inputmode="text" maxlength="6" placeholder="f08c00" onchange="aplicarHex()"></div>
         </div>
       </div>
 
@@ -909,6 +925,8 @@
           } catch (err) { try { cuerpo.focus(); } catch (e0) {} }
         }
         enfocarCuerpo();
+        // Al abrir el teclado los paneles de color/fuente se cierran (la base se deja tapar)
+        try { cerrarSubMenusTexto(); } catch (errS) {}
         // FIX táctil: el foco programado a veces no abre el teclado en celular; se intenta en el toque, en el clic de compatibilidad y en el siguiente cuadro
         try {
           if (document.activeElement !== cuerpo) {
@@ -1019,14 +1037,63 @@
     }
     function syncMenuTexto() {
       try {
-        document.querySelectorAll('#sub-color .cdot').forEach(d => {
-          d.classList.toggle('sel', (d.dataset.c || '') === (defTextoMovil.bc || ''));
+        document.querySelectorAll('#fila-familias .fam').forEach(d => {
+          d.classList.toggle('sel', (d.dataset.c || '') === (familiaTexto || ''));
         });
         const mapaF = { '': 'mt-f1', 'Courier New, monospace': 'mt-f2', 'Creepster, cursive': 'mt-f3' };
         ['mt-f1', 'mt-f2', 'mt-f3'].forEach(x => {
           const b = document.getElementById(x);
           if (b) b.classList.toggle('sel', mapaF[defTextoMovil.ff || ''] === x);
         });
+        pintarTonos();
+      } catch (e) {}
+    }
+    // Tonos por familia + código hex, como el panel de excalidraw
+    let familiaTexto = '#b14dff';
+    function mezclaColores(a, b, p) {
+      try {
+        const pa = [1, 3, 5].map(i => parseInt(a.substr(i, 2), 16));
+        const pb = [1, 3, 5].map(i => parseInt(b.substr(i, 2), 16));
+        return '#' + pa.map((v, i) => Math.round(v + (pb[i] - v) * p).toString(16).padStart(2, '0')).join('');
+      } catch (e) { return b; }
+    }
+    function pintarTonos() {
+      try {
+        const fila = document.getElementById('fila-tonos');
+        if (!fila) return;
+        const base = /^#[0-9a-fA-F]{6}$/.test(familiaTexto || '') ? familiaTexto : '#b14dff';
+        fila.innerHTML = '';
+        [0.85, 0.65, 0.45, 0.25, 0].forEach(p => {
+          const c = mezclaColores('#ffffff', base, p);
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'fam' + (((defTextoMovil.bc || '').toLowerCase() === c.toLowerCase()) ? ' sel' : '');
+          b.style.background = c;
+          b.title = c;
+          b.setAttribute('aria-label', 'Tono ' + c);
+          b.onclick = () => ajusteTexto({ bc: c });
+          fila.appendChild(b);
+        });
+        const hx = document.getElementById('hex-color');
+        if (hx && document.activeElement !== hx) hx.value = (defTextoMovil.bc || '').replace('#', '');
+      } catch (e) {}
+    }
+    function elegirFamilia(c) {
+      try {
+        familiaTexto = c || '';
+        ajusteTexto({ bc: familiaTexto });
+        pintarTonos();
+      } catch (e) {}
+    }
+    function aplicarHex() {
+      try {
+        const hx = document.getElementById('hex-color');
+        if (!hx) return;
+        let v = (hx.value || '').trim().replace(/^#/, '').toLowerCase();
+        if (/^[0-9a-f]{3}$/.test(v)) v = v.split('').map(x => x + x).join('');
+        if (!/^[0-9a-f]{6}$/.test(v)) { hx.value = (defTextoMovil.bc || '').replace('#', ''); return; }
+        ajusteTexto({ bc: '#' + v });
+        pintarTonos();
       } catch (e) {}
     }
     function toggleSubMenuTexto(cual) {
@@ -1067,6 +1134,8 @@
             defTextoMovil.fs = t.fs || 20;
             defTextoMovil.ff = t.ff || '';
             defTextoMovil.bc = t.bc && t.bc !== '#b14dff' ? t.bc : '';
+            const fams = ['#ffffff', '#b14dff', '#ff1a1a', '#ff8c1a', '#1affc4', '#2a4bff', '#2bd96a'];
+            if (fams.indexOf(defTextoMovil.bc) >= 0) familiaTexto = defTextoMovil.bc;
           }
         }
         const m = document.getElementById('estilo-pop');
