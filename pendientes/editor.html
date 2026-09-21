@@ -191,7 +191,7 @@
     .bcard-head:active { cursor: grabbing; }
     .bcard-clas { font-size: 10px; border: 1px solid var(--bc, #ff1a1a); border-radius: 4px; padding: 1px 6px; }
     .bcard-body { padding: 8px 10px; min-height: 40px; font-size: 13px; line-height: 1.6; outline: none; word-break: break-word; }
-    .bcard-body:focus { background: rgba(177,77,255,0.08); }
+    .bcard:not(.texto-card) .bcard-body:focus { background: rgba(177,77,255,0.08); }
     .board-tip { font-size: 12px; color: #5a5a5a; letter-spacing: 1px; text-align: center; }
     .board-tit { margin-bottom: 8px; }
     .board-tit input { width: 100%; box-sizing: border-box; font-family: 'Metal Mania', 'Impact', cursive;
@@ -248,7 +248,7 @@
     /* Botones del menú en blanco (no morados) */
     #menu-opciones button { color: #e8e8e8; border-color: #e8e8e8; }
     #menu-opciones button:hover { background: #e8e8e8; color: #000; box-shadow: 0 0 14px rgba(232,232,232,0.4); }
-    .texto-card .bdel { position: absolute; top: -10px; right: -6px; background: #000; border-radius: 50%; opacity: 0.7; }
+    .texto-card .bdel { display: none; }
     /* Escritura directa: sin recuadro, sin botones, sin puntos */
     .texto-card.escribiendo, .bcard.texto-card.escribiendo.sel { border: none; background: none; box-shadow: none; outline: none; }
     .texto-card.escribiendo .bdel, .texto-card.escribiendo .rh { display: none !important; }
@@ -264,6 +264,7 @@
     #estilo-pop.abierta { display: flex; }
     #estilo-pop .fbtn { font-size: 15px; padding: 6px 10px; margin: 0; min-height: 0; }
     #estilo-pop .fbtn.sel { background: var(--priv); color: #000; }
+    #estilo-pop .fbtn.peligro { color: #ff1a1a; border-color: #ff1a1a; }
     #estilo-caja .fbtn.sel { background: var(--priv); color: #000; }
     #estilo-pop .cdot { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #555; padding: 0; margin: 0; min-height: 0; }
     #estilo-pop .cdot.sel { border-color: #fff; }
@@ -495,6 +496,7 @@
           <button class="fbtn" type="button" onclick="ajusteTexto({df:2})" aria-label="Letra más grande">A+</button>
           <button class="fbtn" type="button" id="mt-fuente" onclick="toggleSubMenuTexto('fuente')">FUENTE</button>
           <button class="fbtn" type="button" id="mt-color" onclick="toggleSubMenuTexto('color')">COLOR</button>
+          <button class="fbtn peligro" type="button" onclick="borrarTextoMenu()">BORRAR</button>
         </div>
         <div id="sub-fuente" class="sub-menu-texto columna">
           <div class="sub-tit">FUENTE</div>
@@ -1218,6 +1220,16 @@
         cerrarSubMenusTexto();
       } catch (e) {}
     }
+    // El texto se borra desde el menú (ya no hay ✕ en el texto libre)
+    function borrarTextoMenu() {
+      try {
+        if (!menuTextoId) return;
+        boardTarjetas = boardTarjetas.filter(o => !o || o.id !== menuTextoId);
+        menuTextoId = null;
+        guardaBoard(); pintarBoard();
+        syncMenuTexto();
+      } catch (e) {}
+    }
     function ajusteTexto(o) {
       o = o || {};
       try {
@@ -1372,6 +1384,18 @@
       });
       cuerpo.addEventListener('blur', () => {
         t.txt = cuerpo.textContent || '';
+        // Si se vacía del todo, se va (ya no hay ✕ para borrarlo)
+        if (esTexto && !t.txt.trim()) {
+          try {
+            const ae = document.activeElement;
+            if (ae && ae.closest && (ae.closest('#estilo-pop') || ae.closest('.sub-menu-texto'))) { guardaBoard(); return; }
+          } catch (eM) {}
+          if (pendienteMovil === t.id) pendienteMovil = null;
+          if (menuTextoId === t.id) menuTextoId = null;
+          boardTarjetas = boardTarjetas.filter(o => o.id !== t.id);
+          guardaBoard(); pintarBoard();
+          return;
+        }
         try { if (esTactil() && esTexto && !t.mw) t.w = Math.round(el.offsetWidth); } catch (e4) {}
         guardaBoard();
       });

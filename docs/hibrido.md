@@ -34,6 +34,7 @@ lo del tablero, donde se mezcló todo).
 - Cara UMBRA con detalles morados; linterna con color de tarjeta.
 - Tablero: el % de zoom lleva aire a la derecha para que el botón ⛶/✕ no lo tape (50px normal, 60px en pantalla completa).
 - Paneles de texto compartidos en CSS base (celular los abre la A, computador el clic derecho sobre texto escrito).
+- El texto libre no usa margen ni ✕ ni cuadro morado en ninguna pantalla; se borra desde el menú (BORRAR) o vaciándolo del todo.
 - Update propio con clave `editor` en `version.json` (mensajes por pantalla, aviso una vez por versión cada 24h, botón salta a `?v=` fresco): los cambios del editor suben `editor`, nunca `version`.
 
 ## REGLA DE ORO
