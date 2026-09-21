@@ -22,6 +22,7 @@ Aplica a las 2 páginas: normal (portada + cajón) y editor.
 - Título en Creepster; fundido puerta→panel al entrar.
 - Botón VIENTO rectangular + mensaje; pie tenue original.
 - Tablero: clic elige tarjeta y muestra puntos; arrastre desde borde o centro (umbral 6px); rueda con zoom al centro; clic derecho abre estilos; sin zoom de pellizco.
+- Menú de texto con clic derecho sobre texto escrito (mismos paneles del celular: tamaño, fuente, color); se cierra tocando el tablero vacío; sin botón A.
 - Recuadros con borde según estilo; textos alineados a la izquierda.
 
 ## REGLA
