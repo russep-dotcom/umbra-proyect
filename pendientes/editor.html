@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- PANEL PRIVADO DE MIGUE: no está enlazado en ninguna página pública -->
   <title>UMBRA · Panel privado</title>
-  <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Nosifer&family=Special+Elite&family=Cinzel:wght@700&family=Creepster&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Nosifer&family=Special+Elite&family=Cinzel:wght@700&family=Creepster&family=Permanent+Marker&family=Caveat:wght@600&family=Eater&family=Courier+Prime&family=Homemade+Apple&display=swap" rel="stylesheet">
   <style>
     /* Transiciones nativas del navegador (progresivo) */
     @view-transition { navigation: auto; }
@@ -357,11 +357,18 @@
       .sub-menu-texto.abierta { display: flex; }
       .sub-menu-texto.columna { flex-direction: column; align-items: stretch; gap: 10px; }
       .sub-menu-texto .fila { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
+      #fila-familias, #fila-tonos { display: grid; grid-template-columns: repeat(5, 44px); justify-content: center; gap: 10px; }
       .sub-tit { font-size: 12px; letter-spacing: 3px; color: #8a6db3; text-align: center; }
+      .sub-tit2 { font-size: 11px; letter-spacing: 2px; color: #5a5a5a; text-align: center; }
+      .fpill { background: rgba(177,77,255,0.3); border: 1px solid var(--priv); border-radius: 10px; padding: 10px 14px; font-size: 17px; text-align: center; color: var(--hueso); }
+      .sub-menu-texto .col { display: flex; flex-direction: column; gap: 4px; }
+      .frow { display: flex; align-items: center; gap: 12px; width: 100%; background: none; border: 1px solid transparent; border-radius: 10px; padding: 10px 12px; margin: 0; min-height: 0; color: #e8e8e8; font-size: 16px; text-align: left; }
+      .frow.sel { background: rgba(177,77,255,0.25); border-color: var(--priv); }
+      .frow .fic { font-size: 19px; width: 30px; text-align: center; color: #8a6db3; }
       .sub-menu-texto .fbtn { font-size: 14px; padding: 10px 12px; margin: 0; min-height: 0; }
       .sub-menu-texto .fbtn.sel { background: var(--priv); color: #000; }
       .sub-menu-texto .fam { width: 44px; height: 44px; border-radius: 10px; border: 2px solid #555; padding: 0; margin: 0; min-height: 0; color: #e8e8e8; font-size: 15px; }
-      .sub-menu-texto .fam.sel { border-color: #fff; }
+      .sub-menu-texto .fam.sel { border-color: transparent; box-shadow: 0 0 0 2px #050505, 0 0 0 4px var(--priv); }
       .sub-menu-texto .sin-tonos { font-size: 13px; letter-spacing: 1px; color: #8a8a8a; text-align: center; padding: 6px 4px; }
       .sub-menu-texto .hash { color: #8a6db3; font-size: 16px; }
       .sub-menu-texto #hex-color { width: 110px; background: #111; border: 1px solid #4a0505; border-radius: 8px; color: var(--hueso); padding: 8px 10px; font-size: 15px; letter-spacing: 2px; }
@@ -488,16 +495,14 @@
         </div>
         <div id="sub-fuente" class="sub-menu-texto columna">
           <div class="sub-tit">FUENTE</div>
-          <div class="fila">
-            <button class="fbtn" type="button" id="mt-f1" onclick="ajusteTexto({ff:''})">NORMAL</button>
-            <button class="fbtn" type="button" id="mt-f2" onclick="ajusteTexto({ff:'Courier New, monospace'})">MÁQUINA</button>
-            <button class="fbtn" type="button" id="mt-f4" onclick="ajusteTexto({ff:'Cinzel, serif'})">EXPEDIENTE</button>
-            <button class="fbtn" type="button" id="mt-f3" onclick='ajusteTexto({ff:"Creepster, cursive"})'>TERROR</button>
-            <button class="fbtn" type="button" id="mt-f5" onclick="ajusteTexto({ff:'Nosifer, cursive'})">SANGRE</button>
-          </div>
+          <div class="sub-tit2">En uso</div>
+          <div class="fila"><div class="fpill" id="mt-ahora">NORMAL</div></div>
+          <div class="sub-tit2">Disponibles</div>
+          <div class="col" id="lista-fuentes"></div>
         </div>
         <div id="sub-color" class="sub-menu-texto columna">
           <div class="sub-tit">COLOR</div>
+          <div class="sub-tit2">Colores</div>
           <div class="fila" id="fila-familias">
             <button class="fam" type="button" data-c="" title="Normal" style="background:transparent" onclick="elegirFamilia('')">A</button>
             <button class="fam" type="button" data-c="#ffffff" title="Blanco" style="background:#ffffff" onclick="elegirFamilia('#ffffff')"></button>
@@ -1038,19 +1043,63 @@
         return cv.querySelector('[data-id="' + id + '"]');
       } catch (e) { return null; }
     }
+    // Fuentes del tablero: cada fila muestra su letra (como el panel de excalidraw)
+    const FUENTES_TEXTO = [
+      { nombre: 'NORMAL', css: '' },
+      { nombre: 'MÁQUINA', css: 'Courier New, monospace' },
+      { nombre: 'EXPEDIENTE', css: 'Cinzel, serif' },
+      { nombre: 'MARCADOR', css: "'Permanent Marker', cursive" },
+      { nombre: 'MANO', css: 'Caveat, cursive' },
+      { nombre: 'CARTA', css: "'Courier Prime', monospace" },
+      { nombre: 'NOTA', css: "'Homemade Apple', cursive" },
+      { nombre: 'TERROR', css: 'Creepster, cursive' },
+      { nombre: 'SANGRE', css: 'Nosifer, cursive' },
+      { nombre: 'METAL', css: "'Metal Mania', cursive" }
+    ];
+    function pintarFuentes() {
+      try {
+        const lista = document.getElementById('lista-fuentes');
+        if (!lista || lista.dataset.lista) return;
+        lista.dataset.lista = 'si';
+        FUENTES_TEXTO.forEach(f => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'frow';
+          b.dataset.ff = f.css;
+          const ic = document.createElement('span');
+          ic.className = 'fic';
+          ic.textContent = 'A';
+          if (f.css) ic.style.fontFamily = f.css;
+          const nm = document.createElement('span');
+          nm.className = 'fnom';
+          nm.textContent = f.nombre;
+          if (f.css) nm.style.fontFamily = f.css;
+          b.appendChild(ic);
+          b.appendChild(nm);
+          b.onclick = () => ajusteTexto({ ff: f.css });
+          lista.appendChild(b);
+        });
+      } catch (e) {}
+    }
     function syncMenuTexto() {
       try {
         document.querySelectorAll('#fila-familias .fam').forEach(d => {
           d.classList.toggle('sel', (d.dataset.c || '') === (familiaTexto || ''));
         });
-        const mapaF = { '': 'mt-f1', 'Courier New, monospace': 'mt-f2', 'Creepster, cursive': 'mt-f3', 'Cinzel, serif': 'mt-f4', 'Nosifer, cursive': 'mt-f5' };
-        ['mt-f1', 'mt-f2', 'mt-f3', 'mt-f4', 'mt-f5'].forEach(x => {
-          const b = document.getElementById(x);
-          if (b) b.classList.toggle('sel', mapaF[defTextoMovil.ff || ''] === x);
+        const ff = defTextoMovil.ff || '';
+        document.querySelectorAll('#lista-fuentes .frow').forEach(r => {
+          r.classList.toggle('sel', (r.dataset.ff || '') === ff);
         });
+        const pill = document.getElementById('mt-ahora');
+        if (pill) {
+          const f = FUENTES_TEXTO.find(x => x.css === ff);
+          pill.textContent = f ? f.nombre : 'NORMAL';
+          pill.style.fontFamily = ff || '';
+        }
         pintarTonos();
       } catch (e) {}
     }
+    pintarFuentes();
     // Tonos por familia + código hex, como el panel de excalidraw
     let familiaTexto = '#b14dff';
     function mezclaColores(a, b, p) {
