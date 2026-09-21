@@ -1384,9 +1384,9 @@
         if (e.target.closest && (e.target.closest('.rh') || e.target.closest('.bdel'))) return;
         try {
           document.querySelectorAll('#board-cv .bcard.sel').forEach(n => { if (n !== el) n.classList.remove('sel'); });
-          // En celular el texto no usa margen: se abre su menú; en computador igual que siempre
+          // El texto libre ya no usa margen en ninguna pantalla (todo sale del menú): en celular se abre su menú
           if (esTactil() && esTexto) { try { abrirMenuTexto(t.id); } catch (eS) {} }
-          else el.classList.add('sel');
+          else if (!esTexto) el.classList.add('sel');
         } catch (err) {}
         try { if (e.stopPropagation) e.stopPropagation(); } catch (err) {}
         try { if (e.stopPropagation) e.stopPropagation(); } catch (err) {}
