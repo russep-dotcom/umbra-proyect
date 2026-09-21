@@ -1411,6 +1411,18 @@
           // El texto libre ya no usa margen en ninguna pantalla (todo sale del menú): en celular se abre su menú
           if (esTactil() && esTexto) { try { abrirMenuTexto(t.id); } catch (eS) {} }
           else if (!esTexto) el.classList.add('sel');
+          // Al tocar texto escrito se sigue ahí mismo (foco explícito, sin depender del nativo)
+          try {
+            if (esTexto && e.target.closest && !e.target.closest('.rh') && !e.target.closest('.bdel')) {
+              const bd = el.querySelector('.bcard-body');
+              if (bd && document.activeElement !== bd) {
+                try {
+                  if (esTactil()) bd.focus({ preventScroll: true });
+                  else bd.focus();
+                } catch (eG) { try { bd.focus(); } catch (eH) {} }
+              }
+            }
+          } catch (eF) {}
         } catch (err) {}
         try { if (e.stopPropagation) e.stopPropagation(); } catch (err) {}
         try { if (e.stopPropagation) e.stopPropagation(); } catch (err) {}
