@@ -240,9 +240,24 @@
     #estilo-caja { display: none; position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 96;
       background: rgba(8,0,0,0.96); border: 1px solid var(--priv); border-radius: 12px; padding: 10px 12px;
       flex-direction: row; gap: 8px; align-items: center; box-shadow: 0 0 24px rgba(177,77,255,0.4); max-width: 94vw; }
-    #estilo-caja.abierta { display: flex; }
+    #estilo-caja.abierta { display: flex; flex-wrap: wrap; justify-content: center; row-gap: 8px; }
     #estilo-caja .fbtn { font-size: 12px; padding: 8px 10px; margin: 0; min-height: 0; }
     #estilo-caja .fbtn.sel { background: var(--priv); color: #000; }
+    /* MARCO recuadros (tipo caja): todos en rojo fijo #ff1a1a, sin scope de medio */
+    .bcard.marco-hud { border: 2px solid #ff1a1a; }
+    .bcard.marco-hud::before, .bcard.marco-hud::after { content: ''; position: absolute; width: 18px; height: 18px; pointer-events: none; }
+    .bcard.marco-hud::before { top: -6px; left: -6px; border-top: 3px solid #ff1a1a; border-left: 3px solid #ff1a1a; }
+    .bcard.marco-hud::after { bottom: -6px; right: -6px; border-bottom: 3px solid #ff1a1a; border-right: 3px solid #ff1a1a; }
+    .bcard.marco-bisel { border: 2px solid #ff1a1a; border-radius: 0; clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px); filter: drop-shadow(0 0 8px #ff1a1a); }
+    .bcard.marco-bisel .bdel { top: 4px; right: 4px; }
+    .bcard.marco-bisel .rh-nw { top: 2px; left: 2px; }
+    .bcard.marco-bisel .rh-ne { top: 2px; right: 2px; }
+    .bcard.marco-bisel .rh-sw { bottom: 2px; left: 2px; }
+    .bcard.marco-bisel .rh-se { bottom: 2px; right: 2px; }
+    .bcard.marco-cinta { border: 2px solid #ff1a1a; }
+    .bcard.marco-cinta::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 14px; background: repeating-linear-gradient(45deg, #ff1a1a 0 10px, #000 10px 20px); pointer-events: none; }
+    .bcard.marco-polaroid { border: 2px solid #ff1a1a; border-bottom: 26px solid #ded6c2; transform: rotate(-1deg); }
+    .bcard.marco-polaroid::before { content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 14px; height: 14px; border-radius: 50%; background: #ff1a1a; box-shadow: 0 0 8px #ff1a1a; pointer-events: none; }
     .texto-card .bcard-body { font-size: 20px; padding: 4px 8px; min-height: 0; overflow-wrap: anywhere; }
     .bcard-body { overflow-wrap: anywhere; }
     /* Botones del menú en blanco (no morados) */
@@ -497,6 +512,14 @@
           <button class="fbtn" type="button" id="mt-fuente" onclick="toggleSubMenuTexto('fuente')">FUENTE</button>
           <button class="fbtn" type="button" id="mt-color" onclick="toggleSubMenuTexto('color')">COLOR</button>
           <button class="fbtn peligro" type="button" onclick="borrarTextoMenu()">BORRAR</button>
+        </div>
+        <div id="estilo-caja">
+          <span class="sub-tit">MARCO</span>
+          <button class="fbtn" type="button" data-m="normal" onclick="elegirMarco(event,'normal')">NORMAL</button>
+          <button class="fbtn" type="button" data-m="hud" onclick="elegirMarco(event,'hud')">HUD</button>
+          <button class="fbtn" type="button" data-m="bisel" onclick="elegirMarco(event,'bisel')">BISEL</button>
+          <button class="fbtn" type="button" data-m="cinta" onclick="elegirMarco(event,'cinta')">CINTA</button>
+          <button class="fbtn" type="button" data-m="polaroid" onclick="elegirMarco(event,'polaroid')">POLAROID</button>
         </div>
         <div id="sub-fuente" class="sub-menu-texto columna">
           <div class="sub-tit">FUENTE</div>
@@ -859,6 +882,7 @@
             document.querySelectorAll('#board-cv .bcard.sel').forEach(n => n.classList.remove('sel'));
             // Sin herramienta (celular) o en computador, el toque en vacío cierra el menú
             try { if (!esTactil() || !textoToolMovil) cerrarMenuTexto(); } catch (e2) {}
+            try { cerrarMenuCaja(); } catch (e3) {}
           }
         } catch (err) {}
       });
@@ -1220,6 +1244,75 @@
         cerrarSubMenusTexto();
       } catch (e) {}
     }
+    // MARCO recuadros (tipo caja): pinta según dataset.marco, persiste en boardTarjetas + guardaBoard
+    let marcoCajaId = null;
+    function pintarMarco(card) {
+      try {
+        if (!card) return;
+        card.classList.remove('marco-hud', 'marco-bisel', 'marco-cinta', 'marco-polaroid');
+        const m = String((card.dataset && card.dataset.marco) || '').toLowerCase();
+        if (m === 'hud') card.classList.add('marco-hud');
+        else if (m === 'bisel') card.classList.add('marco-bisel');
+        else if (m === 'cinta') card.classList.add('marco-cinta');
+        else if (m === 'polaroid') card.classList.add('marco-polaroid');
+      } catch (e) {}
+    }
+    function syncMenuCaja() {
+      try {
+        let m = 'normal';
+        const t = marcoCajaId ? boardTarjetas.find(x => x && x.id === marcoCajaId) : null;
+        if (t && t.marco && ['hud', 'bisel', 'cinta', 'polaroid'].indexOf(String(t.marco).toLowerCase()) >= 0) m = String(t.marco).toLowerCase();
+        document.querySelectorAll('#estilo-caja .fbtn').forEach(b => {
+          b.classList.toggle('sel', (b.dataset.m || '') === m);
+        });
+      } catch (e) {}
+    }
+    function abrirMenuCaja(id) {
+      try {
+        marcoCajaId = id || null;
+        const m = document.getElementById('estilo-caja');
+        if (m) m.classList.add('abierta');
+        syncMenuCaja();
+      } catch (e) {}
+    }
+    function cerrarMenuCaja() {
+      try {
+        marcoCajaId = null;
+        const m = document.getElementById('estilo-caja');
+        if (m) m.classList.remove('abierta');
+      } catch (e) {}
+    }
+    function elegirMarco(e, modo) {
+      try { if (e && e.stopPropagation) e.stopPropagation(); } catch (err) {}
+      try {
+        modo = String(modo || 'normal').toLowerCase();
+        if (['normal', 'hud', 'bisel', 'cinta', 'polaroid'].indexOf(modo) < 0) modo = 'normal';
+        let id = marcoCajaId;
+        let obj = id ? boardTarjetas.find(x => x && x.id === id) : null;
+        if (!obj || obj.tipo === 'texto') {
+          try {
+            const sel = document.querySelector('#board-cv .bcard.sel');
+            if (sel && sel.dataset && sel.dataset.id) {
+              id = sel.dataset.id;
+              obj = boardTarjetas.find(x => x && x.id === id) || null;
+            }
+          } catch (e2) {}
+        }
+        if (!obj || obj.tipo === 'texto') return;
+        obj.marco = (modo === 'normal') ? '' : modo;
+        marcoCajaId = obj.id;
+        try {
+          const cv = document.getElementById('board-cv');
+          const el = cv ? cv.querySelector('[data-id="' + obj.id + '"]') : null;
+          if (el) {
+            el.dataset.marco = obj.marco || '';
+            pintarMarco(el);
+          }
+        } catch (e3) {}
+        guardaBoard();
+        syncMenuCaja();
+      } catch (err) {}
+    }
     // El texto se borra desde el menú (ya no hay ✕ en el texto libre)
     function borrarTextoMenu() {
       try {
@@ -1313,7 +1406,8 @@
             fs: Math.max(0, +o.fs || 0),
             ff: String(o.ff || ''),
             mw: o.mw === true,
-            bc: o.bc || o.c || o.color || '#b14dff'
+            bc: o.bc || o.c || o.color || '#b14dff',
+            marco: (['hud', 'bisel', 'cinta', 'polaroid'].indexOf(String(o.marco || '').toLowerCase()) >= 0) ? String(o.marco).toLowerCase() : ''
           };
         }).filter(Boolean);
       } catch (e) { return []; }
@@ -1393,7 +1487,7 @@
     function crearCajaBoard() {
       const c = centroBoard();
       const bcRango = (rangoBoardSel && rangoBoardSel.color) ? String(rangoBoardSel.color) : '#b14dff';
-      boardTarjetas.push({ id: 'b' + Date.now().toString(36) + Math.floor(Math.random() * 90 + 10), tipo: 'caja', x: Math.round(c.x - 110), y: Math.round(c.y - 60), w: 220, h: 120, txt: '', bc: bcRango });
+      boardTarjetas.push({ id: 'b' + Date.now().toString(36) + Math.floor(Math.random() * 90 + 10), tipo: 'caja', x: Math.round(c.x - 110), y: Math.round(c.y - 60), w: 220, h: 120, txt: '', bc: bcRango, marco: '' });
       guardaBoard(); pintarBoard(); cerrarMenuBoard();
     }
     function crearTextoBoard() {
@@ -1417,6 +1511,8 @@
       el.className = 'bcard' + (esTexto ? ' texto-card' : '');
       el.dataset.id = t.id;
       el.style.setProperty('--bc', t.bc || '#b14dff');
+      el.dataset.marco = t.marco || '';
+      pintarMarco(el);
       el.style.left = (t.x || 0) + 'px';
       el.style.top = (t.y || 0) + 'px';
       // En celular el texto es flexible (ancho automático pegado al contenido); el ajuste manual manda
@@ -1458,6 +1554,7 @@
       });
       el.querySelector('.bdel').addEventListener('click', e => {
         try { if (e && e.stopPropagation) e.stopPropagation(); } catch (err) {}
+        try { if (marcoCajaId === t.id) cerrarMenuCaja(); } catch (err2) {}
         boardTarjetas = boardTarjetas.filter(o => o.id !== t.id);
         guardaBoard(); pintarBoard();
       });
@@ -1466,8 +1563,9 @@
         try {
           document.querySelectorAll('#board-cv .bcard.sel').forEach(n => { if (n !== el) n.classList.remove('sel'); });
           // El texto libre ya no usa margen en ninguna pantalla (todo sale del menú): en celular se abre su menú
-          if (esTactil() && esTexto) { try { abrirMenuTexto(t.id); } catch (eS) {} }
-          else if (!esTexto) el.classList.add('sel');
+          if (esTactil() && esTexto) { try { cerrarMenuCaja(); } catch (eC) {} try { abrirMenuTexto(t.id); } catch (eS) {} }
+          else if (!esTexto) { el.classList.add('sel'); try { cerrarMenuTexto(); cerrarSubMenusTexto(); } catch (eT) {} try { abrirMenuCaja(t.id); } catch (eC2) {} }
+          else { try { cerrarMenuCaja(); } catch (eC3) {} }
           // Al tocar texto escrito se sigue ahí mismo (foco explícito, sin depender del nativo)
           try {
             if (esTexto && e.target.closest && !e.target.closest('.rh') && !e.target.closest('.bdel')) {
@@ -1513,6 +1611,7 @@
           if (esTactil()) return;
           if (e && e.preventDefault) e.preventDefault();
           if (e && e.stopPropagation) e.stopPropagation();
+          try { cerrarMenuCaja(); } catch (eC) {}
           abrirMenuTexto(t.id);
         } catch (err) {}
       });
