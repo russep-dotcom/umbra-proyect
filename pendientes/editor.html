@@ -244,20 +244,49 @@
     #estilo-caja .fbtn { font-size: 12px; padding: 8px 10px; margin: 0; min-height: 0; }
     #estilo-caja .fbtn.sel { background: var(--priv); color: #000; }
     /* MARCO recuadros (tipo caja): todos en rojo fijo #ff1a1a, sin scope de medio */
-    .bcard.marco-hud { border: 2px solid #ff1a1a; }
+    .bcard.marco-hud { border: 2px solid #ff1a1a;
+      background:
+        radial-gradient(circle 3px at 14px 14px, #ff1a1a 98%, transparent 100%),
+        radial-gradient(circle 3px at calc(100% - 14px) 14px, #ff1a1a 98%, transparent 100%),
+        radial-gradient(circle 3px at 14px calc(100% - 14px), #ff1a1a 98%, transparent 100%),
+        radial-gradient(circle 3px at calc(100% - 14px) calc(100% - 14px), #ff1a1a 98%, transparent 100%),
+        repeating-linear-gradient(180deg, rgba(255,26,26,0.5) 0 5px, transparent 5px 11px),
+        repeating-linear-gradient(180deg, rgba(255,26,26,0.5) 0 5px, transparent 5px 11px),
+        rgba(10,0,0,0.93);
+      background-size: auto, auto, auto, auto, 6px 70px, 6px 70px, auto;
+      background-position: 0 0, 0 0, 0 0, 0 0, 7px center, calc(100% - 7px) center, 0 0;
+      background-repeat: no-repeat;
+      box-shadow: 0 0 18px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,26,26,0.4), inset 0 0 26px rgba(255,26,26,0.10); }
     .bcard.marco-hud::before, .bcard.marco-hud::after { content: ''; position: absolute; width: 18px; height: 18px; pointer-events: none; }
     .bcard.marco-hud::before { top: -6px; left: -6px; border-top: 3px solid #ff1a1a; border-left: 3px solid #ff1a1a; }
     .bcard.marco-hud::after { bottom: -6px; right: -6px; border-bottom: 3px solid #ff1a1a; border-right: 3px solid #ff1a1a; }
-    .bcard.marco-bisel { border: 2px solid #ff1a1a; border-radius: 0; clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px); filter: drop-shadow(0 0 8px #ff1a1a); }
+    .bcard.marco-bisel { border: 2px solid #ff1a1a; border-radius: 0; clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px); filter: drop-shadow(0 0 8px #ff1a1a);
+      background:
+        radial-gradient(circle 2.5px at 24px 24px, #ff1a1a 98%, transparent 100%),
+        radial-gradient(circle 2.5px at calc(100% - 24px) 24px, #ff1a1a 98%, transparent 100%),
+        radial-gradient(circle 2.5px at 24px calc(100% - 24px), #ff1a1a 98%, transparent 100%),
+        radial-gradient(circle 2.5px at calc(100% - 24px) calc(100% - 24px), #ff1a1a 98%, transparent 100%),
+        rgba(10,0,0,0.93);
+      background-repeat: no-repeat;
+      box-shadow: inset 0 0 0 1px rgba(255,26,26,0.5), inset 0 0 26px rgba(255,26,26,0.10); }
     .bcard.marco-bisel .bdel { top: 4px; right: 4px; }
     .bcard.marco-bisel .rh-nw { top: 2px; left: 2px; }
     .bcard.marco-bisel .rh-ne { top: 2px; right: 2px; }
     .bcard.marco-bisel .rh-sw { bottom: 2px; left: 2px; }
     .bcard.marco-bisel .rh-se { bottom: 2px; right: 2px; }
-    .bcard.marco-cinta { border: 2px solid #ff1a1a; }
+    .bcard.marco-cinta { border: 2px solid #ff1a1a;
+      background:
+        radial-gradient(circle 2.5px at 14px calc(100% - 14px), #ff1a1a 98%, transparent 100%),
+        radial-gradient(circle 2.5px at calc(100% - 14px) calc(100% - 14px), #ff1a1a 98%, transparent 100%),
+        linear-gradient(#ff1a1a, #ff1a1a),
+        rgba(10,0,0,0.93);
+      background-size: auto, auto, 100% 3px, auto;
+      background-position: 0 0, 0 0, 0 100%, 0 0;
+      background-repeat: no-repeat; }
     .bcard.marco-cinta::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 14px; background: repeating-linear-gradient(45deg, #ff1a1a 0 10px, #000 10px 20px); pointer-events: none; }
     .bcard.marco-polaroid { border: 2px solid #ff1a1a; border-bottom: 26px solid #ded6c2; transform: rotate(-1deg); }
     .bcard.marco-polaroid::before { content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 14px; height: 14px; border-radius: 50%; background: #ff1a1a; box-shadow: 0 0 8px #ff1a1a; pointer-events: none; }
+    .bcard.marco-polaroid::after { content: 'UMBRA · EVIDENCIA'; position: absolute; bottom: -21px; left: 0; right: 0; text-align: center; font-size: 8px; letter-spacing: 3px; color: #5a4a2a; pointer-events: none; }
     .texto-card .bcard-body { font-size: 20px; padding: 4px 8px; min-height: 0; overflow-wrap: anywhere; }
     .bcard-body { overflow-wrap: anywhere; }
     /* Botones del menú en blanco (no morados) */
