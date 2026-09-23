@@ -1325,6 +1325,63 @@
         if (v) v.style.display = boardTarjetas.length ? 'none' : 'block';
       } catch (e) {}
     }
+    // Seguimiento suave SOLO táctil: el dedo manda el objetivo y la tarjeta lo alcanza (60fps, sin tirones)
+    const suavMaps = new Map();
+    function suavCard(t, el, nx, ny, nw, nh, soloAncho) {
+      let s = suavMaps.get(t.id);
+      if (!s) { s = { raf: null }; suavMaps.set(t.id, s); }
+      s.tx = nx; s.ty = ny; s.tw = nw; s.th = nh; s.soloAncho = !!soloAncho; s.el = el; s.t = t;
+      if (!s.raf) s.raf = requestAnimationFrame(() => pasoSuav(t.id));
+    }
+    function pasoSuav(id) {
+      const s = suavMaps.get(id);
+      if (!s) return;
+      s.raf = null;
+      const t = s.t, el = s.el;
+      if (!t || !el || !el.isConnected) { suavMaps.delete(id); return; }
+      const f = 0.4;
+      const esT = el.classList.contains('texto-card');
+      const nx = t.x + (s.tx - t.x) * f, ny = t.y + (s.ty - t.y) * f;
+      t.x = nx; t.y = ny;
+      el.style.left = nx + 'px'; el.style.top = ny + 'px';
+      if (s.tw !== undefined) {
+        const cw = parseFloat(el.style.width) || s.tw;
+        const nw2 = cw + (s.tw - cw) * f;
+        t.w = Math.round(nw2);
+        el.style.width = nw2 + 'px';
+        if (!esT && !s.soloAncho) {
+          const ch = parseFloat(el.style.height) || s.th;
+          const nh2 = ch + (s.th - ch) * f;
+          t.h = Math.round(nh2);
+          el.style.height = nh2 + 'px';
+          const cuerpo = el.querySelector('.bcard-body');
+          if (cuerpo) cuerpo.style.minHeight = Math.max(20, nh2 - 20) + 'px';
+        }
+      }
+      const dx = Math.abs(s.tx - nx), dy = Math.abs(s.ty - ny);
+      const dw = (s.tw === undefined) ? 0 : Math.abs(s.tw - parseFloat(el.style.width));
+      if (dx > 0.2 || dy > 0.2 || dw > 0.3) s.raf = requestAnimationFrame(() => pasoSuav(id));
+    }
+    function finSuav(id) {
+      const s = suavMaps.get(id);
+      if (!s) return;
+      if (s.raf) cancelAnimationFrame(s.raf);
+      suavMaps.delete(id);
+      const t = s.t, el = s.el;
+      if (!t || !el || !el.isConnected) return;
+      t.x = Math.round(s.tx); t.y = Math.round(s.ty);
+      el.style.left = t.x + 'px'; el.style.top = t.y + 'px';
+      if (s.tw !== undefined) {
+        t.w = Math.round(s.tw);
+        el.style.width = t.w + 'px';
+        if (!el.classList.contains('texto-card') && !s.soloAncho) {
+          t.h = Math.round(s.th);
+          el.style.height = t.h + 'px';
+          const cuerpo = el.querySelector('.bcard-body');
+          if (cuerpo) cuerpo.style.minHeight = Math.max(20, t.h - 20) + 'px';
+        }
+      }
+    }
     function centroBoard() {
       let cx = 200, cy = 200;
       try {
@@ -1432,15 +1489,17 @@
           if (ev.pointerId !== pid) return;
           if (!arr && Math.hypot(ev.clientX - x0, ev.clientY - y0) < 4) return;
           arr = true;
-          t.x = Math.round(ox + (ev.clientX - x0) / boardVista.k);
-          t.y = Math.round(oy + (ev.clientY - y0) / boardVista.k);
-          el.style.left = t.x + 'px'; el.style.top = t.y + 'px';
+          const nx = ox + (ev.clientX - x0) / boardVista.k;
+          const ny = oy + (ev.clientY - y0) / boardVista.k;
+          if (ev.pointerType === 'touch') { suavCard(t, el, nx, ny); }
+          else { t.x = Math.round(nx); t.y = Math.round(ny); el.style.left = t.x + 'px'; el.style.top = t.y + 'px'; }
         };
         const up = ev => {
           if (ev.pointerId !== pid) return;
           window.removeEventListener('pointermove', mv);
           window.removeEventListener('pointerup', up);
           window.removeEventListener('pointercancel', up);
+          finSuav(t.id);
           if (arr) guardaBoard();
         };
         window.addEventListener('pointermove', mv);
@@ -1491,7 +1550,8 @@
             if (dir.indexOf('n') >= 0) { nh = oh - dy; ny = oy + dy; }
             nw = Math.max(120, nw);
             if (dir.indexOf('w') >= 0) nx = ox + (ow - nw);
-            if (esTexto) {
+            if (ev.pointerType === 'touch') { suavCard(t, el, nx, ny, nw, nh, esTexto); }
+            else if (esTexto) {
               tocoAncho = true;
               t.w = Math.round(nw);
               t.x = Math.round(nx);
@@ -1512,6 +1572,7 @@
             window.removeEventListener('pointermove', mv);
             window.removeEventListener('pointerup', up);
             window.removeEventListener('pointercancel', up);
+            finSuav(t.id);
             if (esTactil() && esTexto) {
               try { t.w = Math.round(el.offsetWidth); } catch (e5) {}
               if (tocoAncho) t.mw = true;
