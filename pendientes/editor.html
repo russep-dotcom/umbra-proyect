@@ -859,6 +859,9 @@
         sx = e.clientX; sy = e.clientY;
         svx = boardVista.x; svy = boardVista.y;
         tapX = e.clientX; tapY = e.clientY; tapId = e.pointerId; tapPinza = false; tapMovido = false;
+        try {
+          if (flechaModo && iniciarTrazoFlecha(null, e)) { moviendo = false; return; }
+        } catch (errF) {}
       });
       vp.addEventListener('pointermove', e => {
         if (!puntos.has(e.pointerId)) return;
@@ -1509,8 +1512,14 @@
         boardFlechas = fl.filter(Boolean).map((f, i) => {
           if (!f || typeof f !== 'object') return null;
           const de = String(f.de || f.from || ''), a = String(f.a || f.to || '');
-          if (!de || !a || !ids[de] || !ids[a] || de === a) return null;
-          return { id: String(f.id || ('f' + i + '_' + Date.now().toString(36))), de: de, a: a };
+          const fx = (f.fx === undefined || f.fx === null || f.fx === '') ? null : +f.fx;
+          const fy = (f.fy === undefined || f.fy === null || f.fy === '') ? null : +f.fy;
+          const tx = (f.tx === undefined || f.tx === null || f.tx === '') ? null : +f.tx;
+          const ty = (f.ty === undefined || f.ty === null || f.ty === '') ? null : +f.ty;
+          const okDe = de ? !!ids[de] : (fx !== null && fy !== null);
+          const okA = a ? !!ids[a] : (tx !== null && ty !== null);
+          if (!okDe || !okA || (de && a && de === a)) return null;
+          return { id: String(f.id || ('f' + i + '_' + Date.now().toString(36))), de: de || null, a: a || null, fx: fx, fy: fy, tx: tx, ty: ty };
         }).filter(Boolean);
         return tarjetas;
       } catch (e) { try { boardFlechas = []; } catch (e2) {} return []; }
@@ -1520,7 +1529,7 @@
         const ids = {};
         boardTarjetas.forEach(t => { if (t && t.id) ids[t.id] = true; });
         const n0 = boardFlechas.length;
-        boardFlechas = boardFlechas.filter(f => f && ids[f.de] && ids[f.a]);
+        boardFlechas = boardFlechas.filter(f => f && (f.de ? ids[f.de] : (f.fx !== undefined && f.fx !== null)) && (f.a ? ids[f.a] : (f.tx !== undefined && f.tx !== null)) && (f.de || f.a));
         if (flechaSel && !boardFlechas.some(f => f.id === flechaSel)) flechaSel = null;
         if (flechaOrigen && !ids[flechaOrigen]) flechaOrigen = null;
         return boardFlechas.length !== n0;
@@ -1886,10 +1895,14 @@
         while (capa.firstChild) capa.removeChild(capa.firstChild);
         const NS = 'http://www.w3.org/2000/svg';
         (boardFlechas || []).forEach(f => {
-          if (!f || !f.id || !f.de || !f.a) return;
-          const a = medidaTarjeta(f.de), b = medidaTarjeta(f.a);
-          if (!a || !b) return;
-          const d = curvaFlecha(a, b, f.de, f.a);
+          if (!f || !f.id || !(f.de || f.a)) return;
+          const ma = f.de ? medidaTarjeta(f.de) : null;
+          const mb = f.a ? medidaTarjeta(f.a) : null;
+          if (f.de && !ma) return;
+          if (f.a && !mb) return;
+          const a = ma || { cx: +f.fx || 0, cy: +f.fy || 0, w: 0, h: 0 };
+          const b = mb || { cx: +f.tx || 0, cy: +f.ty || 0, w: 0, h: 0 };
+          const d = curvaFlecha(a, b, f.de || (f.id + '>A'), f.a || (f.id + '>B'));
           if (!d) return;
           const sel = (flechaSel === f.id);
           const g = document.createElementNS(NS, 'g');
@@ -2031,9 +2044,9 @@
         }
         while (tmp.firstChild) tmp.removeChild(tmp.firstChild);
         if (!flechaTrazo) return;
-        const a = medidaTarjeta(flechaTrazo.de);
-        if (!a) return;
-        const d = curvaTrazoFlecha(a, flechaTrazo.x, flechaTrazo.y);
+        const a = flechaTrazo.de ? medidaTarjeta(flechaTrazo.de) : null;
+        const o = a || { cx: flechaTrazo.ox, cy: flechaTrazo.oy, w: 0, h: 0 };
+        const d = curvaTrazoFlecha(o, flechaTrazo.x, flechaTrazo.y);
         if (!d) return;
         const vis = document.createElementNS(NS, 'path');
         vis.setAttribute('d', d);
@@ -2052,13 +2065,13 @@
     function iniciarTrazoFlecha(id, e) {
       try {
         if (!flechaModo) return false;
-        if (!id) return true;
         try { if (e.stopPropagation) e.stopPropagation(); } catch (errS) {}
         try { if (e.preventDefault) e.preventDefault(); } catch (errP) {}
         const p = puntoBoardFlecha(e.clientX, e.clientY);
-        flechaOrigen = id;
+        if (!p) return true;
+        flechaOrigen = id || null;
         flechaSel = null;
-        flechaTrazo = { de: id, x: p ? p.x : 0, y: p ? p.y : 0 };
+        flechaTrazo = { de: id || null, ox: p.x, oy: p.y, x: p.x, y: p.y };
         try { updateBtnFlecha(); } catch (errB) {}
         try { dibujarFlechas(); } catch (errD) {}
         try { dibujarTrazoFlecha(); } catch (errT) {}
@@ -2088,13 +2101,22 @@
               if (card && card.dataset && card.dataset.id) dest = card.dataset.id;
             } catch (errE) {}
             const ori = (flechaTrazo && flechaTrazo.de) || flechaOrigen;
+            const ox = flechaTrazo ? flechaTrazo.ox : null;
+            const oy = flechaTrazo ? flechaTrazo.oy : null;
+            const ex = flechaTrazo ? flechaTrazo.x : null;
+            const ey = flechaTrazo ? flechaTrazo.y : null;
             flechaTrazo = null;
             try { limpiarTrazoFlecha(); } catch (errL) {}
-            if (dest && ori && dest !== ori) {
-              const ya = boardFlechas.some(f => f && ((f.de === ori && f.a === dest) || (f.de === dest && f.a === ori)));
-              if (!ya) {
-                boardFlechas.push({ id: 'f' + Date.now().toString(36) + Math.floor(Math.random() * 90 + 10), de: ori, a: dest });
+            if (dest && dest !== ori) {
+              if (!ori) {
+                boardFlechas.push({ id: 'f' + Date.now().toString(36) + Math.floor(Math.random() * 90 + 10), de: null, a: dest, fx: ox, fy: oy });
                 guardaBoard();
+              } else {
+                const ya = boardFlechas.some(f => f && ((f.de === ori && f.a === dest) || (f.de === dest && f.a === ori)));
+                if (!ya) {
+                  boardFlechas.push({ id: 'f' + Date.now().toString(36) + Math.floor(Math.random() * 90 + 10), de: ori, a: dest });
+                  guardaBoard();
+                }
               }
             }
             flechaOrigen = null;
