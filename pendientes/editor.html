@@ -439,48 +439,6 @@
       .texto-card .bcard-body, .texto-card.escribiendo .bcard-body,
       .texto-card.escribiendo .bcard-body:focus { background: none !important; box-shadow: none !important; outline: none !important; -webkit-tap-highlight-color: transparent; }
       .texto-card.escribiendo, .bcard.texto-card.escribiendo.sel { outline: none !important; box-shadow: none !important; }
-      /* Marcos con imagen por rango (SOLO móvil; en PC mandan los marcos CSS de base) */
-      /* ALFA: hud=a2 esquinas limpias 90°, bisel=a3 cantos achaflanados, cinta=a4 barra superior, polaroid=a1 bloque más macizo */
-      .bcard[data-rango="alfa"].marco-hud { border: 20px solid var(--bc, #ff1a1a); border-radius: 6px;
-        border-image-source: url('../img/marcos/alfa/a2.jpg'); border-image-slice: 90; border-image-repeat: stretch;
-        background: rgba(10,0,0,0.93); clip-path: none; filter: none;
-        box-shadow: 0 0 18px rgba(0,0,0,0.7), 0 0 22px var(--bc, #ff1a1a); }
-      .bcard[data-rango="alfa"].marco-bisel { border: 16px solid var(--bc, #ff1a1a); border-radius: 6px;
-        border-image-source: url('../img/marcos/alfa/a3.jpg'); border-image-slice: 42; border-image-repeat: stretch;
-        background: rgba(10,0,0,0.93); clip-path: none; filter: none;
-        box-shadow: 0 0 18px rgba(0,0,0,0.7), 0 0 22px var(--bc, #ff1a1a); }
-      .bcard[data-rango="alfa"].marco-cinta { border: 20px solid var(--bc, #ff1a1a); border-radius: 6px;
-        border-image-source: url('../img/marcos/alfa/a4.jpg'); border-image-slice: 70; border-image-repeat: stretch;
-        background: rgba(10,0,0,0.93); clip-path: none; filter: none;
-        box-shadow: 0 0 18px rgba(0,0,0,0.7), 0 0 22px var(--bc, #ff1a1a); }
-      .bcard[data-rango="alfa"].marco-polaroid { border: 18px solid var(--bc, #ff1a1a); border-radius: 6px;
-        border-image-source: url('../img/marcos/alfa/a1.jpg'); border-image-slice: 46; border-image-repeat: stretch;
-        background: rgba(10,0,0,0.93); clip-path: none; filter: none;
-        box-shadow: 0 0 18px rgba(0,0,0,0.7), 0 0 22px var(--bc, #ff1a1a); }
-      /* BETA: hud=b1 filete fino 90°, bisel=b4 filete técnico, cinta=b3 papel con cinta (fondo, no cuadra como border-image), polaroid=b2 cuñas gruesas */
-      .bcard[data-rango="beta"].marco-hud { border: 16px solid var(--bc, #ff8c1a); border-radius: 6px;
-        border-image-source: url('../img/marcos/beta/b1.jpg'); border-image-slice: 40; border-image-repeat: stretch;
-        background: rgba(10,0,0,0.93); clip-path: none; filter: none;
-        box-shadow: 0 0 18px rgba(0,0,0,0.7), 0 0 22px var(--bc, #ff8c1a); }
-      .bcard[data-rango="beta"].marco-bisel { border: 16px solid var(--bc, #ff8c1a); border-radius: 6px;
-        border-image-source: url('../img/marcos/beta/b4.jpg'); border-image-slice: 36; border-image-repeat: stretch;
-        background: rgba(10,0,0,0.93); clip-path: none; filter: none;
-        box-shadow: 0 0 18px rgba(0,0,0,0.7), 0 0 22px var(--bc, #ff8c1a); }
-      .bcard[data-rango="beta"].marco-cinta { border: 2px solid var(--bc, #ff8c1a); border-radius: 6px;
-        background-image: url('../img/marcos/beta/b3.jpg'); background-size: 100% 100%; background-repeat: no-repeat;
-        background-color: rgba(10,0,0,0.93); clip-path: none; filter: none;
-        box-shadow: 0 0 18px rgba(0,0,0,0.7), 0 0 22px var(--bc, #ff8c1a); }
-      .bcard[data-rango="beta"].marco-polaroid { border: 22px solid var(--bc, #ff8c1a); border-radius: 6px;
-        border-image-source: url('../img/marcos/beta/b2.jpg'); border-image-slice: 100; border-image-repeat: stretch;
-        background: rgba(10,0,0,0.93); clip-path: none; filter: none;
-        box-shadow: 0 0 18px rgba(0,0,0,0.7), 0 0 22px var(--bc, #ff8c1a); }
-      /* La decoración CSS (esquinas, cintas, pin) estorba a la imagen: se apaga solo en variantes con imagen */
-      .bcard[data-rango="alfa"].marco-hud::before, .bcard[data-rango="alfa"].marco-hud::after,
-      .bcard[data-rango="alfa"].marco-cinta::before,
-      .bcard[data-rango="alfa"].marco-polaroid::before, .bcard[data-rango="alfa"].marco-polaroid::after,
-      .bcard[data-rango="beta"].marco-hud::before, .bcard[data-rango="beta"].marco-hud::after,
-      .bcard[data-rango="beta"].marco-cinta::before,
-      .bcard[data-rango="beta"].marco-polaroid::before, .bcard[data-rango="beta"].marco-polaroid::after { display: none; }
     }
     body { animation: encender 1.1s ease-out backwards; }
     @keyframes encender { from { opacity: 0; } to { opacity: 1; } }
