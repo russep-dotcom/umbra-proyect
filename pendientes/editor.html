@@ -172,6 +172,16 @@
     .board-bar { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
     .board-bar button { font-size: 14px; padding: 6px 14px; margin-top: 0; min-height: 0; }
     #zoom-num { font-size: 12px; letter-spacing: 2px; color: var(--priv); margin-left: auto; margin-right: 50px; }
+    /* Flechas estilo excalidraw con toque UMBRA (solo tablero) */
+    #btn-flecha.encendida { background: var(--priv); color: #000; }
+    #board-flechas { position: absolute; left: 0; top: 0; width: 2000px; height: 2000px; overflow: visible; pointer-events: none; z-index: 1; }
+    #board-cv .bcard { z-index: 2; }
+    #board-flechas g.flecha { pointer-events: none; filter: drop-shadow(0 0 5px rgba(177,77,255,0.8)); }
+    #board-flechas g.flecha.sel { filter: drop-shadow(0 0 10px #e0b3ff); }
+    #board-flechas path.golpe { fill: none; stroke: rgba(0,0,0,0); stroke-width: 20px; stroke-linecap: round; pointer-events: stroke; cursor: pointer; }
+    #board-flechas path.vis { fill: none; stroke: #b14dff; stroke-width: 2.6px; stroke-linecap: round; pointer-events: none; }
+    #board-flechas g.flecha.sel path.vis { stroke: #d9a5ff; stroke-width: 3.4px; }
+    .bcard.origen-flecha { outline: 2px dashed #b14dff; outline-offset: 3px; }
     /* Botón A de texto: solo existe en celular (ver bloque móvil) */
     #btn-texto { display: none; font-weight: bold; font-family: Georgia, 'Times New Roman', serif; }
     #board-vp { height: 60vh; min-height: 380px; overflow: hidden; position: relative;
@@ -521,6 +531,7 @@
               </div>
             </div>
             <button id="btn-texto" type="button" onclick="toggleTextoMovil(event)" aria-label="Escribir texto en el tablero">A</button>
+            <button id="btn-flecha" type="button" onclick="toggleFlecha(event)" aria-label="Crear flechas entre tarjetas">↗ FLECHA</button>
             <div class="clas-wrap" id="rango-wrap">
               <button id="btn-rango" type="button" class="clas-drop-btn mini" onclick="toggleRangoBoard(event)">RANGO ▾</button>
               <div class="clas-lista" id="lista-rangos">
@@ -533,7 +544,7 @@
             </div>
             <span id="zoom-num">100%</span>
           </div>
-          <div id="board-vp"><div id="board-cv"></div><div id="board-vacio">TOCA PARA ESCRIBIR · O AGREGA DESDE ⚙</div></div>
+          <div id="board-vp"><div id="board-cv"><svg id="board-flechas" width="2000" height="2000" viewBox="0 0 2000 2000" aria-hidden="true"><defs><filter id="fl-rugoso" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="4"/></filter><marker id="fl-punta" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#b14dff"/></marker><marker id="fl-punta-sel" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#d9a5ff"/></marker></defs><g id="fl-capa"></g></svg></div><div id="board-vacio">TOCA PARA ESCRIBIR · O AGREGA DESDE ⚙</div></div>
         </div>
         <div id="estilo-pop">
           <button class="fbtn" type="button" onclick="ajusteTexto({df:-2})" aria-label="Letra más pequeña">A−</button>
@@ -885,6 +896,16 @@
           tapId = null;
           if (!fueTap) return;
           if (e.target.closest && e.target.closest('.bcard')) return;
+          // Modo flecha: el toque en vacío no escribe, solo suelta el origen/elegida
+          try {
+            if (flechaModo || flechaSel || flechaOrigen) {
+              flechaOrigen = null;
+              flechaSel = null;
+              try { updateBtnFlecha(); } catch (eF) {}
+              try { dibujarFlechas(); } catch (eD) {}
+              if (flechaModo) return;
+            } else if (flechaModo) return;
+          } catch (eF2) {}
           if (esTactil()) {
             // Celular estilo excalidraw: sin la herramienta A el toque no crea nada
             if (!textoToolMovil) return;
@@ -912,6 +933,13 @@
             // Sin herramienta (celular) o en computador, el toque en vacío cierra el menú
             try { if (!esTactil() || !textoToolMovil) cerrarMenuTexto(); } catch (e2) {}
             try { cerrarMenuCaja(); } catch (e3) {}
+            try {
+              if (flechaOrigen || flechaSel) {
+                flechaOrigen = null; flechaSel = null;
+                try { updateBtnFlecha(); } catch (eF) {}
+                try { dibujarFlechas(); } catch (eD) {}
+              }
+            } catch (eF2) {}
           }
         } catch (err) {}
       });
@@ -1036,6 +1064,9 @@
     }
     // ===== TABLERO: barra + tarjetas (solo umbra_board3) =====
     let boardTarjetas = [];
+    let boardFlechas = [];
+    // Flechas excalidraw con toque UMBRA (solo tablero): modo armado + origen + elegida
+    let flechaModo = false, flechaOrigen = null, flechaSel = null;
     // Herramienta de texto estilo excalidraw (solo celular): botón A + pendiente que se anula si queda vacía
     let textoToolMovil = false;
     let pendienteMovil = null;
@@ -1442,9 +1473,14 @@
     function alejarBoard() { zoomHacia(1 / 1.2); cerrarMenuBoard(); }
     function leeBoard() {
       try {
-        const a = JSON.parse(localStorage.getItem('umbra_board3') || '[]');
-        if (!Array.isArray(a)) return [];
-        return a.filter(Boolean).map((o, i) => {
+        const crudo = JSON.parse(localStorage.getItem('umbra_board3') || '[]');
+        let lista = [], fl = [];
+        if (Array.isArray(crudo)) { lista = crudo; fl = []; }
+        else if (crudo && typeof crudo === 'object') {
+          lista = Array.isArray(crudo.tarjetas) ? crudo.tarjetas : (Array.isArray(crudo.cards) ? crudo.cards : []);
+          fl = Array.isArray(crudo.flechas) ? crudo.flechas : [];
+        }
+        const tarjetas = lista.filter(Boolean).map((o, i) => {
           if (!o || typeof o !== 'object') return null;
           return {
             id: String(o.id || ('b' + i + '_' + Date.now().toString(36))),
@@ -1461,10 +1497,31 @@
             rango: (['ALFA', 'DELTA', 'BETA', 'GAMMA', 'OMEGA'].indexOf(String(o.rango || '').toUpperCase()) >= 0) ? String(o.rango).toUpperCase() : ''
           };
         }).filter(Boolean);
-      } catch (e) { return []; }
+        const ids = {};
+        tarjetas.forEach(t => { ids[t.id] = true; });
+        boardFlechas = fl.filter(Boolean).map((f, i) => {
+          if (!f || typeof f !== 'object') return null;
+          const de = String(f.de || f.from || ''), a = String(f.a || f.to || '');
+          if (!de || !a || !ids[de] || !ids[a] || de === a) return null;
+          return { id: String(f.id || ('f' + i + '_' + Date.now().toString(36))), de: de, a: a };
+        }).filter(Boolean);
+        return tarjetas;
+      } catch (e) { try { boardFlechas = []; } catch (e2) {} return []; }
+    }
+    function purgaFlechas() {
+      try {
+        const ids = {};
+        boardTarjetas.forEach(t => { if (t && t.id) ids[t.id] = true; });
+        const n0 = boardFlechas.length;
+        boardFlechas = boardFlechas.filter(f => f && ids[f.de] && ids[f.a]);
+        if (flechaSel && !boardFlechas.some(f => f.id === flechaSel)) flechaSel = null;
+        if (flechaOrigen && !ids[flechaOrigen]) flechaOrigen = null;
+        return boardFlechas.length !== n0;
+      } catch (e) { return false; }
     }
     function guardaBoard() {
-      try { localStorage.setItem('umbra_board3', JSON.stringify(boardTarjetas)); } catch (e) {}
+      try { purgaFlechas(); } catch (e) {}
+      try { localStorage.setItem('umbra_board3', JSON.stringify({ tarjetas: boardTarjetas, flechas: boardFlechas })); } catch (e) {}
       try {
         const v = document.getElementById('board-vacio');
         if (v) v.style.display = boardTarjetas.length ? 'none' : 'block';
@@ -1505,6 +1562,7 @@
       }
       const dx = Math.abs(s.tx - nx), dy = Math.abs(s.ty - ny);
       const dw = (s.tw === undefined) ? 0 : Math.abs(s.tw - parseFloat(el.style.width));
+      try { dibujarFlechas(); } catch (e) {}
       if (dx > 0.2 || dy > 0.2 || dw > 0.3) s.raf = requestAnimationFrame(() => pasoSuav(id));
     }
     function finSuav(id) {
@@ -1526,6 +1584,7 @@
           if (cuerpo) cuerpo.style.minHeight = Math.max(20, t.h - 20) + 'px';
         }
       }
+      try { dibujarFlechas(); } catch (e) {}
     }
     function centroBoard() {
       let cx = 200, cy = 200;
@@ -1556,6 +1615,7 @@
         const v = document.getElementById('board-vacio');
         if (v) v.style.display = boardTarjetas.length ? 'none' : 'block';
       } catch (e) {}
+      try { asegurarSvgFlechas(); dibujarFlechas(); } catch (e) {}
     }
     function nodoTarjeta(t) {
       const esTexto = t.tipo === 'texto';
@@ -1613,6 +1673,8 @@
       });
       el.addEventListener('pointerdown', e => {
         if (e.target.closest && (e.target.closest('.rh') || e.target.closest('.bdel'))) return;
+        // Modo flecha: tocar tarjetas arma origen/destino, sin arrastrar ni editar
+        try { if (flechaModo && clicTarjetaFlecha(t.id)) { if (e.stopPropagation) e.stopPropagation(); if (e.preventDefault) e.preventDefault(); return; } } catch (errF) {}
         try {
           document.querySelectorAll('#board-cv .bcard.sel').forEach(n => { if (n !== el) n.classList.remove('sel'); });
           // El texto libre ya no usa margen en ninguna pantalla (todo sale del menú): en celular se abre su menú
@@ -1643,7 +1705,7 @@
           const nx = ox + (ev.clientX - x0) / boardVista.k;
           const ny = oy + (ev.clientY - y0) / boardVista.k;
           if (ev.pointerType === 'touch') { suavCard(t, el, nx, ny); }
-          else { t.x = Math.round(nx); t.y = Math.round(ny); el.style.left = t.x + 'px'; el.style.top = t.y + 'px'; }
+          else { t.x = Math.round(nx); t.y = Math.round(ny); el.style.left = t.x + 'px'; el.style.top = t.y + 'px'; try { dibujarFlechas(); } catch (eD) {} }
         };
         const up = ev => {
           if (ev.pointerId !== pid) return;
@@ -1651,6 +1713,7 @@
           window.removeEventListener('pointerup', up);
           window.removeEventListener('pointercancel', up);
           finSuav(t.id);
+          try { dibujarFlechas(); } catch (eD) {}
           if (arr) guardaBoard();
         };
         window.addEventListener('pointermove', mv);
@@ -1692,6 +1755,7 @@
               const fs = Math.max(10, Math.min(64, Math.round(fs0 * dd / dd0)));
               t.fs = fs;
               cuerpo.style.fontSize = fs + 'px';
+              try { dibujarFlechas(); } catch (eD) {}
               return;
             }
             const dx = (ev.clientX - sx) / boardVista.k, dy = (ev.clientY - sy) / boardVista.k;
@@ -1709,6 +1773,7 @@
               t.x = Math.round(nx);
               el.style.width = t.w + 'px';
               el.style.left = t.x + 'px';
+              try { dibujarFlechas(); } catch (eD) {}
             } else {
               nh = Math.max(60, nh);
               if (dir.indexOf('n') >= 0) ny = oy + (oh - nh);
@@ -1717,6 +1782,7 @@
               el.style.left = t.x + 'px'; el.style.top = t.y + 'px';
               el.style.width = t.w + 'px';
               cuerpo.style.minHeight = Math.max(20, t.h - 20) + 'px';
+              try { dibujarFlechas(); } catch (eD) {}
             }
           };
           const up = ev => {
@@ -1730,6 +1796,7 @@
               if (tocoAncho) t.mw = true;
             }
             guardaBoard();
+            try { dibujarFlechas(); } catch (eD) {}
           };
           window.addEventListener('pointermove', mv);
           window.addEventListener('pointerup', up);
@@ -1738,6 +1805,210 @@
       });
       return el;
     }
+    // ===== TABLERO: flechas estilo excalidraw con toque UMBRA (solo umbra_board3.flechas) =====
+    function asegurarSvgFlechas() {
+      try {
+        let svg = document.getElementById('board-flechas');
+        const cv = document.getElementById('board-cv');
+        if (!svg && cv) {
+          svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          svg.setAttribute('id', 'board-flechas');
+          svg.setAttribute('width', '2000');
+          svg.setAttribute('height', '2000');
+          svg.setAttribute('viewBox', '0 0 2000 2000');
+          svg.setAttribute('aria-hidden', 'true');
+          svg.innerHTML = '<defs><filter id="fl-rugoso" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="4"/></filter><marker id="fl-punta" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#b14dff"/></marker><marker id="fl-punta-sel" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#d9a5ff"/></marker></defs><g id="fl-capa"></g>';
+          cv.insertBefore(svg, cv.firstChild);
+        }
+        return svg;
+      } catch (e) { return null; }
+    }
+    function medidaTarjeta(id) {
+      try {
+        const t = boardTarjetas.find(o => o && o.id === id);
+        if (!t) return null;
+        let w = +t.w || 220, h = +t.h || 120;
+        try {
+          const cv = document.getElementById('board-cv');
+          const el = cv ? cv.querySelector('[data-id="' + id + '"]') : null;
+          if (el) {
+            if (el.offsetWidth) w = el.offsetWidth;
+            if (el.offsetHeight) h = el.offsetHeight;
+          }
+        } catch (e2) {}
+        return { x: +t.x || 0, y: +t.y || 0, w: w, h: h, cx: (+t.x || 0) + w / 2, cy: (+t.y || 0) + h / 2 };
+      } catch (e) { return null; }
+    }
+    function bordeRect(cx, cy, w, h, tx, ty) {
+      const dx = tx - cx, dy = ty - cy;
+      if (!dx && !dy) return { x: cx, y: cy };
+      const sx = dx ? (w / 2) / Math.abs(dx) : Infinity;
+      const sy = dy ? (h / 2) / Math.abs(dy) : Infinity;
+      const s = Math.min(sx, sy);
+      return { x: cx + dx * s, y: cy + dy * s };
+    }
+    function curvaFlecha(a, b, de, al) {
+      try {
+        const p0 = bordeRect(a.cx, a.cy, a.w, a.h, b.cx, b.cy);
+        const p1 = bordeRect(b.cx, b.cy, b.w, b.h, a.cx, a.cy);
+        const mx = (p0.x + p1.x) / 2, my = (p0.y + p1.y) / 2;
+        const dx = p1.x - p0.x, dy = p1.y - p0.y;
+        const len = Math.hypot(dx, dy) || 1;
+        let lado = 1;
+        try {
+          const s = String(de) + '>' + String(al);
+          let hh = 0;
+          for (let i = 0; i < s.length; i++) hh = (hh * 31 + s.charCodeAt(i)) | 0;
+          lado = (hh % 2 === 0) ? 1 : -1;
+        } catch (e2) {}
+        const panza = Math.max(16, len * 0.14) * lado;
+        const cx = mx + (-dy / len) * panza, cy = my + (dx / len) * panza;
+        return 'M ' + p0.x.toFixed(1) + ' ' + p0.y.toFixed(1) + ' Q ' + cx.toFixed(1) + ' ' + cy.toFixed(1) + ' ' + p1.x.toFixed(1) + ' ' + p1.y.toFixed(1);
+      } catch (e) { return ''; }
+    }
+    function dibujarFlechas() {
+      try {
+        const svg = asegurarSvgFlechas();
+        if (!svg) return;
+        let capa = svg.querySelector('#fl-capa');
+        if (!capa) {
+          capa = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          capa.setAttribute('id', 'fl-capa');
+          svg.appendChild(capa);
+        }
+        while (capa.firstChild) capa.removeChild(capa.firstChild);
+        const NS = 'http://www.w3.org/2000/svg';
+        (boardFlechas || []).forEach(f => {
+          if (!f || !f.id || !f.de || !f.a) return;
+          const a = medidaTarjeta(f.de), b = medidaTarjeta(f.a);
+          if (!a || !b) return;
+          const d = curvaFlecha(a, b, f.de, f.a);
+          if (!d) return;
+          const sel = (flechaSel === f.id);
+          const g = document.createElementNS(NS, 'g');
+          g.setAttribute('class', 'flecha' + (sel ? ' sel' : ''));
+          g.dataset.fid = f.id;
+          const rug = document.createElementNS(NS, 'g');
+          rug.setAttribute('filter', 'url(#fl-rugoso)');
+          const golpe = document.createElementNS(NS, 'path');
+          golpe.setAttribute('d', d);
+          golpe.setAttribute('class', 'golpe');
+          golpe.addEventListener('pointerdown', ev => {
+            try { if (ev.stopPropagation) ev.stopPropagation(); } catch (e2) {}
+          });
+          golpe.addEventListener('click', ev => {
+            try { if (ev.stopPropagation) ev.stopPropagation(); } catch (e2) {}
+            try { clicFlecha(f.id); } catch (e3) {}
+          });
+          const vis = document.createElementNS(NS, 'path');
+          vis.setAttribute('d', d);
+          vis.setAttribute('class', 'vis');
+          vis.setAttribute('marker-end', sel ? 'url(#fl-punta-sel)' : 'url(#fl-punta)');
+          rug.appendChild(golpe);
+          rug.appendChild(vis);
+          g.appendChild(rug);
+          capa.appendChild(g);
+        });
+        // Origen pendiente: se marca la tarjeta para guiar el destino
+        try {
+          document.querySelectorAll('#board-cv .bcard.origen-flecha').forEach(n => n.classList.remove('origen-flecha'));
+          if (flechaModo && flechaOrigen) {
+            const cv = document.getElementById('board-cv');
+            const el = cv ? cv.querySelector('[data-id="' + flechaOrigen + '"]') : null;
+            if (el) el.classList.add('origen-flecha');
+          }
+        } catch (e2) {}
+      } catch (e) {}
+    }
+    function updateBtnFlecha() {
+      try {
+        const b = document.getElementById('btn-flecha');
+        if (!b) return;
+        if (flechaSel) {
+          b.textContent = 'QUITAR';
+          b.classList.add('encendida');
+        } else if (flechaModo) {
+          b.textContent = flechaOrigen ? 'ELIGE DESTINO' : '✕ FLECHA';
+          b.classList.add('encendida');
+        } else {
+          b.textContent = '↗ FLECHA';
+          b.classList.remove('encendida');
+        }
+      } catch (e) {}
+    }
+    function toggleFlecha(e) {
+      try { if (e && e.stopPropagation) e.stopPropagation(); } catch (err) {}
+      try {
+        // Si hay una flecha elegida, el botón la borra
+        if (flechaSel) { borrarFlechaSel(); return; }
+        flechaModo = !flechaModo;
+        flechaOrigen = null;
+        flechaSel = null;
+        try { cerrarMenuBoard(); } catch (e2) {}
+        updateBtnFlecha();
+        dibujarFlechas();
+      } catch (err) {}
+    }
+    function salirFlecha() {
+      try {
+        flechaModo = false;
+        flechaOrigen = null;
+        flechaSel = null;
+        updateBtnFlecha();
+        dibujarFlechas();
+      } catch (e) {}
+    }
+    function clicTarjetaFlecha(id) {
+      try {
+        if (!flechaModo) return false;
+        if (!id) return true;
+        if (!flechaOrigen) {
+          flechaOrigen = id;
+          flechaSel = null;
+          updateBtnFlecha();
+          dibujarFlechas();
+          return true;
+        }
+        if (flechaOrigen === id) {
+          flechaOrigen = null;
+          updateBtnFlecha();
+          dibujarFlechas();
+          return true;
+        }
+        const ya = boardFlechas.some(f => f && ((f.de === flechaOrigen && f.a === id) || (f.de === id && f.a === flechaOrigen)));
+        if (!ya) {
+          boardFlechas.push({ id: 'f' + Date.now().toString(36) + Math.floor(Math.random() * 90 + 10), de: flechaOrigen, a: id });
+          guardaBoard();
+        }
+        flechaOrigen = null;
+        updateBtnFlecha();
+        dibujarFlechas();
+        return true;
+      } catch (e) { return true; }
+    }
+    function clicFlecha(id) {
+      try {
+        flechaSel = (flechaSel === id) ? null : id;
+        if (flechaSel) flechaOrigen = null;
+        updateBtnFlecha();
+        dibujarFlechas();
+      } catch (e) {}
+    }
+    function borrarFlechaSel() {
+      try {
+        if (!flechaSel) return;
+        boardFlechas = boardFlechas.filter(f => !f || f.id !== flechaSel);
+        flechaSel = null;
+        guardaBoard();
+        updateBtnFlecha();
+        dibujarFlechas();
+      } catch (e) {}
+    }
+    document.addEventListener('keydown', e => {
+      try {
+        if (e && e.key === 'Escape' && (flechaModo || flechaSel || flechaOrigen)) salirFlecha();
+      } catch (err) {}
+    });
     // ===== INTERFAZ =====
     function guardarUI() {
       const ui = {
