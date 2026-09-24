@@ -173,7 +173,10 @@
     .board-bar button { font-size: 14px; padding: 6px 14px; margin-top: 0; min-height: 0; }
     #zoom-num { font-size: 12px; letter-spacing: 2px; color: var(--priv); margin-left: auto; margin-right: 50px; }
     /* Flechas estilo excalidraw con toque UMBRA (solo tablero) */
-    #btn-flecha.encendida { background: var(--priv); color: #000; }
+    #btn-flecha { background: transparent; color: var(--priv); border: 1px solid rgba(177,77,255,0.55); font-size: 11px; padding: 5px 10px; letter-spacing: 2px; opacity: 0.85; }
+    #btn-flecha:hover { background: rgba(177,77,255,0.12); color: #d9a5ff; box-shadow: none; }
+    #btn-flecha.encendida { background: rgba(177,77,255,0.18); color: #e0b3ff; border-color: var(--priv); box-shadow: 0 0 12px rgba(177,77,255,0.35); }
+    #vista-board .board-bar #btn-flecha { font-size: 11px; padding: 6px 10px; min-height: 0; }
     #board-flechas { position: absolute; left: 0; top: 0; width: 2000px; height: 2000px; overflow: visible; pointer-events: none; z-index: 1; }
     #board-cv .bcard { z-index: 2; }
     #board-flechas g.flecha { pointer-events: none; filter: drop-shadow(0 0 5px rgba(177,77,255,0.8)); }
@@ -901,6 +904,8 @@
             if (flechaModo || flechaSel || flechaOrigen) {
               flechaOrigen = null;
               flechaSel = null;
+              try { if (typeof flechaTrazo !== 'undefined') flechaTrazo = null; } catch (eL) {}
+              try { if (typeof limpiarTrazoFlecha === 'function') limpiarTrazoFlecha(); } catch (eL2) {}
               try { updateBtnFlecha(); } catch (eF) {}
               try { dibujarFlechas(); } catch (eD) {}
               if (flechaModo) return;
@@ -936,6 +941,8 @@
             try {
               if (flechaOrigen || flechaSel) {
                 flechaOrigen = null; flechaSel = null;
+                try { if (typeof flechaTrazo !== 'undefined') flechaTrazo = null; } catch (eL) {}
+                try { if (typeof limpiarTrazoFlecha === 'function') limpiarTrazoFlecha(); } catch (eL2) {}
                 try { updateBtnFlecha(); } catch (eF) {}
                 try { dibujarFlechas(); } catch (eD) {}
               }
@@ -1673,8 +1680,8 @@
       });
       el.addEventListener('pointerdown', e => {
         if (e.target.closest && (e.target.closest('.rh') || e.target.closest('.bdel'))) return;
-        // Modo flecha: tocar tarjetas arma origen/destino, sin arrastrar ni editar
-        try { if (flechaModo && clicTarjetaFlecha(t.id)) { if (e.stopPropagation) e.stopPropagation(); if (e.preventDefault) e.preventDefault(); return; } } catch (errF) {}
+        // Modo flecha: arrastre para crear (la línea sigue al dedo/ratón; al soltar en otra tarjeta se crea)
+        try { if (flechaModo && iniciarTrazoFlecha(t.id, e)) return; } catch (errF) {}
         try {
           document.querySelectorAll('#board-cv .bcard.sel').forEach(n => { if (n !== el) n.classList.remove('sel'); });
           // El texto libre ya no usa margen en ninguna pantalla (todo sale del menú): en celular se abre su menú
@@ -1944,6 +1951,7 @@
         flechaModo = !flechaModo;
         flechaOrigen = null;
         flechaSel = null;
+        try { flechaTrazo = null; limpiarTrazoFlecha(); } catch (eL) {}
         try { cerrarMenuBoard(); } catch (e2) {}
         updateBtnFlecha();
         dibujarFlechas();
@@ -1954,10 +1962,12 @@
         flechaModo = false;
         flechaOrigen = null;
         flechaSel = null;
+        try { flechaTrazo = null; limpiarTrazoFlecha(); } catch (eL) {}
         updateBtnFlecha();
         dibujarFlechas();
       } catch (e) {}
     }
+    // Legado toque-origen/toque-destino: inerte (la creación ahora es por arrastre con iniciarTrazoFlecha)
     function clicTarjetaFlecha(id) {
       try {
         if (!flechaModo) return false;
@@ -1985,6 +1995,120 @@
         dibujarFlechas();
         return true;
       } catch (e) { return true; }
+    }
+    // Creación por arrastre en modo flecha: línea temporal rugosa morada que sigue al puntero
+    let flechaTrazo = null;
+    function puntoBoardFlecha(cx, cy) {
+      try {
+        const vp = document.getElementById('board-vp');
+        if (!vp) return null;
+        const r = vp.getBoundingClientRect();
+        return { x: (cx - r.left - boardVista.x) / boardVista.k, y: (cy - r.top - boardVista.y) / boardVista.k };
+      } catch (e) { return null; }
+    }
+    function curvaTrazoFlecha(a, px, py) {
+      try {
+        const p0 = bordeRect(a.cx, a.cy, a.w, a.h, px, py);
+        const mx = (p0.x + px) / 2, my = (p0.y + py) / 2;
+        const dx = px - p0.x, dy = py - p0.y;
+        const len = Math.hypot(dx, dy) || 1;
+        const panza = Math.max(10, len * 0.12);
+        const cx = mx + (-dy / len) * panza, cy = my + (dx / len) * panza;
+        return 'M ' + p0.x.toFixed(1) + ' ' + p0.y.toFixed(1) + ' Q ' + cx.toFixed(1) + ' ' + cy.toFixed(1) + ' ' + px.toFixed(1) + ' ' + py.toFixed(1);
+      } catch (e) { return ''; }
+    }
+    function dibujarTrazoFlecha() {
+      try {
+        const svg = asegurarSvgFlechas();
+        if (!svg) return;
+        const NS = 'http://www.w3.org/2000/svg';
+        let tmp = svg.querySelector('#fl-temp');
+        if (!tmp) {
+          tmp = document.createElementNS(NS, 'g');
+          tmp.setAttribute('id', 'fl-temp');
+          tmp.setAttribute('filter', 'url(#fl-rugoso)');
+          svg.appendChild(tmp);
+        }
+        while (tmp.firstChild) tmp.removeChild(tmp.firstChild);
+        if (!flechaTrazo) return;
+        const a = medidaTarjeta(flechaTrazo.de);
+        if (!a) return;
+        const d = curvaTrazoFlecha(a, flechaTrazo.x, flechaTrazo.y);
+        if (!d) return;
+        const vis = document.createElementNS(NS, 'path');
+        vis.setAttribute('d', d);
+        vis.setAttribute('class', 'vis');
+        vis.setAttribute('marker-end', 'url(#fl-punta)');
+        tmp.appendChild(vis);
+      } catch (e) {}
+    }
+    function limpiarTrazoFlecha() {
+      try {
+        const svg = document.getElementById('board-flechas');
+        const tmp = svg ? svg.querySelector('#fl-temp') : null;
+        if (tmp) while (tmp.firstChild) tmp.removeChild(tmp.firstChild);
+      } catch (e) {}
+    }
+    function iniciarTrazoFlecha(id, e) {
+      try {
+        if (!flechaModo) return false;
+        if (!id) return true;
+        try { if (e.stopPropagation) e.stopPropagation(); } catch (errS) {}
+        try { if (e.preventDefault) e.preventDefault(); } catch (errP) {}
+        const p = puntoBoardFlecha(e.clientX, e.clientY);
+        flechaOrigen = id;
+        flechaSel = null;
+        flechaTrazo = { de: id, x: p ? p.x : 0, y: p ? p.y : 0 };
+        try { updateBtnFlecha(); } catch (errB) {}
+        try { dibujarFlechas(); } catch (errD) {}
+        try { dibujarTrazoFlecha(); } catch (errT) {}
+        const pid = e.pointerId;
+        const mv = ev => {
+          try {
+            if (pid !== undefined && ev.pointerId !== undefined && ev.pointerId !== pid) return;
+            const q = puntoBoardFlecha(ev.clientX, ev.clientY);
+            if (!q || !flechaTrazo) return;
+            flechaTrazo.x = q.x;
+            flechaTrazo.y = q.y;
+            dibujarTrazoFlecha();
+          } catch (errM) {}
+        };
+        const fin = ev => {
+          try {
+            if (pid !== undefined && ev.pointerId !== undefined && ev.pointerId !== pid) return;
+          } catch (errI) {}
+          try { window.removeEventListener('pointermove', mv); } catch (errR) {}
+          try { window.removeEventListener('pointerup', fin); } catch (errR2) {}
+          try { window.removeEventListener('pointercancel', fin); } catch (errR3) {}
+          try {
+            let dest = null;
+            try {
+              const el = document.elementFromPoint(ev.clientX, ev.clientY);
+              const card = el && el.closest ? el.closest('#board-cv .bcard') : null;
+              if (card && card.dataset && card.dataset.id) dest = card.dataset.id;
+            } catch (errE) {}
+            const ori = (flechaTrazo && flechaTrazo.de) || flechaOrigen;
+            flechaTrazo = null;
+            try { limpiarTrazoFlecha(); } catch (errL) {}
+            if (dest && ori && dest !== ori) {
+              const ya = boardFlechas.some(f => f && ((f.de === ori && f.a === dest) || (f.de === dest && f.a === ori)));
+              if (!ya) {
+                boardFlechas.push({ id: 'f' + Date.now().toString(36) + Math.floor(Math.random() * 90 + 10), de: ori, a: dest });
+                guardaBoard();
+              }
+            }
+            flechaOrigen = null;
+            try { updateBtnFlecha(); } catch (errB2) {}
+            try { dibujarFlechas(); } catch (errD2) {}
+          } catch (errF) {
+            try { flechaTrazo = null; flechaOrigen = null; limpiarTrazoFlecha(); dibujarFlechas(); } catch (errC) {}
+          }
+        };
+        window.addEventListener('pointermove', mv);
+        window.addEventListener('pointerup', fin);
+        window.addEventListener('pointercancel', fin);
+        return true;
+      } catch (err) { return true; }
     }
     function clicFlecha(id) {
       try {
