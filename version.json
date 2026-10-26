@@ -3,8 +3,8 @@
   "mensaje": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_movil": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_pc": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
-  "editor": "14",
-  "editor_mensaje": "UMBRA editor: la puerta ya deja recuperar la clave. Actualiza para verlo.",
-  "editor_mensaje_movil": "UMBRA editor: si olvidaste la clave, ahora hay un enlace para crear otra. Toca ACTUALIZAR.",
-  "editor_mensaje_pc": "UMBRA editor: la puerta ya deja recuperar la clave. Actualiza para verlo."
+  "editor": "15",
+  "editor_mensaje": "UMBRA editor: flechas rectas y destino por coordenadas. Actualiza para verlo.",
+  "editor_mensaje_movil": "UMBRA editor: flechas rectas y destino por coordenadas. Toca ACTUALIZAR.",
+  "editor_mensaje_pc": "UMBRA editor: flechas rectas y destino por coordenadas. Actualiza para verlo."
 }
