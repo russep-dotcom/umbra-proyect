@@ -623,6 +623,8 @@
 
   <script>
     // ===== PUERTA =====
+    // CLAVE MAESTRA: esta entra siempre, aunque olvides la tuya. Cámbiala aquí cuando quieras.
+    const CLAVE_MAESTRA = 'director';
     function claveGuardada() {
       try { return localStorage.getItem('umbra_pass'); } catch (e) { return null; }
     }
@@ -648,7 +650,9 @@
     function entrar() {
       const v = document.getElementById('clave').value;
       const pass = claveGuardada();
-      if (pass === null) {
+      if (v && v === CLAVE_MAESTRA) {
+        abrir();
+      } else if (pass === null) {
         // Primera vez: tu clave queda creada
         try { localStorage.setItem('umbra_pass', v); } catch (e) {}
         abrir();
