@@ -162,6 +162,12 @@
     .tab.activa { display: block; }
     /* Fundido entre recuadros al entrar (ambas pantallas) */
     #puerta, #panel { transition: opacity 0.45s ease-out; }
+    /* Recuperación de la puerta: sin caja, discreta */
+    #puerta-olvido { display: block; width: auto; background: none; border: none; box-shadow: none;
+      color: #7a5f9e; font-family: inherit; font-size: 11px; letter-spacing: 2px; padding: 8px 0 0;
+      margin: 6px auto 0; text-decoration: underline; cursor: pointer; }
+    #puerta-olvido:hover { background: none; color: #d9a5ff; box-shadow: none; }
+    #puerta-msg.clave-mala { color: #ff5a5a; text-shadow: 0 0 14px rgba(255,26,26,0.5); }
     .item { border: 1px dashed #4a0505; border-radius: 6px; padding: 10px; margin: 8px 0; font-size: 14px; }
     .item button { font-size: 12px; padding: 6px 12px; }
     .aviso { background: #140a02; border: 1px solid #ff7a1a; color: #ff7a1a; border-radius: 6px; padding: 12px; font-size: 14px; }
@@ -486,9 +492,10 @@
     <!-- PUERTA: la primera vez creas tu clave, después siempre la pide -->
     <div id="puerta">
       <p id="puerta-msg">Zona restringida. Identifícate, director.</p>
-      <label>CLAVE</label>
+      <label id="puerta-label">CLAVE</label>
       <input type="password" id="clave" placeholder="••••••••">
       <button onclick="entrar()">ENTRAR</button>
+      <button type="button" id="puerta-olvido" onclick="olvideClave()" style="display:none">¿OLVIDASTE LA CLAVE?</button>
     </div>
 
     <div id="panel" style="display:none;">
@@ -616,20 +623,43 @@
 
   <script>
     // ===== PUERTA =====
+    function claveGuardada() {
+      try { return localStorage.getItem('umbra_pass'); } catch (e) { return null; }
+    }
+    function actualizarPuerta(aviso, mala) {
+      const hay = !!claveGuardada();
+      const etiqueta = document.getElementById('puerta-label');
+      const olvido = document.getElementById('puerta-olvido');
+      if (etiqueta) etiqueta.textContent = hay ? 'CLAVE' : 'PRIMERA VEZ · CREA TU CLAVE';
+      if (olvido) olvido.style.display = hay ? 'block' : 'none';
+      if (aviso) {
+        const m = document.getElementById('puerta-msg');
+        m.textContent = aviso;
+        if (mala) m.classList.add('clave-mala'); else m.classList.remove('clave-mala');
+      }
+    }
+    function olvideClave() {
+      if (!confirm('¿Borrar la clave guardada en este aparato y crear una nueva?')) return;
+      try { localStorage.removeItem('umbra_pass'); } catch (e) {}
+      document.getElementById('clave').value = '';
+      actualizarPuerta('Clave borrada. Escribe una nueva y pulsa ENTRAR.');
+      document.getElementById('clave').focus();
+    }
     function entrar() {
       const v = document.getElementById('clave').value;
-      let pass = null;
-      try { pass = localStorage.getItem('umbra_pass'); } catch (e) {}
-      if (!pass) {
+      const pass = claveGuardada();
+      if (pass === null) {
         // Primera vez: tu clave queda creada
         try { localStorage.setItem('umbra_pass', v); } catch (e) {}
         abrir();
       } else if (v === pass) {
         abrir();
       } else {
-        document.getElementById('puerta-msg').textContent = 'Clave incorrecta. UMBRA te está mirando…';
+        actualizarPuerta('Clave incorrecta. UMBRA te está mirando…', true);
       }
     }
+    document.getElementById('clave').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
+    actualizarPuerta();
     function abrir() {
       const puerta = document.getElementById('puerta');
       const panel = document.getElementById('panel');

@@ -30,6 +30,8 @@ lo del tablero, donde se mezcló todo).
 
 ## Editor privado (sin versión pública, no enlazado)
 - Puerta con clave + intro + portal/suave/crash + INTERFAZ y PUBLICAR.
+  - La primera vez la etiqueta dice `PRIMERA VEZ · CREA TU CLAVE` (antes parecía que te estaba pidiendo una que no tenías). Enter también entra.
+  - Si ya hay clave guardada aparece `¿OLVIDASTE LA CLAVE?` (debajo de ENTRAR, centrado): pide confirmación, borra `umbra_pass` de ese aparato y deja crear otra. No toca los registros.
 - Exportar/importar registros entre aparatos (merge sin duplicados).
 - Cara UMBRA con detalles morados; linterna con color de tarjeta.
 - Tablero: el % de zoom lleva aire a la derecha para que el botón ⛶/✕ no lo tape (50px normal, 60px en pantalla completa).
