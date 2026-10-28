@@ -507,13 +507,39 @@
     .fila-ctrl button { padding: 6px 14px; font-size: 12px; }
     .ayuda { font-size: 11px; color: #666; font-style: italic; margin-left: 10px; }
 
+    /* ===== CAJÓN DE ARCHIVOS ===== */
+    .cajon-header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+    .cajon-header h2 { font-family: 'Special Elite','Courier New',monospace; font-size: 22px; letter-spacing: 3px; color: #d9a5ff; margin: 0; text-transform: uppercase; }
+    .btn-nuevo { background: #14041f; color: #d9a5ff; border: 1px solid #d9a5ff; border-radius: 6px; padding: 10px 22px; font-family: 'Metal Mania','Impact',cursive; font-size: 14px; letter-spacing: 2px; cursor: pointer; align-self: flex-start; box-shadow: 0 0 12px rgba(217,165,255,0.25); }
+    .btn-nuevo:hover { background: #d9a5ff; color: #000; box-shadow: 0 0 20px rgba(217,165,255,0.6); }
+    .cajon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; padding: 0 4px; }
+    .tarjeta-archivo { background: #2a1a0e; border: 1px solid #4a331a; border-radius: 4px; padding: 16px; cursor: pointer; position: relative; transition: transform 0.2s, border-color 0.2s; display: flex; flex-direction: column; gap: 10px; min-height: 200px; }
+    .tarjeta-archivo:hover { border-color: #d9a5ff; transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+    .tarjeta-archivo .t-top { font-family: 'Special Elite','Courier New',monospace; font-size: 15px; letter-spacing: 2px; color: #d9a5ff; text-transform: uppercase; border-bottom: 1px solid #4a331a; padding-bottom: 6px; }
+    .tarjeta-archivo .t-clas { font-family: 'Special Elite','Courier New',monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 10px; border: 1px solid; border-radius: 3px; display: inline-block; margin-top: 6px; }
+    .tarjeta-archivo .t-texto { font-family: 'Special Elite','Courier New',monospace; font-size: 12px; color: #b8a880; line-height: 1.5; margin-top: 8px; flex: 1; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+    .tarjeta-archivo .t-pie { font-size: 10px; color: #6b522b; margin-top: auto; border-top: 1px solid #4a331a; padding-top: 8px; text-align: right; }
+    /* Colores por clasificación */
+    .clas-incompleto { border-color: #8a6d3b; color: #8a6d3b; }
+    .clas-completado { border-color: #2bd96a; color: #2bd96a; }
+    .clas-top-secret { border-color: #ff1a1a; color: #ff1a1a; box-shadow: 0 0 10px rgba(255,26,26,0.35); }
+    .clas-omega { border-color: #2a4bff; color: #2a4bff; }
+    .clas-delta { border-color: #b14dff; color: #b14dff; }
+    .clas-beta { border-color: #ff8c1a; color: #ff8c1a; }
+    .clas-alfa { border-color: #ff1a1a; color: #ff1a1a; font-weight: 700; }
+
+    /* Encabezado de archivo individual */
+    .archivo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
+    .archivo-header h2 { font-family: 'Special Elite','Courier New',monospace; font-size: 18px; letter-spacing: 3px; color: #d9a5ff; margin: 0; text-transform: uppercase; flex: 1; }
+    .btn-volver { background: none; border: 1px solid #7a5f9e; color: #7a5f9e; border-radius: 4px; padding: 6px 14px; font-family: inherit; font-size: 11px; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; flex: 0 0 auto; }
+    .btn-volver:hover { background: #7a5f9e; color: #000; }
+    .btn-borrar { background: none; border: 1px solid #ff1a1a; color: #ff1a1a; border-radius: 4px; padding: 6px 14px; font-family: inherit; font-size: 11px; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; flex: 0 0 auto; margin-left: 8px; }
+    .btn-borrar:hover { background: #ff1a1a; color: #000; }
+
     @media (max-width: 640px) {
-      .carpeta-cuerpo { min-height: 420px; }
-      .hoja { width: 92%; padding: 34px 24px 30px; min-height: 360px; }
-      .sello-incidente { width: 80%; font-size: 16px; }
-      .sello-incidente span { font-size: 14px; }
-      .polaroid-wrap { right: 10px; bottom: 10px; width: 96px; }
-      .fila-ctrl input, .fila-ctrl select { width: 120px; }
+      .cajon-grid { grid-template-columns: 1fr; }
+      .archivo-header { flex-direction: column; align-items: flex-start; }
+      .btn-borrar { margin-left: 0; margin-top: 8px; }
     }
   </style>
 </head>
@@ -579,67 +605,79 @@
       </div>
 
       <div class="tab" id="t-registro">
-        <h2>Nuevo registro de archivo</h2>
-        <p style="font-size:13px;color:#8a8a8a;">Llena el expediente como en el cajón físico. Queda guardado en este navegador hasta que se publique.</p>
+        <!-- ===== VISTA CAJÓN DE ARCHIVOS ===== -->
+        <div id="vista-cajon">
+          <div class="cajon-header">
+            <h2>CAJÓN DE ARCHIVOS UMBRA</h2>
+            <p style="font-size:13px;color:#8a8a8a;">Selecciona un expediente para leerlo o editarlo.</p>
+            <button onclick="nuevoArchivo()" class="btn-nuevo">+ NUEVO ARCHIVO</button>
+          </div>
+          <div class="cajon-grid" id="cajon-grid">
+            <!-- las tarjetas de archivo se inyectan aquí por JS -->
+          </div>
+          <p id="cajon-vacio" style="color:#8a8a8a;text-align:center;margin-top:30px;display:none;">El cajón está vacío. Crea tu primer archivo.</p>
+        </div>
 
-        <!-- ===== ARCHIVO FÍSICO UMBRA ===== -->
-        <div class="archivo-wrap">
-          <!-- Carpeta exterior -->
-          <div class="carpeta">
-            <div class="carpeta-pestaña">ARCHIVO UMBRA</div>
-            <div class="carpeta-cuerpo">
-              <!-- Hoja de papel vieja -->
-              <div class="hoja">
-                <!-- Sello superior INCIDENTE -->
-                <div class="sello-incidente" id="sello-incidente">INCIDENTE <span id="num-incidente">17-B</span></div>
-                <div class="subsello" id="subsello">ARCHIVO INCOMPLETO</div>
-                <hr class="filete">
+        <!-- ===== VISTA ARCHIVO INDIVIDUAL ===== -->
+        <div id="vista-archivo" style="display:none;">
+          <div class="archivo-header">
+            <button onclick="volverCajon()" class="btn-volver">← CAJÓN</button>
+            <h2 id="arch-titulo">EXPEDIENTE</h2>
+          </div>
 
-                <!-- Cuerpo del documento -->
-                <div class="cuerpo-doc">
-                  <div class="polaroid-wrap" id="polaroid-wrap">
-                    <div class="polaroid">
-                      <div class="foto-negra" id="foto-negra"></div>
+          <div class="archivo-wrap">
+            <div class="carpeta">
+              <div class="carpeta-pestaña">ARCHIVO UMBRA</div>
+              <div class="carpeta-cuerpo">
+                <div class="hoja">
+                  <div class="sello-incidente" id="sello-incidente">INCIDENTE <span id="num-incidente">17-B</span></div>
+                  <div class="subsello" id="subsello">ARCHIVO INCOMPLETO</div>
+                  <hr class="filete">
+                  <div class="cuerpo-doc">
+                    <div class="polaroid-wrap" id="polaroid-wrap">
+                      <div class="polaroid">
+                        <div class="foto-negra" id="foto-negra"></div>
+                      </div>
+                      <div class="pie-polaroid" id="pie-polaroid">EVIDENCIA</div>
                     </div>
-                    <div class="pie-polaroid" id="pie-polaroid">EVIDENCIA</div>
+                    <textarea id="texto-archivo" placeholder="Escribe el registro aquí… (máquina de escribir)"></textarea>
                   </div>
-
-                  <textarea id="texto-archivo" placeholder="Escribe el registro aquí… (máquina de escribir)"></textarea>
+                  <div class="sello-confidencial" id="sello-confidencial">CONFIDENCIAL</div>
                 </div>
-
-                <!-- Sello inferior derecho -->
-                <div class="sello-confidencial" id="sello-confidencial">CONFIDENCIAL</div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Controles del archivo -->
-        <div class="controles-archivo">
-          <div class="fila-ctrl">
-            <label>INCIDENTE</label>
-            <input id="ctrl-incidente" value="17-B" maxlength="6" placeholder="17-B">
-            <label>CLASIFICACIÓN</label>
-            <select id="ctrl-clasificacion">
-              <option value="ARCHIVO INCOMPLETO">ARCHIVO INCOMPLETO</option>
-              <option value="TOP SECRET">TOP SECRET</option>
-              <option value="OMEGA">OMEGA</option>
-              <option value="DELTA">DELTA</option>
-              <option value="BETA">BETA</option>
-              <option value="ALFA">ALFA</option>
-            </select>
-            <button onclick="aplicarSello()">APLICAR SELLO</button>
-            <button onclick="toggleFoto()" type="button" id="btn-foto">FOTO NEGRA</button>
-            <button onclick="guardarArchivo()">GUARDAR ARCHIVO</button>
-          </div>
-          <div class="fila-ctrl">
-            <label>Sello inferior</label>
-            <input id="ctrl-sello-inferior" value="CONFIDENCIAL" maxlength="14" placeholder="CONFIDENCIAL">
-            <button onclick="aplicarSelloInferior()">APLICAR</button>
-            <span class="ayuda">El texto queda en el papel; se ve cuando imprimes o exportas.</span>
+          <div class="controles-archivo">
+            <div class="fila-ctrl">
+              <label>INCIDENTE</label>
+              <input id="ctrl-incidente" value="17-B" maxlength="6" placeholder="17-B">
+              <label>CLASIFICACIÓN</label>
+              <select id="ctrl-clasificacion">
+                <option value="ARCHIVO INCOMPLETO">ARCHIVO INCOMPLETO</option>
+                <option value="COMPLETADO">COMPLETADO</option>
+                <option value="TOP SECRET">TOP SECRET</option>
+                <option value="OMEGA">OMEGA</option>
+                <option value="DELTA">DELTA</option>
+                <option value="BETA">BETA</option>
+                <option value="ALFA">ALFA</option>
+              </select>
+              <button onclick="aplicarSello()">APLICAR SELLO</button>
+              <button onclick="toggleFoto()" type="button" id="btn-foto">FOTO NEGRA</button>
+              <button onclick="guardarArchivo()">GUARDAR ARCHIVO</button>
+              <button onclick="borrarArchivo()" class="btn-borrar">BORRAR</button>
+            </div>
+            <div class="fila-ctrl">
+              <label>Sello inferior</label>
+              <input id="ctrl-sello-inferior" value="CONFIDENCIAL" maxlength="14" placeholder="CONFIDENCIAL">
+              <button onclick="aplicarSelloInferior()">APLICAR</button>
+              <span class="ayuda">El texto queda en el papel; se ve cuando imprimes o exportas.</span>
+            </div>
           </div>
         </div>
       </div>
+
+      <div class="tab" id="t-publicar">
 
       <div class="tab" id="t-publicar">
         <h2>Llevar a otro aparato</h2>
@@ -2525,6 +2563,117 @@
     document.getElementById('ctrl-clasificacion').addEventListener('change', aplicarSello);
     document.getElementById('ctrl-sello-inferior').addEventListener('input', aplicarSelloInferior);
     cargarUltimoArchivo();
+    renderCajon();
+
+    /* ===== CAJÓN DE ARCHIVOS: funciones ===== */
+    let archivoActivo = null; // id del archivo abierto
+
+    function obtenerArchivos() {
+      try { return JSON.parse(localStorage.getItem('umbra_archivos') || '[]'); } catch (e) { return []; }
+    }
+    function guardarArchivos(lista) {
+      try { localStorage.setItem('umbra_archivos', JSON.stringify(lista)); } catch (e) {}
+    }
+    function renderCajon() {
+      const grid = document.getElementById('cajon-grid');
+      const vacio = document.getElementById('cajon-vacio');
+      const lista = obtenerArchivos();
+      grid.innerHTML = '';
+      if (lista.length === 0) { vacio.style.display = 'block'; return; }
+      vacio.style.display = 'none';
+      lista.forEach(r => {
+        const el = document.createElement('div');
+        el.className = 'tarjeta-archivo ' + 'clas-' + (r.clasificacion || 'incompleto').toLowerCase().replace(' ', '-');
+        const preview = (r.texto || '').slice(0, 90) + (r.texto && r.texto.length > 90 ? '…' : '');
+        el.innerHTML =
+          '<div class="t-top">' + (r.incidente || 'ARCHIVO') + '</div>' +
+          '<div class="t-clas">' + (r.clasificacion || 'ARCHIVO INCOMPLETO') + '</div>' +
+          '<div class="t-texto">' + preview + '</div>' +
+          '<div class="t-pie">' + new Date(r.ts || 0).toLocaleDateString('es-AR') + '</div>';
+        el.onclick = () => entrarArchivo(r.id);
+        grid.appendChild(el);
+      });
+    }
+    function nuevoArchivo() {
+      const id = 'arch-' + Date.now().toString(36);
+      const reg = {
+        id: id,
+        incidente: 'ARCHIVO',
+        clasificacion: 'ARCHIVO INCOMPLETO',
+        selloInferior: 'CONFIDENCIAL',
+        texto: '',
+        foto: true,
+        ts: Date.now()
+      };
+      const lista = obtenerArchivos();
+      lista.push(reg);
+      guardarArchivos(lista);
+      archivoActivo = id;
+      mostrarVistaArchivo();
+      cargarArchivoEnEditor(id);
+      renderCajon();
+    }
+    function entrarArchivo(id) {
+      archivoActivo = id;
+      mostrarVistaArchivo();
+      cargarArchivoEnEditor(id);
+    }
+    function mostrarVistaArchivo() {
+      document.getElementById('vista-cajon').style.display = 'none';
+      document.getElementById('vista-archivo').style.display = 'block';
+      document.getElementById('arch-titulo').textContent = 'EXPEDIENTE ' + (archivoActivo || '');
+    }
+    function volverCajon() {
+      document.getElementById('vista-archivo').style.display = 'none';
+      document.getElementById('vista-cajon').style.display = 'block';
+      renderCajon();
+    }
+    function cargarArchivoEnEditor(id) {
+      const lista = obtenerArchivos();
+      const r = lista.find(x => x && x.id === id);
+      if (!r) return;
+      document.getElementById('num-incidente').textContent = r.incidente || '17-B';
+      document.getElementById('subsello').textContent = r.clasificacion || 'ARCHIVO INCOMPLETO';
+      document.getElementById('ctrl-incidente').value = r.incidente || '17-B';
+      document.getElementById('ctrl-clasificacion').value = r.clasificacion || 'ARCHIVO INCOMPLETO';
+      document.getElementById('ctrl-sello-inferior').value = r.selloInferior || 'CONFIDENCIAL';
+      document.getElementById('sello-confidencial').textContent = r.selloInferior || 'CONFIDENCIAL';
+      document.getElementById('texto-archivo').value = r.texto || '';
+      fotoVisible = r.foto !== false;
+      document.getElementById('polaroid-wrap').classList.toggle('none', !fotoVisible);
+      document.getElementById('btn-foto').textContent = fotoVisible ? 'QUITAR FOTO' : 'PONER FOTO';
+    }
+    function borrarArchivo() {
+      if (!archivoActivo) return;
+      if (!confirm('¿Borrar este expediente del cajón?')) return;
+      const lista = obtenerArchivos().filter(x => x && x.id !== archivoActivo);
+      guardarArchivos(lista);
+      archivoActivo = null;
+      volverCajon();
+    }
+    const _guardarArchivoOrig = guardarArchivo;
+    guardarArchivo = function() {
+      if (!archivoActivo) {
+        // crear uno nuevo si no hay activo
+        nuevoArchivo();
+        return;
+      }
+      const reg = {
+        id: archivoActivo,
+        incidente: document.getElementById('num-incidente').textContent,
+        clasificacion: document.getElementById('subsello').textContent,
+        selloInferior: document.getElementById('sello-confidencial').textContent,
+        texto: document.getElementById('texto-archivo').value,
+        foto: fotoVisible,
+        ts: Date.now()
+      };
+      const lista = obtenerArchivos();
+      const idx = lista.findIndex(x => x && x.id === archivoActivo);
+      if (idx >= 0) lista[idx] = reg; else lista.push(reg);
+      guardarArchivos(lista);
+      renderCajon();
+      alert('Archivo guardado en el cajón privado de UMBRA.');
+    };
   </script>
 </body>
 </html>
