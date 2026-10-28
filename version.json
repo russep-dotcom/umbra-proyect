@@ -3,8 +3,8 @@
   "mensaje": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_movil": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_pc": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
-  "editor": "17",
-  "editor_mensaje": "UMBRA editor: cajón de archivos con clasificación y expedientes individuales. Actualiza para verlo.",
-  "editor_mensaje_movil": "UMBRA editor: cajón de archivos. Toca ACTUALIZAR.",
-  "editor_mensaje_pc": "UMBRA editor: cajón de archivos con clasificación. Actualiza para verlo."
+  "editor": "18",
+  "editor_mensaje": "UMBRA editor: botón de nuevo archivo centrado en el cajón. Actualiza para verlo.",
+  "editor_mensaje_movil": "UMBRA editor: botón de nuevo archivo centrado. Toca ACTUALIZAR.",
+  "editor_mensaje_pc": "UMBRA editor: botón de nuevo archivo centrado. Actualiza para verlo."
 }
