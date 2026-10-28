@@ -467,38 +467,99 @@
     .carpeta { position: relative; background: #8a6d3b; border-radius: 4px 4px 0 0; padding-top: 34px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); overflow: hidden; }
     .carpeta-pestaña { position: absolute; top: 0; left: 14px; right: 14px; height: 30px; background: #a7834a; border-bottom: 1px solid #6b522b; border-radius: 4px 4px 0 0; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Special Elite','Courier New',monospace; font-size: 12px; letter-spacing: 2px; color: #2b1a0e; text-transform: uppercase; box-shadow: 0 2px 6px rgba(0,0,0,0.25); }
     .carpeta-pestaña::before { content: '▤'; font-size: 10px; color: #6b522b; }
-    .carpeta-cuerpo { background: #f5ead1; border: 1px solid #c8b386; border-top: none; min-height: 520px; position: relative; overflow: hidden; box-shadow: inset 0 0 40px rgba(0,0,0,0.06); }
-    /* Textura de papel viejo */
+    .carpeta-cuerpo {
+      background: radial-gradient(ellipse at 50% 38%, #6d4e2b 0%, #573b20 52%, #3a2712 100%);
+      border: 1px solid #3a2712;
+      border-top: none;
+      min-height: 560px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 70px rgba(0,0,0,0.6), inset 0 0 12px rgba(0,0,0,0.7);
+    }
     .carpeta-cuerpo::before { content: ''; position: absolute; inset: 0; background:
-      radial-gradient(circle at 25% 25%, rgba(160,120,60,0.08) 0%, transparent 45%),
-      radial-gradient(circle at 75% 75%, rgba(140,100,50,0.07) 0%, transparent 45%);
-      pointer-events: none; opacity: 0.6; }
+      radial-gradient(circle at 22% 18%, rgba(255,220,160,0.07) 0%, transparent 38%),
+      radial-gradient(circle at 80% 82%, rgba(0,0,0,0.25) 0%, transparent 45%),
+      repeating-linear-gradient(92deg, rgba(0,0,0,0.05) 0 2px, transparent 2px 7px);
+      pointer-events: none; opacity: 0.9; }
     .mancha { position: absolute; border-radius: 50%; filter: blur(24px); opacity: 0.35; pointer-events: none; }
 
-    .hoja { position: relative; background: #faf5e6; margin: 24px auto 28px; width: 86%; max-width: 520px; min-height: 430px; padding: 46px 40px 40px; border: 1px solid #d9c691; border-radius: 2px; box-shadow: 0 6px 18px rgba(0,0,0,0.18), inset 0 0 20px rgba(255,255,255,0.5); font-family: 'Special Elite','Courier New',monospace; color: #2b1a0e; overflow: hidden; }
-    .hoja::before { content: ''; position: absolute; inset: 0; background:
-      linear-gradient(rgba(180,150,90,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(180,150,90,0.04) 1px, transparent 1px);
-      background-size: 24px 24px; pointer-events: none; }
-    .hoja::after { content: ''; position: absolute; inset: -2px; margin: -2px; background: linear-gradient(to bottom, rgba(0,0,0,0.06), rgba(0,0,0,0.01)); border-radius: 2px; pointer-events: none; z-index: -1; }
+    /* Hoja de papel envejecido, con bordes irregulares y quemados */
+    .hoja-wrap { width: 88%; max-width: 520px; margin: 26px auto 30px; filter: drop-shadow(0 16px 22px rgba(0,0,0,0.5)); }
+    .hoja {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-height: 470px;
+      padding: 40px 40px 44px;
+      font-family: 'Special Elite','Courier New',monospace;
+      color: #3b2a15;
+      isolation: isolate;
+    }
+    .hoja::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-color: #ead9b2;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.32'/%3E%3C/svg%3E"),
+        radial-gradient(ellipse at 48% 42%, rgba(250,242,214,0.98) 0%, rgba(240,226,188,0.94) 28%, rgba(222,201,154,0.92) 56%, rgba(180,146,90,0.9) 80%, rgba(104,68,30,0.98) 100%),
+        radial-gradient(ellipse at 0% 0%, rgba(58,32,8,0.82) 0%, rgba(92,56,20,0.48) 15%, transparent 32%),
+        radial-gradient(ellipse at 100% 2%, rgba(70,40,12,0.62) 0%, transparent 24%),
+        radial-gradient(ellipse at 0% 100%, rgba(48,26,6,0.78) 0%, transparent 30%),
+        radial-gradient(ellipse at 100% 100%, rgba(62,36,10,0.68) 0%, transparent 27%),
+        radial-gradient(ellipse at 24% 70%, rgba(140,100,44,0.24) 0%, transparent 15%),
+        radial-gradient(ellipse at 70% 26%, rgba(136,94,40,0.2) 0%, transparent 12%),
+        radial-gradient(ellipse at 55% 90%, rgba(122,82,32,0.18) 0%, transparent 10%),
+        radial-gradient(ellipse at 38% 14%, rgba(142,104,48,0.14) 0%, transparent 9%),
+        radial-gradient(ellipse at 12% 52%, rgba(128,88,36,0.14) 0%, transparent 8%),
+        radial-gradient(ellipse at 88% 46%, rgba(128,88,36,0.12) 0%, transparent 7%),
+        linear-gradient(90deg, transparent 13%, rgba(104,70,28,0.1) 13.4%, transparent 14.2%),
+        linear-gradient(90deg, transparent 77%, rgba(104,70,28,0.08) 77.4%, transparent 78.2%);
+      box-shadow: inset 0 0 80px rgba(84,52,18,0.58), inset 0 0 26px rgba(52,32,10,0.52);
+      filter: url(#papel-rasgado);
+    }
 
-    .sello-incidente { position: absolute; top: 10px; left: 50%; transform: translateX(-50%) rotate(-2deg); width: 62%; max-width: 320px; border: 3px solid #a31616; border-radius: 0; padding: 6px 4px; font-family: 'Special Elite','Courier New',monospace; font-size: 19px; letter-spacing: 3px; color: #a31616; text-align: center; text-transform: uppercase; font-weight: 700; box-shadow: 0 0 0 1px #a31616 inset; z-index: 5; cursor: pointer; user-select: none; }
-    .sello-incidente span { display: block; font-size: 16px; letter-spacing: 1px; margin-top: 2px; }
-    .subsello { margin-top: 6px; font-family: 'Special Elite','Courier New',monospace; font-size: 13px; letter-spacing: 2px; color: #6b522b; text-align: center; text-transform: uppercase; z-index: 5; position: relative; }
-    .filete { width: 64%; max-width: 300px; margin: 10px auto 16px; border: none; border-top: 1px solid #8a6d3b; }
+    .sello-incidente {
+      position: relative;
+      align-self: center;
+      width: 70%;
+      max-width: 330px;
+      margin: 0 auto;
+      padding: 7px 12px 8px;
+      border: 3px solid #a31616;
+      box-shadow: 0 0 0 1px #a31616 inset;
+      font-family: 'Special Elite','Courier New',monospace;
+      color: #a31616;
+      text-align: center;
+      text-transform: uppercase;
+      font-weight: 700;
+      transform: rotate(-1.8deg);
+      opacity: 0.86;
+      mix-blend-mode: multiply;
+      cursor: pointer;
+      user-select: none;
+      z-index: 3;
+    }
+    .sello-fila { font-size: 21px; letter-spacing: 4px; line-height: 1.15; }
+    .sello-fila span { font-size: 18px; letter-spacing: 2px; }
+    .sello-sub { margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(163,22,22,0.55); font-size: 12px; letter-spacing: 3px; line-height: 1.2; }
+    .filete { width: 58%; max-width: 280px; margin: 14px auto 18px; border: none; border-top: 1px dashed rgba(122,86,40,0.5); opacity: 0.7; }
 
-    .cuerpo-doc { position: relative; min-height: 260px; }
-    .polaroid-wrap { position: absolute; right: 18px; bottom: 18px; width: 120px; z-index: 4; user-select: none; }
+    .cuerpo-doc { position: relative; flex: 1; min-height: 280px; }
+    .polaroid-wrap { position: absolute; right: 10px; bottom: -10px; width: 168px; z-index: 6; transform: rotate(6deg); user-select: none; }
     .polaroid-wrap.none { display: none; }
-    .polaroid { position: relative; background: #fff; width: 100%; aspect-ratio: 1; padding-bottom: 34px; border: 3px solid #e8e0c8; border-bottom: 18px solid #e8e0c8; box-shadow: 4px 6px 14px rgba(0,0,0,0.3); transform: rotate(-5deg); }
-    .foto-negra { width: 100%; height: calc(100% - 34px); background: #111; border: 1px solid #333; position: relative; overflow: hidden; }
-    .foto-negra::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, #2a2a2a 0%, #0b0b0c 70%); opacity: 0.85; }
-    .pie-polaroid { margin-top: 6px; font-family: 'Special Elite','Courier New',monospace; font-size: 10px; letter-spacing: 1px; color: #6b522b; text-align: center; text-transform: uppercase; cursor: pointer; }
+    .polaroid { position: relative; width: 100%; background: linear-gradient(155deg, #fffdf4 0%, #f4eddc 60%, #e6dcc4 100%); padding: 9px 9px 36px; box-shadow: 0 7px 16px rgba(0,0,0,0.42), 0 1px 2px rgba(0,0,0,0.3); }
+    .foto-negra { width: 100%; aspect-ratio: 1 / 1.06; background: radial-gradient(ellipse at 40% 32%, #2a1e14 0%, #140e09 42%, #070504 74%, #020202 100%); border: 1px solid #1f1610; position: relative; overflow: hidden; }
+    .foto-negra::after { content: ''; position: absolute; inset: 0; background: linear-gradient(125deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.015) 35%, transparent 55%); }
+    .pie-polaroid { position: absolute; left: 0; right: 0; bottom: 8px; margin: 0; font-family: 'Special Elite','Courier New',monospace; font-size: 10px; letter-spacing: 2px; color: #6b522b; text-align: center; text-transform: uppercase; cursor: pointer; }
 
-    #texto-archivo { width: 100%; height: 220px; background: transparent; border: none; border-radius: 0; font-family: 'Special Elite','Courier New',monospace; font-size: 15px; line-height: 1.8; color: #2b1a0e; resize: vertical; padding: 6px 0; outline: none; }
-    #texto-archivo::placeholder { color: #9a835a; }
+    #texto-archivo { width: 100%; height: 220px; background: transparent; border: none; border-radius: 0; font-family: 'Special Elite','Courier New',monospace; font-size: 15px; line-height: 1.8; color: #4a3418; resize: vertical; padding: 6px 0; outline: none; }
+    #texto-archivo::placeholder { color: #8f7648; }
 
-    .sello-confidencial { position: absolute; bottom: 20px; right: 20px; font-family: 'Special Elite','Courier New',monospace; font-size: 12px; letter-spacing: 3px; color: #a31616; text-transform: uppercase; writing-mode: vertical-rl; transform: rotate(180deg); z-index: 3; cursor: pointer; user-select: none; opacity: 0.85; }
+    .sello-confidencial { position: absolute; bottom: 22px; left: 14px; font-family: 'Special Elite','Courier New',monospace; font-size: 12px; letter-spacing: 3px; color: #a31616; text-transform: uppercase; writing-mode: vertical-rl; z-index: 3; cursor: pointer; user-select: none; opacity: 0.8; mix-blend-mode: multiply; }
 
     .controles-archivo { margin-top: 14px; width: 100%; max-width: 720px; padding: 0 12px; }
     .fila-ctrl { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 8px; }
@@ -540,10 +601,25 @@
       .cajon-grid { grid-template-columns: 1fr; }
       .archivo-header { flex-direction: column; align-items: flex-start; }
       .btn-borrar { margin-left: 0; margin-top: 8px; }
+      .carpeta-cuerpo { min-height: 500px; }
+      .hoja-wrap { width: 93%; margin: 20px auto 24px; }
+      .hoja { padding: 32px 24px 34px; min-height: 420px; }
+      .sello-incidente { width: 84%; }
+      .sello-fila { font-size: 17px; letter-spacing: 2px; }
+      .sello-fila span { font-size: 15px; }
+      .sello-sub { font-size: 10px; letter-spacing: 2px; }
+      .polaroid-wrap { width: 112px; right: 20px; bottom: 8px; }
+      .fila-ctrl input, .fila-ctrl select { width: 120px; }
     }
   </style>
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true" focusable="false">
+    <filter id="papel-rasgado" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.014 0.022" numOctaves="4" seed="9" result="ruido"/>
+      <feDisplacementMap in="SourceGraphic" in2="ruido" scale="16" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
   <div class="cielo" aria-hidden="true">
     <div class="luna"></div>
     <div class="niebla-capa n1"></div>
@@ -629,9 +705,12 @@
             <div class="carpeta">
               <div class="carpeta-pestaña">ARCHIVO UMBRA</div>
               <div class="carpeta-cuerpo">
+                <div class="hoja-wrap">
                 <div class="hoja">
-                  <div class="sello-incidente" id="sello-incidente">INCIDENTE <span id="num-incidente">17-B</span></div>
-                  <div class="subsello" id="subsello">ARCHIVO INCOMPLETO</div>
+                  <div class="sello-incidente" id="sello-incidente">
+                    <div class="sello-fila">INCIDENTE <span id="num-incidente">17-B</span></div>
+                    <div class="sello-sub" id="subsello">ARCHIVO INCOMPLETO</div>
+                  </div>
                   <hr class="filete">
                   <div class="cuerpo-doc">
                     <div class="polaroid-wrap" id="polaroid-wrap">
@@ -643,6 +722,7 @@
                     <textarea id="texto-archivo" placeholder="Escribe el registro aquí… (máquina de escribir)"></textarea>
                   </div>
                   <div class="sello-confidencial" id="sello-confidencial">CONFIDENCIAL</div>
+                </div>
                 </div>
               </div>
             </div>
@@ -678,8 +758,6 @@
       </div>
 
       <div class="tab" id="t-publicar">
-
-      <div class="tab" id="t-publicar">
         <h2>Llevar a otro aparato</h2>
         <p style="font-size:14px;color:#8a8a8a;">Copia tus registros aquí y pégalos en tu otro aparato para que queden en ambos.</p>
         <button onclick="exportar()">COPIAR MIS REGISTROS</button>
@@ -689,6 +767,7 @@
         <button onclick="importar()">IMPORTAR</button>
       </div>
       </div>
+    </div>
     </div>
   </main>
   <div id="paso-portal"><div class="jarvis"><div class="ticks"></div><div class="barrido"></div><div class="aro-d"></div><div class="nucleo"></div></div><p class="susurro" id="susurro"></p><div class="barra-carga"><i></i></div><p class="pct" id="pct-portal">0%</p></div>
@@ -2509,7 +2588,7 @@
       const clas = document.getElementById('ctrl-clasificacion').value;
       document.getElementById('num-incidente').textContent = num;
       document.getElementById('subsello').textContent = clas;
-      document.getElementById('sello-incidente').style.transform = 'translateX(-50%) rotate(' + (Math.random() * 6 - 3) + 'deg)';
+      document.getElementById('sello-incidente').style.transform = 'rotate(' + (Math.random() * 6 - 3) + 'deg)';
     }
     function aplicarSelloInferior() {
       const v = document.getElementById('ctrl-sello-inferior').value.trim() || 'CONFIDENCIAL';
@@ -2583,7 +2662,9 @@
       vacio.style.display = 'none';
       lista.forEach(r => {
         const el = document.createElement('div');
-        el.className = 'tarjeta-archivo ' + 'clas-' + (r.clasificacion || 'incompleto').toLowerCase().replace(' ', '-');
+        const clasTxt = (r.clasificacion || 'ARCHIVO INCOMPLETO').toLowerCase();
+        const clasClave = clasTxt === 'archivo incompleto' ? 'incompleto' : clasTxt.replace(/\s+/g, '-');
+        el.className = 'tarjeta-archivo clas-' + clasClave;
         const preview = (r.texto || '').slice(0, 90) + (r.texto && r.texto.length > 90 ? '…' : '');
         el.innerHTML =
           '<div class="t-top">' + (r.incidente || 'ARCHIVO') + '</div>' +
@@ -2598,7 +2679,7 @@
       const id = 'arch-' + Date.now().toString(36);
       const reg = {
         id: id,
-        incidente: 'ARCHIVO',
+        incidente: 'S/N',
         clasificacion: 'ARCHIVO INCOMPLETO',
         selloInferior: 'CONFIDENCIAL',
         texto: '',
@@ -2621,7 +2702,8 @@
     function mostrarVistaArchivo() {
       document.getElementById('vista-cajon').style.display = 'none';
       document.getElementById('vista-archivo').style.display = 'block';
-      document.getElementById('arch-titulo').textContent = 'EXPEDIENTE ' + (archivoActivo || '');
+      const r = obtenerArchivos().find(x => x && x.id === archivoActivo);
+      document.getElementById('arch-titulo').textContent = 'EXPEDIENTE ' + ((r && r.incidente) || 'S/N');
     }
     function volverCajon() {
       document.getElementById('vista-archivo').style.display = 'none';
