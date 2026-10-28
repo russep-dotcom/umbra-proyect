@@ -3,8 +3,8 @@
   "mensaje": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_movil": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_pc": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
-  "editor": "15",
-  "editor_mensaje": "UMBRA editor: flechas rectas y destino por coordenadas. Actualiza para verlo.",
-  "editor_mensaje_movil": "UMBRA editor: flechas rectas y destino por coordenadas. Toca ACTUALIZAR.",
-  "editor_mensaje_pc": "UMBRA editor: flechas rectas y destino por coordenadas. Actualiza para verlo."
+  "editor": "16",
+  "editor_mensaje": "UMBRA editor: nuevo registro de archivo físico (carpeta, sellos, polaroid). Actualiza para verlo.",
+  "editor_mensaje_movil": "UMBRA editor: registro de archivo físico. Toca ACTUALIZAR.",
+  "editor_mensaje_pc": "UMBRA editor: registro de archivo físico. Actualiza para verlo."
 }
