@@ -525,31 +525,33 @@
     .sello-incidente {
       position: relative;
       align-self: center;
-      width: 76%;
-      max-width: 360px;
-      margin: 4px auto 0;
-      padding: 8px 14px 9px;
-      border: 4px solid #9c1010;
-      box-shadow: 0 0 0 1px #9c1010 inset;
+      width: auto;
+      min-width: 148px;
+      margin: 14px auto 2px;
+      padding: 6px 18px 7px;
+      border: 2px solid #9c1010;
+      outline: 1px dashed rgba(156,16,16,0.7);
+      outline-offset: -6px;
+      box-shadow: inset 0 0 0 1px rgba(156,16,16,0.35), 0 1px 0 rgba(156,16,16,0.25);
       font-family: 'Special Elite','Courier New',monospace;
       color: #9c1010;
       text-align: center;
       text-transform: uppercase;
       font-weight: 700;
-      transform: rotate(-1.2deg);
-      opacity: 0.92;
+      transform: rotate(-3deg);
+      opacity: 0.8;
       mix-blend-mode: multiply;
-      cursor: pointer;
       user-select: none;
       z-index: 3;
     }
-    .sello-fila { font-size: 24px; letter-spacing: 6px; line-height: 1.1; }
-    .sello-num { font-size: 22px; letter-spacing: 5px; line-height: 1.15; margin-top: 1px; }
-    .sello-sub { margin-top: 5px; padding-top: 5px; border-top: 2px solid rgba(156,16,16,0.6); font-size: 13px; letter-spacing: 5px; line-height: 1.2; }
+    .sello-fila { font-size: 9px; letter-spacing: 5px; line-height: 1.2; }
+    .sello-num { font-size: 27px; letter-spacing: 5px; line-height: 1; margin: 2px 0 3px; }
+    .sello-sub { display: inline-block; min-width: 64px; padding: 2px 8px 1px; border: 1px solid rgba(156,16,16,0.6); font-size: 9px; letter-spacing: 4px; line-height: 1.3; }
     .filete { width: 58%; max-width: 280px; margin: 14px auto 18px; border: none; border-top: 1px dashed rgba(122,86,40,0.5); opacity: 0.7; }
+    .doc-cabecera { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; padding-bottom: 6px; border-bottom: 1px solid rgba(122,86,40,0.45); font-size: 10px; letter-spacing: 3px; color: #7a5628; text-transform: uppercase; }
 
     .cuerpo-doc { position: relative; flex: 1; min-height: 280px; }
-    .polaroid-wrap { position: absolute; right: 10px; bottom: -10px; width: 168px; z-index: 6; transform: rotate(2.5deg); user-select: none; }
+    .polaroid-wrap { position: absolute; right: 10px; bottom: -10px; width: 168px; z-index: 6; transform: rotate(0.8deg); user-select: none; }
     .polaroid-wrap.none { display: none; }
     .polaroid { position: relative; width: 100%; background: linear-gradient(155deg, #fffdf4 0%, #f4eddc 60%, #e6dcc4 100%); padding: 9px 9px 36px; box-shadow: 0 7px 16px rgba(0,0,0,0.42), 0 1px 2px rgba(0,0,0,0.3); cursor: pointer; }
     .foto-negra { width: 100%; aspect-ratio: 1 / 1.06; background: radial-gradient(ellipse at 40% 32%, #2a1e14 0%, #140e09 42%, #070504 74%, #020202 100%); border: 1px solid #1f1610; position: relative; overflow: hidden; }
@@ -571,6 +573,117 @@
     .fila-ctrl input, .fila-ctrl select { width: 140px; padding: 6px 8px; font-family: 'Special Elite','Courier New',monospace; font-size: 13px; background: #111; border: 1px solid #4a0505; color: #d9a5ff; border-radius: 3px; }
     .fila-ctrl button { padding: 6px 14px; font-size: 12px; }
     .ayuda { font-size: 11px; color: #666; font-style: italic; margin-left: 10px; }
+
+    /* ===== EXPEDIENTE A PANTALLA COMPLETA ===== */
+    body.archivo-abierto { overflow: hidden; }
+    body.archivo-abierto main { z-index: 96; }
+    body.archivo-abierto .brasas-frente,
+    body.archivo-abierto .reflector { display: none; }
+    #vista-archivo.pantalla {
+      position: fixed;
+      inset: 0;
+      z-index: 95;
+      display: flex;
+      flex-direction: column;
+      background: #0d0703;
+      overflow: hidden;
+    }
+    #vista-archivo.pantalla .archivo-header {
+      flex: 0 0 auto;
+      margin: 0;
+      padding: 7px 14px;
+      background: linear-gradient(180deg, #1b1007 0%, #120a04 100%);
+      border-bottom: 1px solid #3a2712;
+      gap: 12px;
+      flex-wrap: nowrap;
+    }
+    #vista-archivo.pantalla .archivo-header h2 { font-size: 15px; letter-spacing: 3px; }
+    #vista-archivo.pantalla .btn-volver { padding: 5px 12px; font-size: 10px; }
+    #vista-archivo.pantalla .archivo-wrap {
+      flex: 1 1 auto;
+      min-height: 0;
+      min-width: 0;
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+    }
+    #vista-archivo.pantalla .carpeta {
+      height: 100%;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      border-radius: 0;
+      padding-top: 30px;
+      box-shadow: none;
+    }
+    #vista-archivo.pantalla .carpeta-cuerpo {
+      flex: 1 1 auto;
+      min-height: 0;
+      min-width: 0;
+      display: flex;
+      padding: 14px 18px 10px;
+    }
+    #vista-archivo.pantalla .hoja-wrap {
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,0.55));
+    }
+    #vista-archivo.pantalla .hoja {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      min-width: 0;
+      padding: clamp(24px, 3.2vw, 54px) clamp(26px, 4vw, 72px) clamp(30px, 4vw, 60px);
+    }
+    #vista-archivo.pantalla .cuerpo-doc {
+      display: flex;
+      flex: 1 1 auto;
+      gap: clamp(16px, 2.4vw, 36px);
+      align-items: stretch;
+      min-height: 0;
+      min-width: 0;
+    }
+    #vista-archivo.pantalla .polaroid-wrap {
+      position: relative;
+      right: auto;
+      bottom: auto;
+      flex: 0 0 clamp(150px, 16vw, 210px);
+      width: clamp(150px, 16vw, 210px);
+      margin-top: 4px;
+      align-self: flex-start;
+    }
+    #vista-archivo.pantalla #texto-archivo {
+      flex: 1;
+      width: 100%;
+      min-width: 0;
+      height: auto;
+      min-height: 140px;
+      resize: none;
+    }
+    #vista-archivo.pantalla .controles-archivo {
+      flex: 0 0 auto;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      margin: 0;
+      padding: 8px 14px 9px;
+      background: #150c05;
+      border-top: 1px solid #3a2712;
+      box-shadow: 0 -8px 22px rgba(0,0,0,0.5);
+    }
+    #vista-archivo.pantalla .fila-ctrl { margin-bottom: 6px; gap: 8px; min-width: 0; }
+    #vista-archivo.pantalla .fila-ctrl:last-child { margin-bottom: 0; }
+    #vista-archivo.pantalla .fila-ctrl label { font-size: 10px; margin-top: 0; }
+    #vista-archivo.pantalla .fila-ctrl input,
+    #vista-archivo.pantalla .fila-ctrl select { width: 118px; padding: 5px 7px; font-size: 12px; margin-top: 0; }
+    #vista-archivo.pantalla .fila-ctrl button { margin-top: 0; padding: 5px 11px; font-size: 11px; letter-spacing: 1px; }
+    #vista-archivo.pantalla .ayuda { display: none; }
 
     /* ===== CAJÓN DE ARCHIVOS ===== */
     .cajon-header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
@@ -616,12 +729,54 @@
       .carpeta-cuerpo { min-height: 500px; }
       .hoja-wrap { width: 93%; margin: 20px auto 24px; }
       .hoja { padding: 32px 24px 34px; min-height: 420px; }
-      .sello-incidente { width: 86%; }
-      .sello-fila { font-size: 17px; letter-spacing: 2px; }
-      .sello-num { font-size: 16px; letter-spacing: 3px; }
-      .sello-sub { font-size: 10px; letter-spacing: 2px; }
+      .sello-incidente { width: auto; min-width: 128px; margin-top: 10px; padding: 5px 14px 6px; }
+      .sello-fila { font-size: 8px; letter-spacing: 3px; }
+      .sello-num { font-size: 23px; letter-spacing: 4px; }
+      .sello-sub { font-size: 8px; letter-spacing: 3px; }
       .polaroid-wrap { width: 112px; right: 20px; bottom: 8px; }
       .fila-ctrl input, .fila-ctrl select { width: 120px; }
+      /* Expediente a pantalla completa en celular */
+      #vista-archivo.pantalla .archivo-header { flex-direction: row; align-items: center; padding: 6px 10px; }
+      #vista-archivo.pantalla .archivo-header h2 { font-size: 12px; letter-spacing: 2px; }
+      #vista-archivo.pantalla .carpeta-cuerpo { min-height: 0; padding: 10px 10px 8px; }
+      #vista-archivo.pantalla .hoja-wrap { width: 100%; margin: 0; }
+      #vista-archivo.pantalla .hoja { padding: 20px 18px 24px; min-height: 0; }
+      #vista-archivo.pantalla .doc-cabecera { font-size: 8px; letter-spacing: 2px; margin-bottom: 10px; }
+      #vista-archivo.pantalla .cuerpo-doc { flex-direction: column; gap: 10px; }
+      #vista-archivo.pantalla .polaroid-wrap { align-self: flex-end; flex: 0 0 auto; width: 108px; margin: 0; }
+      #vista-archivo.pantalla #texto-archivo { min-height: 80px; }
+      #vista-archivo.pantalla .filete { margin: 8px auto 6px; }
+      #vista-archivo.pantalla .sello-incidente { margin-top: 4px; }
+      #vista-archivo.pantalla .controles-archivo { padding: 6px 8px; }
+      #vista-archivo.pantalla .fila-ctrl { gap: 6px; margin-bottom: 5px; }
+      #vista-archivo.pantalla .fila-ctrl button { padding: 5px 8px; font-size: 10px; }
+      #vista-archivo.pantalla .fila-ctrl input,
+      #vista-archivo.pantalla .fila-ctrl select { width: 100px; }
+    }
+    /* Pantallas bajas (celular horizontal): el papel crece y se puede desplazar */
+    @media (max-height: 620px) {
+      #vista-archivo.pantalla .carpeta-cuerpo {
+        overflow-y: auto;
+        align-items: flex-start;
+        padding-top: 10px;
+      }
+      #vista-archivo.pantalla .hoja-wrap {
+        height: auto;
+        min-height: 100%;
+        align-items: stretch;
+      }
+      #vista-archivo.pantalla .hoja {
+        height: auto;
+        min-height: 100%;
+      }
+      #vista-archivo.pantalla .cuerpo-doc {
+        flex: 0 0 auto;
+        min-height: 180px;
+      }
+      #vista-archivo.pantalla .polaroid-wrap {
+        flex: 0 0 auto;
+        width: 120px;
+      }
     }
   </style>
 </head>
@@ -719,13 +874,12 @@
               <div class="carpeta-cuerpo">
                 <div class="hoja-wrap">
                 <div class="hoja">
-                  <div class="sello-incidente" id="sello-incidente">
-                    <div class="sello-fila">REGISTRO E.</div>
-                    <div class="sello-num" id="num-incidente">001</div>
-                    <div class="sello-sub" id="subsello">ALFA</div>
+                  <div class="doc-cabecera">
+                    <span>UMBRA · ARCHIVO</span>
+                    <span>REGISTRO DE CAMPO</span>
                   </div>
-                  <hr class="filete">
                   <div class="cuerpo-doc">
+                    <textarea id="texto-archivo" placeholder="Escribe el registro aquí… (máquina de escribir)"></textarea>
                     <div class="polaroid-wrap" id="polaroid-wrap">
                       <div class="polaroid" onclick="elegirFoto()" role="button" tabindex="0" title="Haz clic para elegir una foto" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();elegirFoto();}">
                         <div class="foto-negra" id="foto-negra">
@@ -735,7 +889,12 @@
                       </div>
                       <div class="pie-polaroid" id="pie-polaroid">EVIDENCIA</div>
                     </div>
-                    <textarea id="texto-archivo" placeholder="Escribe el registro aquí… (máquina de escribir)"></textarea>
+                  </div>
+                  <hr class="filete">
+                  <div class="sello-incidente" id="sello-incidente">
+                    <div class="sello-fila">REGISTRO</div>
+                    <div class="sello-num" id="num-incidente">001</div>
+                    <div class="sello-sub" id="subsello">ALFA</div>
                   </div>
                   <div class="sello-confidencial" id="sello-confidencial">CONFIDENCIAL</div>
                   <input type="file" id="foto-input" accept="image/*" style="display:none">
@@ -747,8 +906,6 @@
 
           <div class="controles-archivo">
             <div class="fila-ctrl">
-              <label>REGISTRO</label>
-              <input id="ctrl-incidente" value="001" maxlength="8" placeholder="001">
               <label>RANGO</label>
               <select id="ctrl-rango">
                 <option value="ALFA">ALFA</option>
@@ -757,7 +914,6 @@
                 <option value="DELTA">DELTA</option>
                 <option value="OMEGA">OMEGA</option>
               </select>
-              <button onclick="aplicarSello()">APLICAR SELLO</button>
               <button onclick="toggleFoto()" type="button" id="btn-foto">QUITAR FOTO</button>
               <button onclick="guardarArchivo()">GUARDAR ARCHIVO</button>
               <button onclick="borrarArchivo()" class="btn-borrar">BORRAR</button>
@@ -2599,13 +2755,13 @@
 
     /* ===== ARCHIVO FÍSICO: controles del registro ===== */
     let fotoData = '';
+    let registroActual = '001';
     const RANGOS = ['ALFA', 'BETA', 'GAMMA', 'DELTA', 'OMEGA'];
     function aplicarSello() {
-      const num = document.getElementById('ctrl-incidente').value.trim() || '001';
       const rango = document.getElementById('ctrl-rango').value || 'ALFA';
-      document.getElementById('num-incidente').textContent = num;
+      document.getElementById('num-incidente').textContent = registroActual;
       document.getElementById('subsello').textContent = rango;
-      document.getElementById('sello-incidente').style.transform = 'rotate(' + (Math.random() * 4 - 2) + 'deg)';
+      document.getElementById('sello-incidente').style.transform = 'rotate(' + (-4 + Math.random() * 2.2) + 'deg)';
     }
     function aplicarSelloInferior() {
       const v = document.getElementById('ctrl-sello-inferior').value.trim() || 'CONFIDENCIAL';
@@ -2661,9 +2817,13 @@
       reader.readAsDataURL(file);
     });
     function guardarArchivo() {
+      if (!archivoActivo) {
+        nuevoArchivo();
+        return;
+      }
       const reg = {
-        id: 'arch-' + Date.now().toString(36),
-        incidente: document.getElementById('num-incidente').textContent,
+        id: archivoActivo,
+        incidente: registroActual,
         rango: document.getElementById('subsello').textContent,
         selloInferior: document.getElementById('sello-confidencial').textContent,
         texto: document.getElementById('texto-archivo').value,
@@ -2671,11 +2831,11 @@
         fotoData: fotoData,
         ts: Date.now()
       };
-      try {
-        const lista = JSON.parse(localStorage.getItem('umbra_archivos') || '[]');
-        lista.push(reg);
-        localStorage.setItem('umbra_archivos', JSON.stringify(lista));
-      } catch (e) {}
+      const lista = obtenerArchivos();
+      const idx = lista.findIndex(x => x && x.id === archivoActivo);
+      if (idx >= 0) lista[idx] = reg; else lista.push(reg);
+      guardarArchivos(lista);
+      renderCajon();
       alert('Archivo guardado en el cajón privado de UMBRA.');
     }
     // Cargar último archivo si existe al abrir el tab
@@ -2685,9 +2845,9 @@
         if (lista.length) {
           const r = lista[lista.length - 1];
           const rango = rangoDe(r);
-          document.getElementById('num-incidente').textContent = r.incidente || 'S/N';
+          registroActual = r.incidente || 'S/N';
+          document.getElementById('num-incidente').textContent = registroActual;
           document.getElementById('subsello').textContent = rango;
-          document.getElementById('ctrl-incidente').value = r.incidente || 'S/N';
           document.getElementById('ctrl-rango').value = rango;
           document.getElementById('ctrl-sello-inferior').value = r.selloInferior || 'CONFIDENCIAL';
           document.getElementById('sello-confidencial').textContent = r.selloInferior || 'CONFIDENCIAL';
@@ -2700,7 +2860,6 @@
         }
       } catch (e) {}
     }
-    document.getElementById('ctrl-incidente').addEventListener('input', aplicarSello);
     document.getElementById('ctrl-rango').addEventListener('change', aplicarSello);
     document.getElementById('ctrl-sello-inferior').addEventListener('input', aplicarSelloInferior);
     cargarUltimoArchivo();
@@ -2759,7 +2918,7 @@
       });
     }
     function nuevoArchivo() {
-      const id = 'arch-' + Date.now().toString(36);
+      const id = 'arch-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6);
       const reg = {
         id: id,
         incidente: siguienteRegistro(),
@@ -2785,23 +2944,32 @@
     }
     function mostrarVistaArchivo() {
       document.getElementById('vista-cajon').style.display = 'none';
-      document.getElementById('vista-archivo').style.display = 'block';
+      const v = document.getElementById('vista-archivo');
+      v.classList.add('pantalla');
+      v.style.display = 'flex';
+      document.body.classList.add('archivo-abierto');
       const r = obtenerArchivos().find(x => x && x.id === archivoActivo);
       document.getElementById('arch-titulo').textContent = 'EXPEDIENTE ' + ((r && r.incidente) || 'S/N');
     }
     function volverCajon() {
-      document.getElementById('vista-archivo').style.display = 'none';
+      const v = document.getElementById('vista-archivo');
+      v.classList.remove('pantalla');
+      v.style.display = 'none';
+      document.body.classList.remove('archivo-abierto');
       document.getElementById('vista-cajon').style.display = 'block';
       renderCajon();
     }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && document.getElementById('vista-archivo').classList.contains('pantalla')) volverCajon();
+    });
     function cargarArchivoEnEditor(id) {
       const lista = obtenerArchivos();
       const r = lista.find(x => x && x.id === id);
       if (!r) return;
       const rango = rangoDe(r);
-      document.getElementById('num-incidente').textContent = r.incidente || 'S/N';
+      registroActual = r.incidente || 'S/N';
+      document.getElementById('num-incidente').textContent = registroActual;
       document.getElementById('subsello').textContent = rango;
-      document.getElementById('ctrl-incidente').value = r.incidente || 'S/N';
       document.getElementById('ctrl-rango').value = rango;
       document.getElementById('ctrl-sello-inferior').value = r.selloInferior || 'CONFIDENCIAL';
       document.getElementById('sello-confidencial').textContent = r.selloInferior || 'CONFIDENCIAL';
@@ -2820,29 +2988,6 @@
       archivoActivo = null;
       volverCajon();
     }
-    guardarArchivo = function() {
-      if (!archivoActivo) {
-        // crear uno nuevo si no hay activo
-        nuevoArchivo();
-        return;
-      }
-      const reg = {
-        id: archivoActivo,
-        incidente: document.getElementById('num-incidente').textContent,
-        rango: document.getElementById('subsello').textContent,
-        selloInferior: document.getElementById('sello-confidencial').textContent,
-        texto: document.getElementById('texto-archivo').value,
-        foto: fotoVisible,
-        fotoData: fotoData,
-        ts: Date.now()
-      };
-      const lista = obtenerArchivos();
-      const idx = lista.findIndex(x => x && x.id === archivoActivo);
-      if (idx >= 0) lista[idx] = reg; else lista.push(reg);
-      guardarArchivos(lista);
-      renderCajon();
-      alert('Archivo guardado en el cajón privado de UMBRA.');
-    };
   </script>
 </body>
 </html>
