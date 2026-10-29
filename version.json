@@ -3,8 +3,8 @@
   "mensaje": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_movil": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_pc": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
-  "editor": "19",
-  "editor_mensaje": "UMBRA editor: expediente con papel viejo rasgado y polaroid real. Actualiza para verlo.",
-  "editor_mensaje_movil": "UMBRA editor: expediente con papel viejo y polaroid. Toca ACTUALIZAR.",
-  "editor_mensaje_pc": "UMBRA editor: expediente con papel viejo rasgado y polaroid real. Actualiza para verlo."
+  "editor": "20",
+  "editor_mensaje": "UMBRA editor: sello REGISTRO, rango separado y foto desde tu galería. Actualiza para verlo.",
+  "editor_mensaje_movil": "UMBRA editor: sello REGISTRO y foto desde tu galería. Toca ACTUALIZAR.",
+  "editor_mensaje_pc": "UMBRA editor: sello REGISTRO, rango separado y foto desde tu galería. Actualiza para verlo."
 }
