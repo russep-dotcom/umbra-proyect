@@ -520,31 +520,6 @@
       filter: url(#papel-rasgado);
     }
 
-    .sello-incidente {
-      position: relative;
-      align-self: center;
-      width: auto;
-      min-width: 148px;
-      margin: 14px auto 2px;
-      padding: 6px 18px 7px;
-      border: 2px solid #9c1010;
-      outline: 1px dashed rgba(156,16,16,0.7);
-      outline-offset: -6px;
-      box-shadow: inset 0 0 0 1px rgba(156,16,16,0.35), 0 1px 0 rgba(156,16,16,0.25);
-      font-family: 'Special Elite','Courier New',monospace;
-      color: #9c1010;
-      text-align: center;
-      text-transform: uppercase;
-      font-weight: 700;
-      transform: rotate(-3deg);
-      opacity: 0.8;
-      mix-blend-mode: multiply;
-      user-select: none;
-      z-index: 3;
-    }
-    .sello-fila { font-size: 9px; letter-spacing: 5px; line-height: 1.2; }
-    .sello-num { font-size: 27px; letter-spacing: 5px; line-height: 1; margin: 2px 0 3px; }
-    .sello-sub { display: inline-block; min-width: 64px; padding: 2px 8px 1px; border: 1px solid rgba(156,16,16,0.6); font-size: 9px; letter-spacing: 4px; line-height: 1.3; }
     .filete { width: 58%; max-width: 280px; margin: 14px auto 18px; border: none; border-top: 1px dashed rgba(122,86,40,0.5); opacity: 0.7; }
     .doc-cabecera { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; padding-bottom: 6px; border-bottom: 1px solid rgba(122,86,40,0.45); font-size: 10px; letter-spacing: 3px; color: #7a5628; text-transform: uppercase; }
 
@@ -616,6 +591,7 @@
     .fila-ctrl input { flex: 1 1 150px; width: auto; }
     .fila-ctrl button { margin: 0; padding: 7px 11px; font-family: 'Special Elite','Courier New',monospace; font-size: 10px; letter-spacing: 1px; }
     .fila-ctrl .btn-borrar { margin: 0; }
+    .grado-desc { flex: 1 0 100%; min-height: 30px; margin: 0; padding: 0 0 0 9px; border-left: 2px solid var(--grado, #7a5f9e); font-family: 'Special Elite','Courier New',monospace; font-size: 10px; line-height: 1.5; color: #b8a880; }
 
     /* ===== EXPEDIENTE A PANTALLA COMPLETA ===== */
     body.archivo-abierto { overflow: hidden; }
@@ -715,28 +691,19 @@
     .btn-nuevo { background: #14041f; color: #d9a5ff; border: 1px solid #d9a5ff; border-radius: 6px; padding: 10px 22px; font-family: 'Metal Mania','Impact',cursive; font-size: 14px; letter-spacing: 2px; cursor: pointer; align-self: center; margin: 6px auto 2px; box-shadow: 0 0 12px rgba(217,165,255,0.25); }
     .btn-nuevo:hover { background: #d9a5ff; color: #000; box-shadow: 0 0 20px rgba(217,165,255,0.6); }
     .cajon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; padding: 0 4px; }
-    .tarjeta-archivo { background: #2a1a0e; border: 1px solid #4a331a; border-radius: 4px; padding: 16px; cursor: pointer; position: relative; transition: transform 0.2s, border-color 0.2s; display: flex; flex-direction: column; gap: 10px; min-height: 200px; }
-    .tarjeta-archivo:hover { border-color: #d9a5ff; transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+    .tarjeta-archivo { background: #2a1a0e; border: 1px solid #4a331a; border-radius: 4px; padding: 16px; cursor: pointer; position: relative; transition: transform 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; gap: 10px; min-height: 200px; }
+    .tarjeta-archivo:hover { border-color: var(--grado, #d9a5ff); background: var(--grado-bg, #2a1a0e); transform: translateY(-4px); box-shadow: 0 0 0 1px var(--grado, #d9a5ff), 0 8px 24px var(--grado-glow, rgba(0,0,0,0.4)); }
+    .tarjeta-archivo:hover .t-top { color: var(--grado, #d9a5ff); }
     .tarjeta-archivo .t-top { font-family: 'Special Elite','Courier New',monospace; font-size: 15px; letter-spacing: 2px; color: #d9a5ff; text-transform: uppercase; border-bottom: 1px solid #4a331a; padding-bottom: 6px; }
     .tarjeta-archivo .t-clas { font-family: 'Special Elite','Courier New',monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 10px; border: 1px solid; border-radius: 3px; display: inline-block; margin-top: 6px; }
     .tarjeta-archivo .t-fila { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
     .tarjeta-archivo .t-fila .t-clas { margin-top: 0; }
-    .t-rango { font-family: 'Special Elite','Courier New',monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 3px 8px; border: 1px solid; border-radius: 3px; }
-    .rango-alfa { border-color: #ff1a1a; color: #ff1a1a; }
-    .rango-beta { border-color: #ff8c1a; color: #ff8c1a; }
-    .rango-gamma { border-color: #1affc4; color: #1affc4; }
-    .rango-delta { border-color: #b14dff; color: #b14dff; }
-    .rango-omega { border-color: #2a4bff; color: #2a4bff; }
+    .t-rango { font-family: 'Special Elite','Courier New',monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 3px 8px; border: 1px solid; border-radius: 3px; border-color: var(--grado, #d9a5ff); color: var(--grado, #d9a5ff); }
     .tarjeta-archivo .t-texto { font-family: 'Special Elite','Courier New',monospace; font-size: 12px; color: #b8a880; line-height: 1.5; margin-top: 8px; flex: 1; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
     .tarjeta-archivo .t-pie { font-size: 10px; color: #6b522b; margin-top: auto; border-top: 1px solid #4a331a; padding-top: 8px; text-align: right; }
     /* Colores por clasificación */
     .clas-incompleto { border-color: #8a6d3b; color: #8a6d3b; }
     .clas-completado { border-color: #2bd96a; color: #2bd96a; }
-    .clas-top-secret { border-color: #ff1a1a; color: #ff1a1a; box-shadow: 0 0 10px rgba(255,26,26,0.35); }
-    .clas-omega { border-color: #2a4bff; color: #2a4bff; }
-    .clas-delta { border-color: #b14dff; color: #b14dff; }
-    .clas-beta { border-color: #ff8c1a; color: #ff8c1a; }
-    .clas-alfa { border-color: #ff1a1a; color: #ff1a1a; font-weight: 700; }
 
     /* Encabezado de archivo individual */
     .archivo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
@@ -753,10 +720,6 @@
       .carpeta-cuerpo { min-height: 500px; }
       .hoja-wrap { width: 93%; margin: 20px auto 24px; }
       .hoja { padding: 32px 24px 34px; min-height: 420px; }
-      .sello-incidente { width: auto; min-width: 128px; margin-top: 10px; padding: 5px 14px 6px; }
-      .sello-fila { font-size: 8px; letter-spacing: 3px; }
-      .sello-num { font-size: 23px; letter-spacing: 4px; }
-      .sello-sub { font-size: 8px; letter-spacing: 3px; }
       .polaroid-wrap { width: 112px; right: 20px; bottom: 8px; }
       /* Expediente a pantalla completa en celular */
       #vista-archivo.pantalla .archivo-header { flex-direction: row; align-items: center; padding: 6px 10px; }
@@ -769,7 +732,6 @@
       #vista-archivo.pantalla .polaroid-wrap { align-self: flex-end; flex: 0 0 auto; width: 108px; margin: 0; }
       #vista-archivo.pantalla #texto-archivo { min-height: 80px; }
       #vista-archivo.pantalla .filete { margin: 8px auto 6px; }
-      #vista-archivo.pantalla .sello-incidente { margin-top: 4px; }
       #vista-archivo.pantalla .btn-ajustes { padding: 5px 9px; font-size: 9px; letter-spacing: 1px; }
       #vista-archivo.pantalla .panel-ajustes { width: calc(100vw - 16px); max-height: calc(100vh - 64px); padding: 12px; }
     }
@@ -890,14 +852,16 @@
               <button type="button" class="btn-ajustes" id="btn-ajustes" aria-expanded="false" aria-controls="panel-ajustes" onclick="toggleAjustes(event)">⚙ AJUSTES</button>
               <div class="panel-ajustes" id="panel-ajustes">
                 <div class="fila-ctrl">
-                  <label for="ctrl-rango">RANGO</label>
+                  <label for="ctrl-rango">GRADO</label>
                   <select id="ctrl-rango">
-                    <option value="ALFA">ALFA</option>
-                    <option value="BETA">BETA</option>
-                    <option value="GAMMA">GAMMA</option>
-                    <option value="DELTA">DELTA</option>
-                    <option value="OMEGA">OMEGA</option>
+                    <option value="G-0">G-0 — Nulo (Inofensivo)</option>
+                    <option value="G-1">G-1 — Bajo (Controlable)</option>
+                    <option value="G-2">G-2 — Moderado (Peligroso)</option>
+                    <option value="G-3">G-3 — Alto (Hostil)</option>
+                    <option value="G-4">G-4 — Crítico (Catastrófico)</option>
+                    <option value="G-5">G-5 — Extremo (Existencial)</option>
                   </select>
+                  <p class="grado-desc" id="grado-desc"></p>
                   <button onclick="toggleFoto()" type="button" id="btn-foto">QUITAR FOTO</button>
                   <button onclick="guardarArchivo()">GUARDAR ARCHIVO</button>
                   <button onclick="borrarArchivo()" class="btn-borrar">BORRAR</button>
@@ -933,11 +897,6 @@
                     </div>
                   </div>
                   <hr class="filete">
-                  <div class="sello-incidente" id="sello-incidente">
-                    <div class="sello-fila">REGISTRO</div>
-                    <div class="sello-num" id="num-incidente">001</div>
-                    <div class="sello-sub" id="subsello">ALFA</div>
-                  </div>
                   <div class="sello-confidencial" id="sello-confidencial">CONFIDENCIAL</div>
                   <input type="file" id="foto-input" accept="image/*" style="display:none">
                 </div>
@@ -2662,6 +2621,7 @@
     }
     document.addEventListener('touchstart', e => {
       if (!ES_MOVIL) return;
+      if (document.body.classList.contains('archivo-abierto')) return;
       const r = document.getElementById('reflector');
       if (!r || r.classList.contains('apagada')) return;
       const t = e.touches && e.touches[0];
@@ -2693,11 +2653,13 @@
     }, { passive: true });
     document.addEventListener('touchmove', e => {
       if (!ES_MOVIL) return;
+      if (document.body.classList.contains('archivo-abierto')) return;
       const t = e.touches && e.touches[0];
       if (t) { objLX = t.clientX; objLY = t.clientY; arrancarCaza(); }
     }, { passive: true });
     document.addEventListener('touchend', () => {
       if (!ES_MOVIL) return;
+      if (document.body.classList.contains('archivo-abierto')) return;
       cazaActiva = false;
       clearTimeout(toqueApaga);
       toqueApaga = setTimeout(() => {
@@ -2711,16 +2673,24 @@
         r.classList.add('fantasma-off');
       }, 350);
     });
+    function despertarLuz() {
+      try {
+        clearTimeout(toqueApaga);
+        const r = document.getElementById('reflector');
+        if (r) r.classList.remove('fantasma-off', 'toque-glitch');
+      } catch (e) {}
+    }
     // PC: clic en el fondo = interruptor (sin sonido en el editor)
     document.addEventListener('click', e => {
       if (window.matchMedia('(pointer: coarse)').matches && ('ontouchstart' in window)) return;
+      if (document.body.classList.contains('archivo-abierto')) return;
       if (e.target.closest && e.target.closest('a, button, input, textarea, select, summary, .bcard, #board-vp')) return;
       const r = document.getElementById('reflector');
       if (!r) return;
       r.classList.toggle('apagada');
     });
     // ===== UPDATE PROPIO DEL EDITOR (clave editor, ambas pantallas) =====
-    const EDITOR_VERSION = '1';
+    const EDITOR_VERSION = '24';
     function mensajeEditor(j) {
       try {
         if (window.matchMedia('(max-width: 640px)').matches && j.editor_mensaje_movil) return j.editor_mensaje_movil;
@@ -2776,12 +2746,29 @@
     /* ===== ARCHIVO FÍSICO: controles del registro ===== */
     let fotoData = '';
     let registroActual = '001';
-    const RANGOS = ['ALFA', 'BETA', 'GAMMA', 'DELTA', 'OMEGA'];
-    function aplicarSello() {
-      const rango = document.getElementById('ctrl-rango').value || 'ALFA';
-      document.getElementById('num-incidente').textContent = registroActual;
-      document.getElementById('subsello').textContent = rango;
-      document.getElementById('sello-incidente').style.transform = 'rotate(' + (-4 + Math.random() * 2.2) + 'deg)';
+    const GRADOS = {
+      'G-0': { nombre: 'Nulo', alias: 'Inofensivo', color: '#3fbf6f', desc: 'No representa una amenaza conocida. Puede ser observado y estudiado sin medidas especiales.' },
+      'G-1': { nombre: 'Bajo', alias: 'Controlable', color: '#b8cc4a', desc: 'Puede causar incidentes menores, pero es fácil de contener y no suele poner vidas en peligro.' },
+      'G-2': { nombre: 'Moderado', alias: 'Peligroso', color: '#e8a92e', desc: 'Puede herir personas, comportarse de forma impredecible o escapar de una contención ordinaria.' },
+      'G-3': { nombre: 'Alto', alias: 'Hostil', color: '#ef6f2e', desc: 'Supone una amenaza grave para las personas o las instalaciones. Requiere vigilancia y protocolos especiales.' },
+      'G-4': { nombre: 'Crítico', alias: 'Catastrófico', color: '#e03a3a', desc: 'Puede provocar numerosas víctimas, destruir instalaciones o amenazar a una comunidad entera.' },
+      'G-5': { nombre: 'Extremo', alias: 'Existencial', color: '#b05ce0', desc: 'Su actividad podría amenazar regiones enteras, alterar las leyes de la realidad o poner en riesgo la supervivencia de la humanidad.' }
+    };
+    const RANGOS = Object.keys(GRADOS);
+    const RANGOS_VIEJOS = { OMEGA: 'G-0', DELTA: 'G-1', GAMMA: 'G-2', BETA: 'G-3', ALFA: 'G-4', 'TOP SECRET': 'G-5' };
+    function aplicarGrado() {
+      const sel = document.getElementById('ctrl-rango');
+      const g = (sel && sel.value) || 'G-0';
+      const meta = GRADOS[g] || GRADOS['G-0'];
+      if (sel) {
+        sel.style.borderColor = meta.color;
+        sel.style.color = meta.color;
+      }
+      const desc = document.getElementById('grado-desc');
+      if (desc) {
+        desc.textContent = meta.desc;
+        desc.style.setProperty('--grado', meta.color);
+      }
     }
     function aplicarSelloInferior() {
       const v = document.getElementById('ctrl-sello-inferior').value.trim() || 'CONFIDENCIAL';
@@ -2844,7 +2831,7 @@
       const reg = {
         id: archivoActivo,
         incidente: registroActual,
-        rango: document.getElementById('subsello').textContent,
+        rango: document.getElementById('ctrl-rango').value || 'G-0',
         selloInferior: document.getElementById('sello-confidencial').textContent,
         texto: document.getElementById('texto-archivo').value,
         foto: fotoVisible,
@@ -2864,11 +2851,10 @@
         const lista = JSON.parse(localStorage.getItem('umbra_archivos') || '[]');
         if (lista.length) {
           const r = lista[lista.length - 1];
-          const rango = rangoDe(r);
+          const rango = gradoDe(r);
           registroActual = r.incidente || 'S/N';
-          document.getElementById('num-incidente').textContent = registroActual;
-          document.getElementById('subsello').textContent = rango;
           document.getElementById('ctrl-rango').value = rango;
+          aplicarGrado();
           document.getElementById('ctrl-sello-inferior').value = r.selloInferior || 'CONFIDENCIAL';
           document.getElementById('sello-confidencial').textContent = r.selloInferior || 'CONFIDENCIAL';
           document.getElementById('texto-archivo').value = r.texto || '';
@@ -2880,9 +2866,10 @@
         }
       } catch (e) {}
     }
-    document.getElementById('ctrl-rango').addEventListener('change', aplicarSello);
+    document.getElementById('ctrl-rango').addEventListener('change', aplicarGrado);
     document.getElementById('ctrl-sello-inferior').addEventListener('input', aplicarSelloInferior);
     cargarUltimoArchivo();
+    aplicarGrado();
     renderCajon();
 
     /* ===== CAJÓN DE ARCHIVOS: funciones ===== */
@@ -2894,10 +2881,14 @@
     function guardarArchivos(lista) {
       try { localStorage.setItem('umbra_archivos', JSON.stringify(lista)); } catch (e) {}
     }
-    function rangoDe(r) {
-      if (r && r.rango) return String(r.rango).toUpperCase();
-      const c = r && r.clasificacion ? String(r.clasificacion).toUpperCase() : '';
-      return RANGOS.indexOf(c) >= 0 ? c : 'ALFA';
+    function gradoDe(r) {
+      const v = String((r && r.rango) || '').toUpperCase();
+      if (GRADOS[v]) return v;
+      if (RANGOS_VIEJOS[v]) return RANGOS_VIEJOS[v];
+      const c = String((r && r.clasificacion) || '').toUpperCase();
+      if (GRADOS[c]) return c;
+      if (RANGOS_VIEJOS[c]) return RANGOS_VIEJOS[c];
+      return 'G-0';
     }
     function estadoDe(r) {
       return ((r && r.texto) || '').trim() ? 'COMPLETADO' : 'ARCHIVO INCOMPLETO';
@@ -2924,13 +2915,18 @@
         const el = document.createElement('div');
         const estado = estadoDe(r);
         const estadoClave = estado === 'COMPLETADO' ? 'completado' : 'incompleto';
-        const rango = rangoDe(r);
+        const rango = gradoDe(r);
+        const meta = GRADOS[rango] || GRADOS['G-0'];
         el.className = 'tarjeta-archivo';
+        el.style.setProperty('--grado', meta.color);
+        el.style.setProperty('--grado-bg', hexA(meta.color, 0.16));
+        el.style.setProperty('--grado-glow', hexA(meta.color, 0.3));
         const preview = (r.texto || '').slice(0, 90) + (r.texto && r.texto.length > 90 ? '…' : '');
+        const ayudaGrado = rango + ' · ' + meta.nombre + ' — ' + meta.alias + ': ' + meta.desc;
         el.innerHTML =
           '<div class="t-top">' + escaparHtml(r.incidente || 'S/N') + '</div>' +
           '<div class="t-fila"><span class="t-clas clas-' + estadoClave + '">' + estado + '</span>' +
-          '<span class="t-rango rango-' + rango.toLowerCase() + '">' + rango + '</span></div>' +
+          '<span class="t-rango" title="' + escaparHtml(ayudaGrado) + '">' + rango + '</span></div>' +
           '<div class="t-texto">' + escaparHtml(preview) + '</div>' +
           '<div class="t-pie">' + new Date(r.ts || 0).toLocaleDateString('es-AR') + '</div>';
         el.onclick = () => entrarArchivo(r.id);
@@ -2942,7 +2938,7 @@
       const reg = {
         id: id,
         incidente: siguienteRegistro(),
-        rango: 'ALFA',
+        rango: 'G-0',
         selloInferior: 'CONFIDENCIAL',
         texto: '',
         foto: true,
@@ -2964,6 +2960,7 @@
     }
     function mostrarVistaArchivo() {
       cerrarAjustes();
+      despertarLuz();
       document.getElementById('vista-cajon').style.display = 'none';
       const v = document.getElementById('vista-archivo');
       v.classList.add('pantalla');
@@ -2974,6 +2971,7 @@
     }
     function volverCajon() {
       cerrarAjustes();
+      despertarLuz();
       const v = document.getElementById('vista-archivo');
       v.classList.remove('pantalla');
       v.style.display = 'none';
@@ -3010,11 +3008,10 @@
       const lista = obtenerArchivos();
       const r = lista.find(x => x && x.id === id);
       if (!r) return;
-      const rango = rangoDe(r);
+      const rango = gradoDe(r);
       registroActual = r.incidente || 'S/N';
-      document.getElementById('num-incidente').textContent = registroActual;
-      document.getElementById('subsello').textContent = rango;
       document.getElementById('ctrl-rango').value = rango;
+      aplicarGrado();
       document.getElementById('ctrl-sello-inferior').value = r.selloInferior || 'CONFIDENCIAL';
       document.getElementById('sello-confidencial').textContent = r.selloInferior || 'CONFIDENCIAL';
       document.getElementById('texto-archivo').value = r.texto || '';
