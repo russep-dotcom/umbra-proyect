@@ -3,8 +3,8 @@
   "mensaje": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_movil": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_pc": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
-  "editor": "22",
-  "editor_mensaje": "UMBRA editor: los ajustes ahora viven en un menú ⚙ arriba a la derecha. Actualiza para verlo.",
-  "editor_mensaje_movil": "UMBRA editor: los ajustes ahora están en el botón ⚙ AJUSTES de arriba. Toca ACTUALIZAR.",
-  "editor_mensaje_pc": "UMBRA editor: los ajustes ahora viven en un menú ⚙ arriba a la derecha. Actualiza para verlo."
+  "editor": "23",
+  "editor_mensaje": "UMBRA editor: fuera la pestaña ARCHIVO UMBRA, el expediente queda limpio. Actualiza para verlo.",
+  "editor_mensaje_movil": "UMBRA editor: fuera la pestaña ARCHIVO UMBRA. Toca ACTUALIZAR para verlo.",
+  "editor_mensaje_pc": "UMBRA editor: fuera la pestaña ARCHIVO UMBRA, el expediente queda limpio. Actualiza para verlo."
 }
