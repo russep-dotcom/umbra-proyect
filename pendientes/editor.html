@@ -567,12 +567,57 @@
 
     .sello-confidencial { position: absolute; bottom: 22px; left: 14px; font-family: 'Special Elite','Courier New',monospace; font-size: 12px; letter-spacing: 3px; color: #a31616; text-transform: uppercase; writing-mode: vertical-rl; z-index: 3; cursor: pointer; user-select: none; opacity: 0.8; mix-blend-mode: multiply; }
 
-    .controles-archivo { margin-top: 14px; width: 100%; max-width: 720px; padding: 0 12px; }
-    .fila-ctrl { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 8px; }
-    .fila-ctrl label { font-size: 12px; letter-spacing: 2px; color: #8a8a8a; text-transform: uppercase; flex: 0 0 auto; }
-    .fila-ctrl input, .fila-ctrl select { width: 140px; padding: 6px 8px; font-family: 'Special Elite','Courier New',monospace; font-size: 13px; background: #111; border: 1px solid #4a0505; color: #d9a5ff; border-radius: 3px; }
-    .fila-ctrl button { padding: 6px 14px; font-size: 12px; }
-    .ayuda { font-size: 11px; color: #666; font-style: italic; margin-left: 10px; }
+    /* ===== MENÚ DE AJUSTES DEL EXPEDIENTE ===== */
+    .menu-ajustes { position: relative; flex: 0 0 auto; }
+    .btn-ajustes {
+      margin-top: 0;
+      padding: 6px 12px;
+      font-family: 'Special Elite','Courier New',monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      background: #14041f;
+      color: #d9a5ff;
+      border: 1px solid #7a5f9e;
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-ajustes:hover { background: #d9a5ff; color: #000; box-shadow: 0 0 16px rgba(217,165,255,0.45); }
+    .panel-ajustes {
+      display: none;
+      position: absolute;
+      top: calc(100% + 9px);
+      right: 0;
+      width: min(360px, calc(100vw - 20px));
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+      padding: 14px;
+      background: #150c05;
+      border: 1px solid #4a331a;
+      border-radius: 6px;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.72);
+      z-index: 40;
+    }
+    .panel-ajustes.abierto { display: block; }
+    .panel-ajustes::before {
+      content: '';
+      position: absolute;
+      top: -7px;
+      right: 18px;
+      width: 12px;
+      height: 12px;
+      background: #150c05;
+      border-left: 1px solid #4a331a;
+      border-top: 1px solid #4a331a;
+      transform: rotate(45deg);
+    }
+    .fila-ctrl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 12px; }
+    .fila-ctrl:last-child { margin-bottom: 0; }
+    .fila-ctrl label { flex: 1 0 100%; margin: 0; font-size: 10px; letter-spacing: 2px; color: #8a8a8a; text-transform: uppercase; }
+    .fila-ctrl input, .fila-ctrl select { width: 100%; margin: 0; padding: 7px 9px; font-family: 'Special Elite','Courier New',monospace; font-size: 12px; background: #111; border: 1px solid #4a0505; color: #d9a5ff; border-radius: 3px; }
+    .fila-ctrl input { flex: 1 1 150px; width: auto; }
+    .fila-ctrl button { margin: 0; padding: 7px 11px; font-family: 'Special Elite','Courier New',monospace; font-size: 10px; letter-spacing: 1px; }
+    .fila-ctrl .btn-borrar { margin: 0; }
 
     /* ===== EXPEDIENTE A PANTALLA COMPLETA ===== */
     body.archivo-abierto { overflow: hidden; }
@@ -597,7 +642,7 @@
       gap: 12px;
       flex-wrap: nowrap;
     }
-    #vista-archivo.pantalla .archivo-header h2 { font-size: 15px; letter-spacing: 3px; }
+    #vista-archivo.pantalla .archivo-header h2 { font-size: 15px; letter-spacing: 3px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     #vista-archivo.pantalla .btn-volver { padding: 5px 12px; font-size: 10px; }
     #vista-archivo.pantalla .archivo-wrap {
       flex: 1 1 auto;
@@ -666,24 +711,6 @@
       min-height: 140px;
       resize: none;
     }
-    #vista-archivo.pantalla .controles-archivo {
-      flex: 0 0 auto;
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
-      margin: 0;
-      padding: 8px 14px 9px;
-      background: #150c05;
-      border-top: 1px solid #3a2712;
-      box-shadow: 0 -8px 22px rgba(0,0,0,0.5);
-    }
-    #vista-archivo.pantalla .fila-ctrl { margin-bottom: 6px; gap: 8px; min-width: 0; }
-    #vista-archivo.pantalla .fila-ctrl:last-child { margin-bottom: 0; }
-    #vista-archivo.pantalla .fila-ctrl label { font-size: 10px; margin-top: 0; }
-    #vista-archivo.pantalla .fila-ctrl input,
-    #vista-archivo.pantalla .fila-ctrl select { width: 118px; padding: 5px 7px; font-size: 12px; margin-top: 0; }
-    #vista-archivo.pantalla .fila-ctrl button { margin-top: 0; padding: 5px 11px; font-size: 11px; letter-spacing: 1px; }
-    #vista-archivo.pantalla .ayuda { display: none; }
 
     /* ===== CAJÓN DE ARCHIVOS ===== */
     .cajon-header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
@@ -734,7 +761,6 @@
       .sello-num { font-size: 23px; letter-spacing: 4px; }
       .sello-sub { font-size: 8px; letter-spacing: 3px; }
       .polaroid-wrap { width: 112px; right: 20px; bottom: 8px; }
-      .fila-ctrl input, .fila-ctrl select { width: 120px; }
       /* Expediente a pantalla completa en celular */
       #vista-archivo.pantalla .archivo-header { flex-direction: row; align-items: center; padding: 6px 10px; }
       #vista-archivo.pantalla .archivo-header h2 { font-size: 12px; letter-spacing: 2px; }
@@ -747,11 +773,8 @@
       #vista-archivo.pantalla #texto-archivo { min-height: 80px; }
       #vista-archivo.pantalla .filete { margin: 8px auto 6px; }
       #vista-archivo.pantalla .sello-incidente { margin-top: 4px; }
-      #vista-archivo.pantalla .controles-archivo { padding: 6px 8px; }
-      #vista-archivo.pantalla .fila-ctrl { gap: 6px; margin-bottom: 5px; }
-      #vista-archivo.pantalla .fila-ctrl button { padding: 5px 8px; font-size: 10px; }
-      #vista-archivo.pantalla .fila-ctrl input,
-      #vista-archivo.pantalla .fila-ctrl select { width: 100px; }
+      #vista-archivo.pantalla .btn-ajustes { padding: 5px 9px; font-size: 9px; letter-spacing: 1px; }
+      #vista-archivo.pantalla .panel-ajustes { width: calc(100vw - 16px); max-height: calc(100vh - 64px); padding: 12px; }
     }
     /* Pantallas bajas (celular horizontal): el papel crece y se puede desplazar */
     @media (max-height: 620px) {
@@ -866,6 +889,29 @@
           <div class="archivo-header">
             <button onclick="volverCajon()" class="btn-volver">← CAJÓN</button>
             <h2 id="arch-titulo">EXPEDIENTE</h2>
+            <div class="menu-ajustes">
+              <button type="button" class="btn-ajustes" id="btn-ajustes" aria-expanded="false" aria-controls="panel-ajustes" onclick="toggleAjustes(event)">⚙ AJUSTES</button>
+              <div class="panel-ajustes" id="panel-ajustes">
+                <div class="fila-ctrl">
+                  <label for="ctrl-rango">RANGO</label>
+                  <select id="ctrl-rango">
+                    <option value="ALFA">ALFA</option>
+                    <option value="BETA">BETA</option>
+                    <option value="GAMMA">GAMMA</option>
+                    <option value="DELTA">DELTA</option>
+                    <option value="OMEGA">OMEGA</option>
+                  </select>
+                  <button onclick="toggleFoto()" type="button" id="btn-foto">QUITAR FOTO</button>
+                  <button onclick="guardarArchivo()">GUARDAR ARCHIVO</button>
+                  <button onclick="borrarArchivo()" class="btn-borrar">BORRAR</button>
+                </div>
+                <div class="fila-ctrl">
+                  <label for="ctrl-sello-inferior">SELLO INFERIOR</label>
+                  <input id="ctrl-sello-inferior" value="CONFIDENCIAL" maxlength="14" placeholder="CONFIDENCIAL">
+                  <button onclick="aplicarSelloInferior()">APLICAR</button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="archivo-wrap">
@@ -901,28 +947,6 @@
                 </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div class="controles-archivo">
-            <div class="fila-ctrl">
-              <label>RANGO</label>
-              <select id="ctrl-rango">
-                <option value="ALFA">ALFA</option>
-                <option value="BETA">BETA</option>
-                <option value="GAMMA">GAMMA</option>
-                <option value="DELTA">DELTA</option>
-                <option value="OMEGA">OMEGA</option>
-              </select>
-              <button onclick="toggleFoto()" type="button" id="btn-foto">QUITAR FOTO</button>
-              <button onclick="guardarArchivo()">GUARDAR ARCHIVO</button>
-              <button onclick="borrarArchivo()" class="btn-borrar">BORRAR</button>
-            </div>
-            <div class="fila-ctrl">
-              <label>Sello inferior</label>
-              <input id="ctrl-sello-inferior" value="CONFIDENCIAL" maxlength="14" placeholder="CONFIDENCIAL">
-              <button onclick="aplicarSelloInferior()">APLICAR</button>
-              <span class="ayuda">El texto queda en el papel; se ve cuando imprimes o exportas.</span>
             </div>
           </div>
         </div>
@@ -2943,6 +2967,7 @@
       cargarArchivoEnEditor(id);
     }
     function mostrarVistaArchivo() {
+      cerrarAjustes();
       document.getElementById('vista-cajon').style.display = 'none';
       const v = document.getElementById('vista-archivo');
       v.classList.add('pantalla');
@@ -2952,6 +2977,7 @@
       document.getElementById('arch-titulo').textContent = 'EXPEDIENTE ' + ((r && r.incidente) || 'S/N');
     }
     function volverCajon() {
+      cerrarAjustes();
       const v = document.getElementById('vista-archivo');
       v.classList.remove('pantalla');
       v.style.display = 'none';
@@ -2959,8 +2985,30 @@
       document.getElementById('vista-cajon').style.display = 'block';
       renderCajon();
     }
+    function toggleAjustes(ev) {
+      if (ev) ev.stopPropagation();
+      const panel = document.getElementById('panel-ajustes');
+      const btn = document.getElementById('btn-ajustes');
+      const abrir = !panel.classList.contains('abierto');
+      panel.classList.toggle('abierto', abrir);
+      btn.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+    }
+    function cerrarAjustes() {
+      const panel = document.getElementById('panel-ajustes');
+      if (!panel) return;
+      panel.classList.remove('abierto');
+      const btn = document.getElementById('btn-ajustes');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+    document.addEventListener('click', function (e) {
+      if (e.target instanceof Element && e.target.closest('.menu-ajustes')) return;
+      cerrarAjustes();
+    });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && document.getElementById('vista-archivo').classList.contains('pantalla')) volverCajon();
+      if (e.key !== 'Escape') return;
+      const panel = document.getElementById('panel-ajustes');
+      if (panel && panel.classList.contains('abierto')) { cerrarAjustes(); return; }
+      if (document.getElementById('vista-archivo').classList.contains('pantalla')) volverCajon();
     });
     function cargarArchivoEnEditor(id) {
       const lista = obtenerArchivos();
