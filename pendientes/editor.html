@@ -535,8 +535,14 @@
     .foto-negra.con-foto .foto-vacia { display: none; }
     .pie-polaroid { position: absolute; left: 0; right: 0; bottom: 8px; margin: 0; font-family: 'Special Elite','Courier New',monospace; font-size: 10px; letter-spacing: 2px; color: #6b522b; text-align: center; text-transform: uppercase; cursor: pointer; }
 
-    #texto-archivo { width: 100%; height: 220px; background: transparent; border: none; border-radius: 0; font-family: 'Special Elite','Courier New',monospace; font-size: 15px; line-height: 1.8; color: #4a3418; resize: vertical; padding: 6px 0; outline: none; }
-    #texto-archivo::placeholder { color: #8f7648; }
+    #texto-archivo { position: relative; width: 100%; height: 220px; min-height: 220px; background: transparent; border: none; border-radius: 0; font-family: 'Special Elite','Courier New',monospace; font-size: 15px; line-height: 1.8; color: #4a3418; padding: 6px 0; outline: none; overflow-y: auto; white-space: pre-wrap; overflow-wrap: break-word; }
+    #texto-archivo.vacio::before { content: attr(data-placeholder); position: absolute; top: 6px; left: 0; right: 0; color: #8f7648; pointer-events: none; user-select: none; }
+    #texto-archivo .tx-brillo { text-shadow: 0 0 4px #fff8d8, 0 0 10px currentColor; }
+    #texto-archivo .tx-neon { text-shadow: 0 0 2px #fff, 0 0 6px currentColor, 0 0 14px currentColor, 0 0 22px currentColor; }
+    #texto-archivo .tx-sombra { text-shadow: 2px 2px 0 rgba(59,42,21,0.28), 4px 5px 8px rgba(0,0,0,0.28); }
+    #texto-archivo .tx-contorno { -webkit-text-stroke: 1px rgba(59,42,21,0.82); text-shadow: 0 0 2px rgba(255,248,220,0.9); }
+    #texto-archivo .tx-sin-efecto { text-shadow: none; -webkit-text-stroke: 0; }
+    #texto-archivo .tx-reset { color: #4a3418; font-size: 15px; text-shadow: none; -webkit-text-stroke: 0; }
 
     .sello-confidencial { position: absolute; bottom: 22px; left: 14px; font-family: 'Special Elite','Courier New',monospace; font-size: 12px; letter-spacing: 3px; color: #a31616; text-transform: uppercase; writing-mode: vertical-rl; z-index: 3; cursor: pointer; user-select: none; opacity: 0.8; mix-blend-mode: multiply; }
 
@@ -592,6 +598,40 @@
     .fila-ctrl button { margin: 0; padding: 7px 11px; font-family: 'Special Elite','Courier New',monospace; font-size: 10px; letter-spacing: 1px; }
     .fila-ctrl .btn-borrar { margin: 0; }
     .grado-desc { flex: 1 0 100%; min-height: 30px; margin: 0; padding: 0 0 0 9px; border-left: 2px solid var(--grado, #7a5f9e); font-family: 'Special Elite','Courier New',monospace; font-size: 10px; line-height: 1.5; color: #b8a880; }
+
+    /* ===== MENÚ DE FORMATO DEL TEXTO ===== */
+    .menu-texto {
+      display: none;
+      position: fixed;
+      z-index: 130;
+      width: 268px;
+      max-width: calc(100vw - 16px);
+      max-height: calc(100vh - 16px);
+      overflow-y: auto;
+      padding: 10px;
+      background: #150c05;
+      border: 1px solid #6b4a2a;
+      border-radius: 6px;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.82), 0 0 0 1px rgba(217,165,255,0.12);
+      font-family: 'Special Elite','Courier New',monospace;
+      color: #d9c7a8;
+    }
+    .menu-texto.abierto { display: block; }
+    .mt-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-bottom: 6px; margin-bottom: 4px; border-bottom: 1px solid #4a331a; }
+    .mt-head span { font-size: 9px; letter-spacing: 2px; color: #d9a5ff; }
+    .mt-cerrar { background: none; border: 0; color: #8a6d3b; font-family: inherit; font-size: 14px; line-height: 1; padding: 0 2px; cursor: pointer; }
+    .mt-cerrar:hover { color: #ff6b6b; }
+    .mt-sec { margin-top: 8px; }
+    .mt-label { display: block; margin-bottom: 4px; font-size: 8px; letter-spacing: 2px; color: #8a6d3b; }
+    .mt-colores { display: flex; flex-wrap: wrap; gap: 6px; }
+    .mt-color { width: 22px; height: 22px; padding: 0; border: 1px solid rgba(255,255,255,0.28); border-radius: 50%; cursor: pointer; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.35); }
+    .mt-color:hover, .mt-color.activo { outline: 2px solid #d9a5ff; outline-offset: 1px; }
+    .mt-tamanos, .mt-efectos { display: flex; flex-wrap: wrap; gap: 4px; }
+    .mt-op { flex: 1 1 auto; min-width: 52px; padding: 5px 4px; background: #1e1208; border: 1px solid #4a331a; border-radius: 3px; color: #c9b58f; font-family: inherit; font-size: 9px; letter-spacing: 1px; cursor: pointer; }
+    .mt-op:hover { border-color: #d9a5ff; color: #d9a5ff; }
+    .mt-op.activo { border-color: #d9a5ff; color: #d9a5ff; box-shadow: 0 0 8px rgba(217,165,255,0.25); }
+    .mt-quitar { width: 100%; margin-top: 10px; padding: 6px; background: none; border: 1px solid #7a3a3a; border-radius: 3px; color: #c98a8a; font-family: inherit; font-size: 9px; letter-spacing: 1px; cursor: pointer; }
+    .mt-quitar:hover { background: #7a1a1a; color: #fff; }
 
     /* ===== EXPEDIENTE A PANTALLA COMPLETA ===== */
     body.archivo-abierto { overflow: hidden; }
@@ -682,7 +722,7 @@
       min-width: 0;
       height: auto;
       min-height: 140px;
-      resize: none;
+      overflow-y: auto;
     }
 
     /* ===== CAJÓN DE ARCHIVOS ===== */
@@ -885,7 +925,7 @@
                     <span>REGISTRO DE CAMPO</span>
                   </div>
                   <div class="cuerpo-doc">
-                    <textarea id="texto-archivo" placeholder="Escribe el registro aquí… (máquina de escribir)"></textarea>
+                    <div id="texto-archivo" contenteditable="true" role="textbox" aria-multiline="true" spellcheck="false" data-placeholder="Escribe el registro aquí… (máquina de escribir)"></div>
                     <div class="polaroid-wrap" id="polaroid-wrap">
                       <div class="polaroid" onclick="elegirFoto()" role="button" tabindex="0" title="Haz clic para elegir una foto" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();elegirFoto();}">
                         <div class="foto-negra" id="foto-negra">
@@ -929,6 +969,25 @@
   <div class="reflector" id="reflector" aria-hidden="true"></div>
   <div class="vineta" aria-hidden="true"></div>
   <div id="aviso-editor"><span id="aviso-editor-msg">Hay contenido nuevo en el editor.</span><br><button id="aviso-editor-btn" type="button">ACTUALIZAR</button></div>
+  <div id="menu-texto" class="menu-texto" role="menu" aria-label="Formato del texto seleccionado">
+    <div class="mt-head">
+      <span>TEXTO · SOLO LA SELECCIÓN</span>
+      <button type="button" class="mt-cerrar" id="mt-cerrar" aria-label="Cerrar menú de texto">✕</button>
+    </div>
+    <div class="mt-sec">
+      <span class="mt-label">COLOR</span>
+      <div class="mt-colores" id="mt-colores"></div>
+    </div>
+    <div class="mt-sec">
+      <span class="mt-label">TAMAÑO</span>
+      <div class="mt-tamanos" id="mt-tamanos"></div>
+    </div>
+    <div class="mt-sec">
+      <span class="mt-label">EFECTO</span>
+      <div class="mt-efectos" id="mt-efectos"></div>
+    </div>
+    <button type="button" class="mt-quitar" id="mt-quitar" data-formato="quitar">QUITAR FORMATO</button>
+  </div>
   <footer>☠ UMBRA · Esta página no existe para el público ☠</footer>
 
   <script>
@@ -2690,7 +2749,7 @@
       r.classList.toggle('apagada');
     });
     // ===== UPDATE PROPIO DEL EDITOR (clave editor, ambas pantallas) =====
-    const EDITOR_VERSION = '24';
+    const EDITOR_VERSION = '25';
     function mensajeEditor(j) {
       try {
         if (window.matchMedia('(max-width: 640px)').matches && j.editor_mensaje_movil) return j.editor_mensaje_movil;
@@ -2746,6 +2805,11 @@
     /* ===== ARCHIVO FÍSICO: controles del registro ===== */
     let fotoData = '';
     let registroActual = '001';
+    const editorTexto = document.getElementById('texto-archivo');
+    // Estado del menú de formato de texto
+    let menuTextoAbierto = false;
+    let rangoSeleccionado = null; // { startContainer, startOffset, endContainer, endOffset }
+    let nodoSeleccionado = null;
     const GRADOS = {
       'G-0': { nombre: 'Nulo', alias: 'Inofensivo', color: '#3fbf6f', desc: 'No representa una amenaza conocida. Puede ser observado y estudiado sin medidas especiales.' },
       'G-1': { nombre: 'Bajo', alias: 'Controlable', color: '#b8cc4a', desc: 'Puede causar incidentes menores, pero es fácil de contener y no suele poner vidas en peligro.' },
@@ -2823,6 +2887,351 @@
       };
       reader.readAsDataURL(file);
     });
+
+    /* ===== FORMATO DE TEXTO RICO (solo selección) ===== */
+    const CLASES_TEXTO = ['tx-brillo', 'tx-neon', 'tx-sombra', 'tx-contorno', 'tx-sin-efecto', 'tx-reset'];
+    const CLASES_COLOR = {};
+    const CLASES_TAMANO = {};
+    const COLORES_TEXTO = [
+      { nombre: 'Tinta', color: '#4a3418' },
+      { nombre: 'Sangre', color: '#9c1010' },
+      { nombre: 'Óxido', color: '#b4531a' },
+      { nombre: 'Oliva', color: '#5f6b1f' },
+      { nombre: 'Verde', color: '#2f6b4a' },
+      { nombre: 'Azul', color: '#2b4a7a' },
+      { nombre: 'Violeta', color: '#6a3d8f' },
+      { nombre: 'Negro', color: '#14100a' }
+    ];
+    COLORES_TEXTO.forEach((c, i) => { CLASES_COLOR[c.color] = 'tx-color-' + i; });
+    const TAMANOS_TEXTO = [
+      { nombre: 'Pequeño', tamano: '12px' },
+      { nombre: 'Normal', tamano: '15px' },
+      { nombre: 'Grande', tamano: '20px' },
+      { nombre: 'Enorme', tamano: '28px' }
+    ];
+    TAMANOS_TEXTO.forEach((t, i) => { CLASES_TAMANO[t.tamano] = 'tx-tam-' + i; });
+
+    // Inyecta reglas de color y tamaño dinámicamente
+    (function () {
+      const hoja = document.createElement('style');
+      document.head.appendChild(hoja);
+      const sheet = hoja.sheet;
+      let regla = 0;
+      COLORES_TEXTO.forEach((c, i) => {
+        sheet.insertRule('#texto-archivo .tx-color-' + i + ' { color: ' + c.color + ' !important; }', regla++);
+      });
+      TAMANOS_TEXTO.forEach((t, i) => {
+        sheet.insertRule('#texto-archivo .tx-tam-' + i + ' { font-size: ' + t.tamano + ' !important; }', regla++);
+      });
+    })();
+
+    function limpiarHtmlTexto(html) {
+      // Solo permite SPAN, BR, DIV, P y atributos/estilos seguros
+      try {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        const eliminar = [];
+        function recorrer(nodo) {
+          if (nodo.nodeType === 1) {
+            const tag = nodo.tagName;
+            if (tag !== 'SPAN' && tag !== 'BR' && tag !== 'DIV' && tag !== 'P') {
+              eliminar.push(nodo);
+              return;
+            }
+            // Limpia atributos excepto style y class
+            const attrs = [];
+            for (let a = nodo.attributes.length - 1; a >= 0; a--) {
+              const at = nodo.attributes[a];
+              if (at.name !== 'class' && at.name !== 'style') {
+                attrs.push(at.name);
+              }
+            }
+            attrs.forEach(n => nodo.removeAttribute(n));
+            // Valida clases
+            if (nodo.className) {
+              const clases = String(nodo.className).split(/\s+/).filter(function (cl) {
+                return CLASES_TEXTO.indexOf(cl) >= 0 || /^tx-color-\d+$/.test(cl) || /^tx-tam-\d+$/.test(cl);
+              });
+              nodo.className = clases.join(' ');
+            }
+            // Valida estilos inline
+            if (nodo.style.cssText) {
+              const estilosValidos = [];
+              nodo.style.cssText.split(';').forEach(function (par) {
+                par = par.trim();
+                if (!par) return;
+                const dospuntos = par.indexOf(':');
+                if (dospuntos < 0) return;
+                const prop = par.slice(0, dospuntos).trim().toLowerCase();
+                const val = par.slice(dospuntos + 1).trim();
+                if (prop === 'color' || prop === 'font-size' || prop === 'text-shadow' || prop === '-webkit-text-stroke') {
+                  estilosValidos.push(prop + ': ' + val);
+                }
+              });
+              nodo.style.cssText = estilosValidos.join('; ');
+            }
+            // Recorre hijos
+            const hijos = [];
+            for (let h = 0; h < nodo.childNodes.length; h++) hijos.push(nodo.childNodes[h]);
+            hijos.forEach(recorrer);
+          } else if (nodo.nodeType === 3) {
+            // nodo de texto: está bien
+          } else {
+            eliminar.push(nodo);
+          }
+        }
+        recorrer(tmp);
+        eliminar.forEach(function (n) {
+          if (n.parentNode) n.parentNode.removeChild(n);
+        });
+        return tmp.innerHTML;
+      } catch (e) { return ''; }
+    }
+
+    function textoPlanoEditor() {
+      if (!editorTexto) return '';
+      return editorTexto.textContent || '';
+    }
+
+    function actualizarPlaceholderTexto() {
+      if (!editorTexto) return;
+      const vacio = (editorTexto.textContent || '').trim() === '';
+      editorTexto.classList.toggle('vacio', vacio);
+    }
+
+    function cargarTextoEnEditor(r) {
+      if (!editorTexto || !r) return;
+      const html = r.html || '';
+      const texto = r.texto || '';
+      if (html && html.trim() !== '') {
+        editorTexto.innerHTML = limpiarHtmlTexto(html);
+      } else {
+        editorTexto.textContent = texto;
+      }
+      actualizarPlaceholderTexto();
+    }
+
+    /* ===== MENÚ CONTEXTUAL DE TEXTO ===== */
+    function obtenerRangoEditor() {
+      const sel = document.getSelection();
+      if (!sel || sel.rangeCount === 0) return null;
+      const range = sel.getRangeAt(0);
+      return {
+        startContainer: range.startContainer,
+        startOffset: range.startOffset,
+        endContainer: range.endContainer,
+        endOffset: range.endOffset
+      };
+    }
+
+    function restaurarRangoEditor() {
+      if (!rangoSeleccionado) return;
+      try {
+        const sel = document.getSelection();
+        sel.removeAllRanges();
+        const range = document.createRange();
+        range.setStart(rangoSeleccionado.startContainer, rangoSeleccionado.startOffset);
+        range.setEnd(rangoSeleccionado.endContainer, rangoSeleccionado.endOffset);
+        sel.addRange(range);
+      } catch (e) {}
+    }
+
+    function envolverRangoTexto(claseExtra, colorHex, tamanoPx, efectoClase) {
+      if (!rangoSeleccionado) return;
+      restaurarRangoEditor();
+      const sel = document.getSelection();
+      if (!sel || sel.rangeCount === 0) return;
+      const range = sel.getRangeAt(0);
+
+      // Extrae nodos de texto dentro del rango
+      const nodosTexto = [];
+      function recogerNodos(nodo) {
+        if (nodo.nodeType === 3) {
+          nodosTexto.push(nodo);
+        } else if (nodo.nodeType === 1) {
+          for (let h = 0; h < nodo.childNodes.length; h++) recogerNodos(nodo.childNodes[h]);
+        }
+      }
+      const contenedor = range.commonAncestorContainer;
+      recogerNodos(contenedor.nodeType === 3 ? contenedor.parentNode : contenedor);
+
+      // Solo envuelve los nodos que están dentro del rango (por simplicidad, envuelve todo el contenido del rango)
+      const fragmento = document.createDocumentFragment();
+      const textoSeleccionado = range.toString();
+      if (!textoSeleccionado) return;
+
+      const span = document.createElement('span');
+      const clases = [];
+      if (efectoClase) clases.push(efectoClase);
+      if (colorHex) {
+        const idx = COLORES_TEXTO.findIndex(c => c.color === colorHex);
+        if (idx >= 0) clases.push('tx-color-' + idx);
+      }
+      if (tamanoPx) {
+        const idx = TAMANOS_TEXTO.findIndex(t => t.tamano === tamanoPx);
+        if (idx >= 0) clases.push('tx-tam-' + idx);
+      }
+      if (claseExtra) clases.push(claseExtra);
+      span.className = clases.join(' ');
+      span.textContent = textoSeleccionado;
+
+      range.deleteContents();
+      range.insertNode(span);
+      editorTexto.normalize();
+      actualizarPlaceholderTexto();
+
+      // Guarda el nuevo rango después del span insertado
+      try {
+        const nuevoSel = document.getSelection();
+        nuevoSel.removeAllRanges();
+        const nr = document.createRange();
+        nr.setStartAfter(span);
+        nr.setEndAfter(span);
+        nuevoSel.addRange(nr);
+      } catch (e) {}
+    }
+
+    function aplicarFormatoTexto(tipo, valor) {
+      cerrarMenuTexto();
+      if (!rangoSeleccionado) return;
+      restaurarRangoEditor();
+      const sel = document.getSelection();
+      if (!sel || sel.rangeCount === 0) return;
+      const range = sel.getRangeAt(0);
+      const textoSel = range.toString().trim();
+      if (!textoSel) return;
+
+      let claseExtra = '';
+      let colorHex = '';
+      let tamanoPx = '';
+      let efectoClase = '';
+
+      if (tipo === 'color') {
+        colorHex = valor;
+      } else if (tipo === 'tamano') {
+        tamanoPx = valor;
+      } else if (tipo === 'efecto') {
+        efectoClase = valor;
+      } else if (tipo === 'quitar') {
+        // Quita todo el formato de la selección: envuelve en tx-reset y limpia estilos
+        envolverRangoTexto('tx-reset', '', '', 'tx-reset');
+        return;
+      }
+
+      envolverRangoTexto(claseExtra, colorHex, tamanoPx, efectoClase);
+    }
+
+    function construirMenuTexto() {
+      const contColores = document.getElementById('mt-colores');
+      const contTamanos = document.getElementById('mt-tamanos');
+      const contEfectos = document.getElementById('mt-efectos');
+      if (!contColores || !contTamanos || !contEfectos) return;
+
+      contColores.innerHTML = '';
+      COLORES_TEXTO.forEach(function (c) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'mt-color';
+        btn.style.backgroundColor = c.color;
+        btn.title = c.nombre;
+        btn.onclick = function () { aplicarFormatoTexto('color', c.color); };
+        contColores.appendChild(btn);
+      });
+
+      contTamanos.innerHTML = '';
+      TAMANOS_TEXTO.forEach(function (t) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'mt-op';
+        btn.textContent = t.nombre;
+        btn.onclick = function () { aplicarFormatoTexto('tamano', t.tamano); };
+        contTamanos.appendChild(btn);
+      });
+
+      contEfectos.innerHTML = '';
+      const EFECTOS = [
+        { nombre: 'Brillo', clase: 'tx-brillo' },
+        { nombre: 'Neón', clase: 'tx-neon' },
+        { nombre: 'Sombra', clase: 'tx-sombra' },
+        { nombre: 'Contorno', clase: 'tx-contorno' },
+        { nombre: 'Normal', clase: 'tx-sin-efecto' }
+      ];
+      EFECTOS.forEach(function (e) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'mt-op';
+        btn.textContent = e.nombre;
+        btn.onclick = function () { aplicarFormatoTexto('efecto', e.clase); };
+        contEfectos.appendChild(btn);
+      });
+
+      const btnQuitar = document.getElementById('mt-quitar');
+      if (btnQuitar) btnQuitar.onclick = function () { aplicarFormatoTexto('quitar', ''); };
+      const btnCerrar = document.getElementById('mt-cerrar');
+      if (btnCerrar) btnCerrar.onclick = cerrarMenuTexto;
+    }
+
+    function abrirMenuTexto(ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const sel = document.getSelection();
+      if (!sel || sel.rangeCount === 0) return;
+      const texto = sel.toString().trim();
+      if (!texto) return;
+
+      rangoSeleccionado = obtenerRangoEditor();
+      if (!rangoSeleccionado) return;
+
+      construirMenuTexto();
+
+      const menu = document.getElementById('menu-texto');
+      if (!menu) return;
+      menu.classList.add('abierto');
+      menuTextoAbierto = true;
+
+      // Posiciona cerca del cursor/selección
+      const range = sel.getRangeAt(0);
+      const rect = range.getBoundingClientRect ? range.getBoundingClientRect() : null;
+      const x = rect ? rect.left : (ev.clientX || 0);
+      const y = rect ? rect.top : (ev.clientY || 0);
+      menu.style.left = Math.min(x, window.innerWidth - menu.offsetWidth - 10) + 'px';
+      menu.style.top = Math.max(0, y - menu.offsetHeight - 8) + 'px';
+
+      // Marca visual de botones activos según lo que ya tiene el rango
+      // (sencillo: no hay estado previo almacenado, se deja por defecto)
+    }
+
+    function cerrarMenuTexto() {
+      const menu = document.getElementById('menu-texto');
+      if (menu) menu.classList.remove('abierto');
+      menuTextoAbierto = false;
+      rangoSeleccionado = null;
+    }
+
+    function instalarMenuTexto() {
+      if (!editorTexto) return;
+      editorTexto.addEventListener('contextmenu', function (ev) {
+        // Solo abre si hay selección real
+        const sel = document.getSelection();
+        if (!sel || sel.rangeCount === 0 || !sel.toString().trim()) return;
+        abrirMenuTexto(ev);
+      });
+      // Clic fuera cierra
+      document.addEventListener('click', function (ev) {
+        if (!menuTextoAbierto) return;
+        const menu = document.getElementById('menu-texto');
+        if (menu && !menu.contains(ev.target) && ev.target !== editorTexto && !editorTexto.contains(ev.target)) {
+          cerrarMenuTexto();
+        }
+      });
+      // Escape cierra
+      document.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Escape' && menuTextoAbierto) { cerrarMenuTexto(); ev.preventDefault(); }
+      });
+      // Scroll y resize cierran
+      window.addEventListener('scroll', cerrarMenuTexto, true);
+      window.addEventListener('resize', cerrarMenuTexto);
+    }
     function guardarArchivo() {
       if (!archivoActivo) {
         nuevoArchivo();
@@ -2833,7 +3242,8 @@
         incidente: registroActual,
         rango: document.getElementById('ctrl-rango').value || 'G-0',
         selloInferior: document.getElementById('sello-confidencial').textContent,
-        texto: document.getElementById('texto-archivo').value,
+        texto: textoPlanoEditor(),
+        html: limpiarHtmlTexto(editorTexto.innerHTML || ''),
         foto: fotoVisible,
         fotoData: fotoData,
         ts: Date.now()
@@ -2857,7 +3267,7 @@
           aplicarGrado();
           document.getElementById('ctrl-sello-inferior').value = r.selloInferior || 'CONFIDENCIAL';
           document.getElementById('sello-confidencial').textContent = r.selloInferior || 'CONFIDENCIAL';
-          document.getElementById('texto-archivo').value = r.texto || '';
+          cargarTextoEnEditor(r);
           fotoVisible = r.foto !== false;
           document.getElementById('polaroid-wrap').classList.toggle('none', !fotoVisible);
           document.getElementById('btn-foto').textContent = fotoVisible ? 'QUITAR FOTO' : 'PONER FOTO';
@@ -2869,6 +3279,8 @@
     document.getElementById('ctrl-rango').addEventListener('change', aplicarGrado);
     document.getElementById('ctrl-sello-inferior').addEventListener('input', aplicarSelloInferior);
     cargarUltimoArchivo();
+    instalarMenuTexto();
+    actualizarPlaceholderTexto();
     aplicarGrado();
     renderCajon();
 
@@ -2941,6 +3353,7 @@
         rango: 'G-0',
         selloInferior: 'CONFIDENCIAL',
         texto: '',
+        html: '',
         foto: true,
         fotoData: '',
         ts: Date.now()
@@ -2960,6 +3373,7 @@
     }
     function mostrarVistaArchivo() {
       cerrarAjustes();
+      cerrarMenuTexto();
       despertarLuz();
       document.getElementById('vista-cajon').style.display = 'none';
       const v = document.getElementById('vista-archivo');
@@ -2971,6 +3385,7 @@
     }
     function volverCajon() {
       cerrarAjustes();
+      cerrarMenuTexto();
       despertarLuz();
       const v = document.getElementById('vista-archivo');
       v.classList.remove('pantalla');
@@ -3014,7 +3429,7 @@
       aplicarGrado();
       document.getElementById('ctrl-sello-inferior').value = r.selloInferior || 'CONFIDENCIAL';
       document.getElementById('sello-confidencial').textContent = r.selloInferior || 'CONFIDENCIAL';
-      document.getElementById('texto-archivo').value = r.texto || '';
+      cargarTextoEnEditor(r);
       fotoVisible = r.foto !== false;
       document.getElementById('polaroid-wrap').classList.toggle('none', !fotoVisible);
       document.getElementById('btn-foto').textContent = fotoVisible ? 'QUITAR FOTO' : 'PONER FOTO';

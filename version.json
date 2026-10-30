@@ -3,8 +3,8 @@
   "mensaje": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_movil": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_pc": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
-  "editor": "24",
-  "editor_mensaje": "UMBRA editor: fuera el sello de registro, grados G-0 a G-5 y el cajón se tiñe con el color del grado. Actualiza para verlo.",
-  "editor_mensaje_movil": "UMBRA editor: fuera el sello, grados G-0 a G-5 y cajón con color por grado. Toca ACTUALIZAR para verlo.",
-  "editor_mensaje_pc": "UMBRA editor: fuera el sello de registro, grados G-0 a G-5 y el cajón se tiñe con el color del grado. Actualiza para verlo."
+  "editor": "25",
+  "editor_mensaje": "UMBRA editor 25: formateo de texto seleccionado (color, tamaño, efecto) al hacer clic derecho sobre la selección. Solo afecta al texto sombreado. Actualiza para verlo.",
+  "editor_mensaje_movil": "UMBRA editor 25: selecciona texto, clic derecho y dale color, tamaño o efecto. Solo a lo sombreado. Toca ACTUALIZAR.",
+  "editor_mensaje_pc": "UMBRA editor 25: formateo de texto seleccionado (color, tamaño, efecto) al hacer clic derecho sobre la selección. Solo afecta al texto sombreado. Actualiza para verlo."
 }
