@@ -3,8 +3,8 @@
   "mensaje": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_movil": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_pc": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
-  "editor": "25",
-  "editor_mensaje": "UMBRA editor 25: formateo de texto seleccionado (color, tamaño, efecto) al hacer clic derecho sobre la selección. Solo afecta al texto sombreado. Actualiza para verlo.",
-  "editor_mensaje_movil": "UMBRA editor 25: selecciona texto, clic derecho y dale color, tamaño o efecto. Solo a lo sombreado. Toca ACTUALIZAR.",
-  "editor_mensaje_pc": "UMBRA editor 25: formateo de texto seleccionado (color, tamaño, efecto) al hacer clic derecho sobre la selección. Solo afecta al texto sombreado. Actualiza para verlo."
+  "editor": "26",
+  "editor_mensaje": "UMBRA editor 26: formateo de texto seleccionado (color, tamaño, efecto) al hacer clic derecho sobre la selección. Ahora el placeholder desaparece al escribir y se puede sombrear el texto. Corrige los dos regresos de la 25. Actualiza para verlo.",
+  "editor_mensaje_movil": "UMBRA editor 26: selecciona texto, clic derecho y dale color, tamaño o efecto. Solo a lo sombreado. Arreglado: placeholder se quita al escribir y se puede sombrear. Toca ACTUALIZAR.",
+  "editor_mensaje_pc": "UMBRA editor 26: formateo de texto seleccionado (color, tamaño, efecto) al hacer clic derecho sobre la selección. Solo afecta al texto sombreado. Corrige placeholder y selección de la 25. Actualiza para verlo."
 }

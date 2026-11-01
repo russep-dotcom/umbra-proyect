@@ -535,7 +535,7 @@
     .foto-negra.con-foto .foto-vacia { display: none; }
     .pie-polaroid { position: absolute; left: 0; right: 0; bottom: 8px; margin: 0; font-family: 'Special Elite','Courier New',monospace; font-size: 10px; letter-spacing: 2px; color: #6b522b; text-align: center; text-transform: uppercase; cursor: pointer; }
 
-    #texto-archivo { position: relative; width: 100%; height: 220px; min-height: 220px; background: transparent; border: none; border-radius: 0; font-family: 'Special Elite','Courier New',monospace; font-size: 15px; line-height: 1.8; color: #4a3418; padding: 6px 0; outline: none; overflow-y: auto; white-space: pre-wrap; overflow-wrap: break-word; }
+    #texto-archivo { position: relative; width: 100%; height: 220px; min-height: 220px; background: transparent; border: none; border-radius: 0; font-family: 'Special Elite','Courier New',monospace; font-size: 15px; line-height: 1.8; color: #4a3418; padding: 6px 0; outline: none; overflow-y: auto; white-space: pre-wrap; overflow-wrap: break-word; user-select: text; -webkit-user-select: text; cursor: text; }
     #texto-archivo.vacio::before { content: attr(data-placeholder); position: absolute; top: 6px; left: 0; right: 0; color: #8f7648; pointer-events: none; user-select: none; }
     #texto-archivo .tx-brillo { text-shadow: 0 0 4px #fff8d8, 0 0 10px currentColor; }
     #texto-archivo .tx-neon { text-shadow: 0 0 2px #fff, 0 0 6px currentColor, 0 0 14px currentColor, 0 0 22px currentColor; }
@@ -2749,7 +2749,7 @@
       r.classList.toggle('apagada');
     });
     // ===== UPDATE PROPIO DEL EDITOR (clave editor, ambas pantallas) =====
-    const EDITOR_VERSION = '25';
+    const EDITOR_VERSION = '26';
     function mensajeEditor(j) {
       try {
         if (window.matchMedia('(max-width: 640px)').matches && j.editor_mensaje_movil) return j.editor_mensaje_movil;
@@ -2792,9 +2792,11 @@
     // Sin sombrear textos en ninguna página UMBRA (solo se escribe en campos con foco)
     document.addEventListener('selectstart', e => {
       try {
-        const t = e.target;
+        let t = e.target;
+        if (t && t.nodeType === 3) t = t.parentNode;
         if (t && t.closest) {
-          if (t.closest('input, textarea')) return;
+          // El registro editable SÍ se puede sombrear siempre (para darle formato)
+          if (t.closest('input, textarea, #texto-archivo')) return;
           const ed = t.closest('[contenteditable="true"]');
           if (ed && ed.contains(document.activeElement)) return;
         }
@@ -2890,6 +2892,7 @@
 
     /* ===== FORMATO DE TEXTO RICO (solo selección) ===== */
     const CLASES_TEXTO = ['tx-brillo', 'tx-neon', 'tx-sombra', 'tx-contorno', 'tx-sin-efecto', 'tx-reset'];
+    const EFECTOS_TEXTO = ['tx-brillo', 'tx-neon', 'tx-sombra', 'tx-contorno', 'tx-sin-efecto'];
     const CLASES_COLOR = {};
     const CLASES_TAMANO = {};
     const COLORES_TEXTO = [
@@ -2928,69 +2931,81 @@
     function limpiarHtmlTexto(html) {
       // Solo permite SPAN, BR, DIV, P y atributos/estilos seguros
       try {
-        const tmp = document.createElement('div');
-        tmp.innerHTML = html;
-        const eliminar = [];
-        function recorrer(nodo) {
-          if (nodo.nodeType === 1) {
-            const tag = nodo.tagName;
-            if (tag !== 'SPAN' && tag !== 'BR' && tag !== 'DIV' && tag !== 'P') {
-              eliminar.push(nodo);
-              return;
+        // DOMParser crea un documento inerte: no ejecuta scripts ni carga imágenes
+        const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+        const tmp = doc.body;
+        const PELIGROSOS = {
+          SCRIPT: 1, STYLE: 1, IFRAME: 1, OBJECT: 1, EMBED: 1, LINK: 1, META: 1,
+          SVG: 1, MATH: 1, IMG: 1, VIDEO: 1, AUDIO: 1, SOURCE: 1, TRACK: 1,
+          FORM: 1, INPUT: 1, BUTTON: 1, TEXTAREA: 1, SELECT: 1, OPTION: 1
+        };
+        const todos = Array.from(tmp.querySelectorAll('*'));
+        // De más profundo a más superficial (así desenvolver no rompe el recorrido)
+        for (let i = todos.length - 1; i >= 0; i--) {
+          const nodo = todos[i];
+          if (!nodo.parentNode) continue;
+          const tag = nodo.tagName;
+          if (tag !== 'SPAN' && tag !== 'BR' && tag !== 'DIV' && tag !== 'P') {
+            if (PELIGROSOS[tag]) {
+              // Etiqueta peligrosa: se elimina con todo su contenido
+              nodo.parentNode.removeChild(nodo);
+            } else {
+              // Otras etiquetas (b, i, font...): se desenvuelven conservando el texto
+              const padre = nodo.parentNode;
+              while (nodo.firstChild) padre.insertBefore(nodo.firstChild, nodo);
+              padre.removeChild(nodo);
             }
-            // Limpia atributos excepto style y class
-            const attrs = [];
-            for (let a = nodo.attributes.length - 1; a >= 0; a--) {
-              const at = nodo.attributes[a];
-              if (at.name !== 'class' && at.name !== 'style') {
-                attrs.push(at.name);
+            continue;
+          }
+          // Limpia atributos excepto style y class
+          Array.from(nodo.attributes).forEach(function (at) {
+            if (at.name !== 'class' && at.name !== 'style') nodo.removeAttribute(at.name);
+          });
+          // Valida clases
+          if (nodo.className) {
+            const clases = String(nodo.className).split(/\s+/).filter(function (cl) {
+              return CLASES_TEXTO.indexOf(cl) >= 0 || /^tx-color-\d+$/.test(cl) || /^tx-tam-\d+$/.test(cl);
+            });
+            if (clases.length) nodo.className = clases.join(' ');
+            else nodo.removeAttribute('class');
+          }
+          // Valida estilos inline
+          if (nodo.style && nodo.style.cssText) {
+            const estilosValidos = [];
+            nodo.style.cssText.split(';').forEach(function (par) {
+              par = par.trim();
+              if (!par) return;
+              const dospuntos = par.indexOf(':');
+              if (dospuntos < 0) return;
+              const prop = par.slice(0, dospuntos).trim().toLowerCase();
+              const val = par.slice(dospuntos + 1).trim();
+              if (prop === 'color' || prop === 'font-size' || prop === 'text-shadow' || prop === '-webkit-text-stroke') {
+                estilosValidos.push(prop + ': ' + val);
               }
-            }
-            attrs.forEach(n => nodo.removeAttribute(n));
-            // Valida clases
-            if (nodo.className) {
-              const clases = String(nodo.className).split(/\s+/).filter(function (cl) {
-                return CLASES_TEXTO.indexOf(cl) >= 0 || /^tx-color-\d+$/.test(cl) || /^tx-tam-\d+$/.test(cl);
-              });
-              nodo.className = clases.join(' ');
-            }
-            // Valida estilos inline
-            if (nodo.style.cssText) {
-              const estilosValidos = [];
-              nodo.style.cssText.split(';').forEach(function (par) {
-                par = par.trim();
-                if (!par) return;
-                const dospuntos = par.indexOf(':');
-                if (dospuntos < 0) return;
-                const prop = par.slice(0, dospuntos).trim().toLowerCase();
-                const val = par.slice(dospuntos + 1).trim();
-                if (prop === 'color' || prop === 'font-size' || prop === 'text-shadow' || prop === '-webkit-text-stroke') {
-                  estilosValidos.push(prop + ': ' + val);
-                }
-              });
-              nodo.style.cssText = estilosValidos.join('; ');
-            }
-            // Recorre hijos
-            const hijos = [];
-            for (let h = 0; h < nodo.childNodes.length; h++) hijos.push(nodo.childNodes[h]);
-            hijos.forEach(recorrer);
-          } else if (nodo.nodeType === 3) {
-            // nodo de texto: está bien
-          } else {
-            eliminar.push(nodo);
+            });
+            if (estilosValidos.length) nodo.style.cssText = estilosValidos.join('; ');
+            else nodo.removeAttribute('style');
           }
         }
-        recorrer(tmp);
-        eliminar.forEach(function (n) {
-          if (n.parentNode) n.parentNode.removeChild(n);
-        });
         return tmp.innerHTML;
       } catch (e) { return ''; }
     }
 
     function textoPlanoEditor() {
       if (!editorTexto) return '';
-      return editorTexto.textContent || '';
+      let out = '';
+      function recorrer(nodo) {
+        if (nodo.nodeType === 3) { out += nodo.nodeValue; return; }
+        if (nodo.nodeType !== 1) return;
+        const tag = nodo.tagName;
+        if (tag === 'BR') { out += '\n'; return; }
+        const bloque = tag === 'DIV' || tag === 'P';
+        if (bloque && out && out.charAt(out.length - 1) !== '\n') out += '\n';
+        for (let i = 0; i < nodo.childNodes.length; i++) recorrer(nodo.childNodes[i]);
+        if (bloque && out && out.charAt(out.length - 1) !== '\n') out += '\n';
+      }
+      for (let i = 0; i < editorTexto.childNodes.length; i++) recorrer(editorTexto.childNodes[i]);
+      return out.replace(/\n+$/, '');
     }
 
     function actualizarPlaceholderTexto() {
@@ -3036,89 +3051,128 @@
       } catch (e) {}
     }
 
-    function envolverRangoTexto(claseExtra, colorHex, tamanoPx, efectoClase) {
-      if (!rangoSeleccionado) return;
-      restaurarRangoEditor();
-      const sel = document.getSelection();
-      if (!sel || sel.rangeCount === 0) return;
-      const range = sel.getRangeAt(0);
+    function claseDeFormato(tipo, valor) {
+      if (tipo === 'color') {
+        const idx = COLORES_TEXTO.findIndex(function (c) { return c.color === valor; });
+        return idx >= 0 ? 'tx-color-' + idx : '';
+      }
+      if (tipo === 'tamano') {
+        const idx = TAMANOS_TEXTO.findIndex(function (t) { return t.tamano === valor; });
+        return idx >= 0 ? 'tx-tam-' + idx : '';
+      }
+      if (tipo === 'efecto') return valor;
+      if (tipo === 'quitar') return 'tx-reset';
+      return '';
+    }
 
-      // Extrae nodos de texto dentro del rango
-      const nodosTexto = [];
-      function recogerNodos(nodo) {
-        if (nodo.nodeType === 3) {
-          nodosTexto.push(nodo);
-        } else if (nodo.nodeType === 1) {
-          for (let h = 0; h < nodo.childNodes.length; h++) recogerNodos(nodo.childNodes[h]);
+    function quitarClasesDeCategoria(span, tipo) {
+      Array.from(span.classList).forEach(function (cl) {
+        if (tipo === 'color' && /^tx-color-\d+$/.test(cl)) span.classList.remove(cl);
+        else if (tipo === 'tamano' && /^tx-tam-\d+$/.test(cl)) span.classList.remove(cl);
+        else if (tipo === 'efecto' && EFECTOS_TEXTO.indexOf(cl) >= 0) span.classList.remove(cl);
+        else if (tipo === 'quitar' && cl.indexOf('tx-') === 0) span.classList.remove(cl);
+      });
+      if (tipo === 'quitar') span.removeAttribute('style');
+    }
+
+    function spanSeleccionadoCompleto(range) {
+      let candidato = null;
+      let exactoPorBordes = false;
+      // Caso A: el ancestro común ya es el span
+      let n = range.commonAncestorContainer;
+      if (n && n.nodeType === 3) n = n.parentNode;
+      if (n && n.nodeType === 1 && n.tagName === 'SPAN' && editorTexto.contains(n)) candidato = n;
+      // Caso B: los bordes del rango caen justo antes/después del mismo span
+      if (!candidato) {
+        const ini = range.startContainer;
+        const fin = range.endContainer;
+        if (ini.nodeType === 1 && fin.nodeType === 1) {
+          const hijoIni = ini.childNodes[range.startOffset];
+          const hijoFin = fin.childNodes[range.endOffset - 1];
+          if (hijoIni && hijoIni === hijoFin && hijoIni.nodeType === 1 && hijoIni.tagName === 'SPAN') {
+            candidato = hijoIni;
+            exactoPorBordes = true;
+          }
         }
       }
-      const contenedor = range.commonAncestorContainer;
-      recogerNodos(contenedor.nodeType === 3 ? contenedor.parentNode : contenedor);
-
-      // Solo envuelve los nodos que están dentro del rango (por simplicidad, envuelve todo el contenido del rango)
-      const fragmento = document.createDocumentFragment();
-      const textoSeleccionado = range.toString();
-      if (!textoSeleccionado) return;
-
-      const span = document.createElement('span');
-      const clases = [];
-      if (efectoClase) clases.push(efectoClase);
-      if (colorHex) {
-        const idx = COLORES_TEXTO.findIndex(c => c.color === colorHex);
-        if (idx >= 0) clases.push('tx-color-' + idx);
+      if (!candidato) return null;
+      if (exactoPorBordes) {
+        return (candidato.textContent === range.toString()) ? candidato : null;
       }
-      if (tamanoPx) {
-        const idx = TAMANOS_TEXTO.findIndex(t => t.tamano === tamanoPx);
-        if (idx >= 0) clases.push('tx-tam-' + idx);
-      }
-      if (claseExtra) clases.push(claseExtra);
-      span.className = clases.join(' ');
-      span.textContent = textoSeleccionado;
-
-      range.deleteContents();
-      range.insertNode(span);
-      editorTexto.normalize();
-      actualizarPlaceholderTexto();
-
-      // Guarda el nuevo rango después del span insertado
-      try {
-        const nuevoSel = document.getSelection();
-        nuevoSel.removeAllRanges();
-        const nr = document.createRange();
-        nr.setStartAfter(span);
-        nr.setEndAfter(span);
-        nuevoSel.addRange(nr);
-      } catch (e) {}
+      // La selección debe estar dentro del span y abarcar exactamente todo su texto
+      if (!candidato.contains(range.startContainer) || !candidato.contains(range.endContainer)) return null;
+      if (candidato.textContent !== range.toString()) return null;
+      return candidato;
     }
 
     function aplicarFormatoTexto(tipo, valor) {
-      cerrarMenuTexto();
       if (!rangoSeleccionado) return;
       restaurarRangoEditor();
       const sel = document.getSelection();
       if (!sel || sel.rangeCount === 0) return;
       const range = sel.getRangeAt(0);
-      const textoSel = range.toString().trim();
-      if (!textoSel) return;
+      if (range.collapsed || !range.toString().trim()) return;
 
-      let claseExtra = '';
-      let colorHex = '';
-      let tamanoPx = '';
-      let efectoClase = '';
+      const clase = claseDeFormato(tipo, valor);
+      if (!clase) return;
 
-      if (tipo === 'color') {
-        colorHex = valor;
-      } else if (tipo === 'tamano') {
-        tamanoPx = valor;
-      } else if (tipo === 'efecto') {
-        efectoClase = valor;
-      } else if (tipo === 'quitar') {
-        // Quita todo el formato de la selección: envuelve en tx-reset y limpia estilos
-        envolverRangoTexto('tx-reset', '', '', 'tx-reset');
+      // Caso 1: la selección cubre exactamente un span ya formateado.
+      // Se cambian sus clases en vez de anidar otro span (así se apila color + tamaño + efecto).
+      const existente = spanSeleccionadoCompleto(range);
+      if (existente) {
+        quitarClasesDeCategoria(existente, tipo);
+        existente.classList.add(clase);
+        const nr = document.createRange();
+        nr.selectNodeContents(existente);
+        sel.removeAllRanges();
+        sel.addRange(nr);
+        rangoSeleccionado = obtenerRangoEditor();
+        actualizarPlaceholderTexto();
+        marcarActivosMenu();
         return;
       }
 
-      envolverRangoTexto(claseExtra, colorHex, tamanoPx, efectoClase);
+      // Caso 2: selección parcial o con varios nodos.
+      // Se parten los nodos de texto justo en los bordes y se envuelve solo lo seleccionado
+      // (así se conservan los saltos de línea y los bloques del registro).
+      const raiz = range.commonAncestorContainer;
+      const contenedor = raiz.nodeType === 3 ? raiz.parentNode : raiz;
+      const walker = document.createTreeWalker(contenedor, NodeFilter.SHOW_TEXT, null);
+      const nodos = [];
+      let n;
+      while ((n = walker.nextNode())) {
+        if (!n.nodeValue || !n.nodeValue.length) continue;
+        try { if (range.intersectsNode(n)) nodos.push(n); } catch (e) {}
+      }
+      const spans = [];
+      nodos.forEach(function (nodo) {
+        let inicio = (nodo === range.startContainer) ? range.startOffset : 0;
+        let fin = (nodo === range.endContainer) ? range.endOffset : nodo.nodeValue.length;
+        if (inicio >= fin) return;
+        let objetivo = nodo;
+        if (fin < objetivo.nodeValue.length) objetivo.splitText(fin);
+        if (inicio > 0) objetivo = objetivo.splitText(inicio);
+        if (!objetivo.nodeValue) return;
+        const span = document.createElement('span');
+        span.className = clase;
+        objetivo.parentNode.insertBefore(span, objetivo);
+        span.appendChild(objetivo);
+        spans.push(span);
+      });
+      editorTexto.normalize();
+      actualizarPlaceholderTexto();
+
+      if (spans.length) {
+        const nr = document.createRange();
+        nr.setStartBefore(spans[0]);
+        nr.setEndAfter(spans[spans.length - 1]);
+        sel.removeAllRanges();
+        sel.addRange(nr);
+        rangoSeleccionado = obtenerRangoEditor();
+        marcarActivosMenu();
+      } else {
+        cerrarMenuTexto();
+      }
     }
 
     function construirMenuTexto() {
@@ -3128,22 +3182,24 @@
       if (!contColores || !contTamanos || !contEfectos) return;
 
       contColores.innerHTML = '';
-      COLORES_TEXTO.forEach(function (c) {
+      COLORES_TEXTO.forEach(function (c, i) {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'mt-color';
         btn.style.backgroundColor = c.color;
         btn.title = c.nombre;
+        btn.setAttribute('data-clase', 'tx-color-' + i);
         btn.onclick = function () { aplicarFormatoTexto('color', c.color); };
         contColores.appendChild(btn);
       });
 
       contTamanos.innerHTML = '';
-      TAMANOS_TEXTO.forEach(function (t) {
+      TAMANOS_TEXTO.forEach(function (t, i) {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'mt-op';
         btn.textContent = t.nombre;
+        btn.setAttribute('data-clase', 'tx-tam-' + i);
         btn.onclick = function () { aplicarFormatoTexto('tamano', t.tamano); };
         contTamanos.appendChild(btn);
       });
@@ -3161,6 +3217,7 @@
         btn.type = 'button';
         btn.className = 'mt-op';
         btn.textContent = e.nombre;
+        btn.setAttribute('data-clase', e.clase);
         btn.onclick = function () { aplicarFormatoTexto('efecto', e.clase); };
         contEfectos.appendChild(btn);
       });
@@ -3171,12 +3228,41 @@
       if (btnCerrar) btnCerrar.onclick = cerrarMenuTexto;
     }
 
+    function marcarActivosMenu() {
+      const activos = {};
+      function sumar(nodo) {
+        if (!nodo || nodo.nodeType !== 1 || !nodo.classList) return;
+        Array.from(nodo.classList).forEach(function (cl) { activos[cl] = true; });
+      }
+      try {
+        const sel = document.getSelection();
+        if (sel && sel.rangeCount) {
+          const range = sel.getRangeAt(0);
+          let n = range.commonAncestorContainer;
+          if (n && n.nodeType === 3) n = n.parentNode;
+          while (n && n !== editorTexto) { sumar(n); n = n.parentNode; }
+          // Spans que toca la selección (aunque el ancestro común sea más arriba)
+          const cont = range.commonAncestorContainer;
+          if (cont && cont.nodeType === 1) {
+            const spans = cont.querySelectorAll('span');
+            for (let i = 0; i < spans.length; i++) {
+              try { if (range.intersectsNode(spans[i])) sumar(spans[i]); } catch (e2) {}
+            }
+          }
+        }
+      } catch (e) {}
+      const botones = document.querySelectorAll('#menu-texto [data-clase]');
+      for (let i = 0; i < botones.length; i++) {
+        botones[i].classList.toggle('activo', !!activos[botones[i].getAttribute('data-clase')]);
+      }
+    }
+
     function abrirMenuTexto(ev) {
       ev.preventDefault();
       ev.stopPropagation();
       const sel = document.getSelection();
       if (!sel || sel.rangeCount === 0) return;
-      const texto = sel.toString().trim();
+      const texto = sel.getRangeAt(0).toString().trim();
       if (!texto) return;
 
       rangoSeleccionado = obtenerRangoEditor();
@@ -3189,16 +3275,22 @@
       menu.classList.add('abierto');
       menuTextoAbierto = true;
 
-      // Posiciona cerca del cursor/selección
+      // Posiciona cerca de la selección (arriba si cabe, abajo si no)
       const range = sel.getRangeAt(0);
       const rect = range.getBoundingClientRect ? range.getBoundingClientRect() : null;
+      const ancho = menu.offsetWidth;
+      const alto = menu.offsetHeight;
       const x = rect ? rect.left : (ev.clientX || 0);
       const y = rect ? rect.top : (ev.clientY || 0);
-      menu.style.left = Math.min(x, window.innerWidth - menu.offsetWidth - 10) + 'px';
-      menu.style.top = Math.max(0, y - menu.offsetHeight - 8) + 'px';
+      const yAbajo = rect ? rect.bottom : y;
+      const left = Math.max(8, Math.min(x, window.innerWidth - ancho - 8));
+      let top = y - alto - 8;
+      if (top < 8) top = Math.min(yAbajo + 8, window.innerHeight - alto - 8);
+      if (top < 8) top = 8;
+      menu.style.left = left + 'px';
+      menu.style.top = top + 'px';
 
-      // Marca visual de botones activos según lo que ya tiene el rango
-      // (sencillo: no hay estado previo almacenado, se deja por defecto)
+      marcarActivosMenu();
     }
 
     function cerrarMenuTexto() {
@@ -3213,20 +3305,26 @@
       editorTexto.addEventListener('contextmenu', function (ev) {
         // Solo abre si hay selección real
         const sel = document.getSelection();
-        if (!sel || sel.rangeCount === 0 || !sel.toString().trim()) return;
+        if (!sel || sel.rangeCount === 0) return;
+        if (!sel.getRangeAt(0).toString().trim()) return;
         abrirMenuTexto(ev);
       });
-      // Clic fuera cierra
+      // El placeholder desaparece en cuanto hay texto
+      editorTexto.addEventListener('input', actualizarPlaceholderTexto);
+      // Clic fuera del menú cierra
       document.addEventListener('click', function (ev) {
         if (!menuTextoAbierto) return;
         const menu = document.getElementById('menu-texto');
-        if (menu && !menu.contains(ev.target) && ev.target !== editorTexto && !editorTexto.contains(ev.target)) {
-          cerrarMenuTexto();
-        }
+        if (menu && menu.contains(ev.target)) return;
+        cerrarMenuTexto();
       });
-      // Escape cierra
+      // Escape cierra solo el menú (no el expediente)
       document.addEventListener('keydown', function (ev) {
-        if (ev.key === 'Escape' && menuTextoAbierto) { cerrarMenuTexto(); ev.preventDefault(); }
+        if (ev.key === 'Escape' && menuTextoAbierto) {
+          cerrarMenuTexto();
+          ev.preventDefault();
+          if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+        }
       });
       // Scroll y resize cierran
       window.addEventListener('scroll', cerrarMenuTexto, true);
@@ -3237,13 +3335,14 @@
         nuevoArchivo();
         return;
       }
+      const plano = textoPlanoEditor();
       const reg = {
         id: archivoActivo,
         incidente: registroActual,
         rango: document.getElementById('ctrl-rango').value || 'G-0',
         selloInferior: document.getElementById('sello-confidencial').textContent,
-        texto: textoPlanoEditor(),
-        html: limpiarHtmlTexto(editorTexto.innerHTML || ''),
+        texto: plano,
+        html: plano.trim() ? limpiarHtmlTexto(editorTexto.innerHTML || '') : '',
         foto: fotoVisible,
         fotoData: fotoData,
         ts: Date.now()
