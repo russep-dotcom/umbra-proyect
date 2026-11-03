@@ -3,8 +3,8 @@
   "mensaje": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_movil": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_pc": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
-  "editor": "28",
-  "editor_mensaje": "UMBRA editor 28: zona de escritura y evidencia mejor organizadas, con renglones sutiles y controles más claros. Actualiza para verlo.",
-  "editor_mensaje_movil": "UMBRA editor 28: área de escritura más clara, renglones suaves y evidencia ordenada. Toca ACTUALIZAR.",
-  "editor_mensaje_pc": "UMBRA editor 28: escritura y evidencia en columnas equilibradas, con guía de renglones y controles más claros. Actualiza para verlo."
+  "editor": "29",
+  "editor_mensaje": "UMBRA editor 29: el texto hace crecer la hoja y los efectos se notan mejor con letras pequeñas. Actualiza para verlo.",
+  "editor_mensaje_movil": "UMBRA editor 29: la hoja crece con lo que escribes y los efectos se notan mejor en letra pequeña. Toca ACTUALIZAR.",
+  "editor_mensaje_pc": "UMBRA editor 29: la hoja crece con el texto y brillo, neón, sombra y contorno resaltan también en letras pequeñas. Actualiza para verlo."
 }

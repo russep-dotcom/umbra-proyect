@@ -538,18 +538,25 @@
     #texto-archivo { position: relative; width: 100%; height: 220px; min-height: 220px; background: transparent; border: none; border-radius: 0; font-family: 'Special Elite','Courier New',monospace; font-size: 15px; line-height: 1.8; color: #4a3418; padding: 6px 0; outline: none; overflow-y: auto; white-space: pre-wrap; overflow-wrap: break-word; user-select: text; -webkit-user-select: text; cursor: text; }
     #texto-archivo.vacio::before { content: attr(data-placeholder); position: absolute; top: 6px; left: 0; right: 0; color: #8f7648; pointer-events: none; user-select: none; }
     #vista-archivo.pantalla #texto-archivo {
+      flex: 1;
+      width: 100%;
+      min-width: 0;
+      height: auto;
+      min-height: 140px;
+      box-sizing: border-box;
       padding: 6px 10px;
       background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(1.8em - 1px), rgba(122,86,40,0.12) calc(1.8em - 1px), rgba(122,86,40,0.12) 1.8em);
       background-position: 0 6px;
       background-size: 100% 1.8em;
+      overflow-y: hidden;
     }
     #vista-archivo.pantalla #texto-archivo:focus-visible { outline: 1px dashed rgba(122,86,40,0.55); outline-offset: 3px; }
-    #texto-archivo .tx-brillo { text-shadow: 0 0 4px #fff8d8, 0 0 10px currentColor; }
-    #texto-archivo .tx-neon { text-shadow: 0 0 2px #fff, 0 0 6px currentColor, 0 0 14px currentColor, 0 0 22px currentColor; }
-    #texto-archivo .tx-sombra { text-shadow: 2px 2px 0 rgba(59,42,21,0.28), 4px 5px 8px rgba(0,0,0,0.28); }
-    #texto-archivo .tx-contorno { -webkit-text-stroke: 1px rgba(59,42,21,0.82); text-shadow: 0 0 2px rgba(255,248,220,0.9); }
-    #texto-archivo .tx-sin-efecto { text-shadow: none; -webkit-text-stroke: 0; }
-    #texto-archivo .tx-reset { color: #4a3418; font-size: 15px; text-shadow: none; -webkit-text-stroke: 0; }
+    #texto-archivo .tx-brillo { text-shadow: 0 0 max(1px, .18em) #fff8d8, 0 0 max(2px, .56em) #fff8d8, 0 0 max(3px, 1em) currentColor; filter: brightness(1.12); }
+    #texto-archivo .tx-neon { text-shadow: 0 0 max(1px, .16em) #fff, 0 0 max(2px, .42em) currentColor, 0 0 max(3px, .85em) currentColor; filter: drop-shadow(0 0 max(2px, .3em) currentColor); }
+    #texto-archivo .tx-sombra { text-shadow: max(1px, .08em) max(1px, .08em) 0 rgba(59,42,21,.48), max(2px, .16em) max(2px, .18em) max(3px, .42em) rgba(0,0,0,.48); }
+    #texto-archivo .tx-contorno { -webkit-text-stroke: max(.5px, .07em) rgba(59,42,21,.95); paint-order: stroke fill; text-shadow: 0 0 max(1px, .12em) rgba(255,248,220,.95), 0 0 max(2px, .35em) currentColor; }
+    #texto-archivo .tx-sin-efecto { text-shadow: none; -webkit-text-stroke: 0; filter: none; }
+    #texto-archivo .tx-reset { color: #4a3418; font-size: 15px; text-shadow: none; -webkit-text-stroke: 0; filter: none; }
 
     .sello-confidencial { position: absolute; bottom: 22px; left: 14px; font-family: 'Special Elite','Courier New',monospace; font-size: 12px; letter-spacing: 3px; color: #a31616; text-transform: uppercase; writing-mode: vertical-rl; z-index: 3; cursor: pointer; user-select: none; opacity: 0.8; mix-blend-mode: multiply; }
 
@@ -694,23 +701,28 @@
       min-height: 0;
       min-width: 0;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
       padding: clamp(16px, 2.5vh, 26px) clamp(14px, 2vw, 30px);
     }
     #vista-archivo.pantalla .hoja-wrap {
       width: min(100%, 1120px);
       max-width: 1120px;
       min-width: 0;
-      height: min(100%, calc(100dvh - 108px));
+      height: auto;
+      min-height: calc(100dvh - 108px);
       margin: auto;
       display: flex;
+      flex: 0 0 auto;
       filter: drop-shadow(0 10px 18px rgba(0,0,0,0.55));
     }
     #vista-archivo.pantalla .hoja {
-      flex: 1;
+      flex: 1 0 auto;
       width: 100%;
-      height: 100%;
-      min-height: 0;
+      height: auto;
+      min-height: calc(100dvh - 108px);
       min-width: 0;
       padding: clamp(24px, 3.2vw, 54px) clamp(26px, 4vw, 72px) clamp(30px, 4vw, 60px);
     }
@@ -781,8 +793,8 @@
       #vista-archivo.pantalla .archivo-header { flex-direction: row; align-items: center; padding: 6px 10px; }
       #vista-archivo.pantalla .archivo-header h2 { font-size: 12px; letter-spacing: 2px; }
       #vista-archivo.pantalla .carpeta-cuerpo { min-height: 0; padding: 10px 10px 8px; }
-      #vista-archivo.pantalla .hoja-wrap { width: 100%; max-width: none; height: min(100%, calc(100dvh - 96px)); margin: 0; }
-      #vista-archivo.pantalla .hoja { padding: 20px 18px 24px; min-height: 0; }
+      #vista-archivo.pantalla .hoja-wrap { width: 100%; max-width: none; height: auto; min-height: calc(100dvh - 96px); margin: auto; }
+      #vista-archivo.pantalla .hoja { height: auto; min-height: calc(100dvh - 96px); padding: 20px 18px 24px; }
       #vista-archivo.pantalla .doc-cabecera { font-size: 8px; letter-spacing: 2px; margin-bottom: 10px; }
       #vista-archivo.pantalla .cuerpo-doc { display: flex; flex-direction: column; gap: 10px; }
       #vista-archivo.pantalla .polaroid-wrap { align-self: flex-end; flex: 0 0 auto; width: 108px; margin: 0; }
@@ -2767,7 +2779,7 @@
       r.classList.toggle('apagada');
     });
     // ===== UPDATE PROPIO DEL EDITOR (clave editor, ambas pantallas) =====
-    const EDITOR_VERSION = '28';
+    const EDITOR_VERSION = '29';
     function mensajeEditor(j) {
       try {
         if (window.matchMedia('(max-width: 640px)').matches && j.editor_mensaje_movil) return j.editor_mensaje_movil;
@@ -3026,6 +3038,14 @@
       return out.replace(/\n+$/, '');
     }
 
+    function ajustarAlturaRegistro() {
+      if (!editorTexto) return;
+      const vista = document.getElementById('vista-archivo');
+      if (!vista || !vista.classList.contains('pantalla')) { editorTexto.style.height = ''; return; }
+      editorTexto.style.height = 'auto';
+      const minimo = parseFloat(window.getComputedStyle(editorTexto).minHeight) || 0;
+      editorTexto.style.height = Math.ceil(Math.max(minimo, editorTexto.scrollHeight)) + "px";
+    }
     function actualizarPlaceholderTexto() {
       if (!editorTexto) return;
       const vacio = (editorTexto.textContent || '').trim() === '';
@@ -3042,6 +3062,7 @@
         editorTexto.textContent = texto;
       }
       actualizarPlaceholderTexto();
+      ajustarAlturaRegistro();
     }
 
     /* ===== MENÚ CONTEXTUAL DE TEXTO ===== */
@@ -3146,6 +3167,7 @@
         sel.addRange(nr);
         rangoSeleccionado = obtenerRangoEditor();
         actualizarPlaceholderTexto();
+        ajustarAlturaRegistro();
         marcarActivosMenu();
         return;
       }
@@ -3179,6 +3201,7 @@
       });
       editorTexto.normalize();
       actualizarPlaceholderTexto();
+      ajustarAlturaRegistro();
 
       if (spans.length) {
         const nr = document.createRange();
@@ -3328,7 +3351,79 @@
         abrirMenuTexto(ev);
       });
       // El placeholder desaparece en cuanto hay texto
-      editorTexto.addEventListener('input', actualizarPlaceholderTexto);
+      editorTexto.addEventListener('input', function () {
+        actualizarPlaceholderTexto();
+        ajustarAlturaRegistro();
+      });
+      // Enter (beforeinput insertParagraph): preservar el formato del span actual en el nuevo renglón
+      editorTexto.addEventListener('beforeinput', function (ev) {
+        if (ev.inputType !== 'insertParagraph') return;
+        ev.preventDefault();
+        aplicarEnterConFormato();
+      });
+
+      function aplicarEnterConFormato() {
+        const sel = document.getSelection();
+        if (!sel || sel.rangeCount === 0) return;
+        const range = sel.getRangeAt(0);
+        // Encontrar el span ancestro con clases de formato que contiene el cursor
+        let nodo = range.startContainer;
+        if (nodo && nodo.nodeType === 3) nodo = nodo.parentNode;
+        let spanFmt = nodo;
+        while (spanFmt && spanFmt !== editorTexto) {
+          if (spanFmt.tagName === 'SPAN' && spanFmt.classList.length > 0) break;
+          spanFmt = spanFmt.parentNode;
+        }
+        const clases = spanFmt && spanFmt !== editorTexto
+          ? Array.from(spanFmt.classList).filter(function (cl) {
+              return cl.startsWith('tx-color-') || cl.startsWith('tx-tam-') || EFECTOS_TEXTO.indexOf(cl) >= 0;
+            })
+          : [];
+        // Dividir el nodo de texto en el punto del cursor y crear el nuevo renglón con el mismo formato
+        const startContainer = range.startContainer;
+        const startOffset = range.startOffset;
+        const padre = (startContainer && startContainer.nodeType === 3 ? startContainer.parentNode : startContainer) || editorTexto;
+        const nuevoDiv = document.createElement('div');
+        if (startContainer && startContainer.nodeType === 3) {
+          const textoAntes = startContainer.nodeValue.slice(0, startOffset);
+          const textoDespues = startContainer.nodeValue.slice(startOffset);
+          startContainer.nodeValue = textoAntes;
+          if (textoDespues) {
+            const s2 = document.createElement('span');
+            if (clases.length) s2.className = clases.join(' ');
+            s2.textContent = textoDespues;
+            nuevoDiv.appendChild(s2);
+          } else {
+            // Enter al final de un span con formato: el nuevo renglón empieza con un span que hereda las clases
+            const s2 = document.createElement('span');
+            if (clases.length) s2.className = clases.join(' ');
+            s2.appendChild(document.createElement('br'));
+            nuevoDiv.appendChild(s2);
+          }
+        } else {
+          nuevoDiv.appendChild(document.createElement('br'));
+        }
+        const contenedor = padre === editorTexto ? editorTexto : padre.parentNode;
+        const referencia = padre === editorTexto
+          ? (startContainer.nodeType === 3 ? startContainer.nextSibling : editorTexto.childNodes[startOffset] || null)
+          : padre.nextSibling;
+        if (!contenedor || !editorTexto.contains(contenedor)) {
+          editorTexto.appendChild(nuevoDiv);
+        } else {
+          const antes = referencia && referencia.parentNode === contenedor ? referencia : null;
+          contenedor.insertBefore(nuevoDiv, antes);
+        }
+        // Posicionar el cursor al inicio del nuevo div
+        const nr = document.createRange();
+        const primero = nuevoDiv.firstChild;
+        nr.setStart(primero, 0);
+        nr.setEnd(primero, 0);
+        sel.removeAllRanges();
+        sel.addRange(nr);
+        actualizarPlaceholderTexto();
+        ajustarAlturaRegistro();
+      }
+      window.aplicarEnterConFormato = aplicarEnterConFormato;
       // Clic fuera del menú cierra
       document.addEventListener('click', function (ev) {
         if (!menuTextoAbierto) return;
@@ -3397,7 +3492,10 @@
     document.getElementById('ctrl-sello-inferior').addEventListener('input', aplicarSelloInferior);
     cargarUltimoArchivo();
     instalarMenuTexto();
+    window.addEventListener('resize', ajustarAlturaRegistro);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', ajustarAlturaRegistro);
     actualizarPlaceholderTexto();
+    ajustarAlturaRegistro();
     aplicarGrado();
     renderCajon();
 

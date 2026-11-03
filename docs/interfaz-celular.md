@@ -20,6 +20,7 @@ Aplica a las 2 páginas: normal (portada + cajón) y editor.
 - Aviso de update con `mensaje_movil`.
 
 ## Editor (pendientes/editor.html)
+- Al mantener Enter, el área de texto y la hoja crecen; se desplaza el expediente para seguir escribiendo sin salirse del papel.
 - Registro: texto arriba y evidencia debajo; botones superiores con área táctil de 44px.
 - Registro a pantalla completa: hoja de ancho completo y centrada, con altura ajustada para dejar márgenes equilibrados en celular.
 - Fondo degradado + luna de sangre mejorada (220px, anillo orbital) + sello morado reforzado.
