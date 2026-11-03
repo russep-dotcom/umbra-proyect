@@ -680,14 +680,15 @@
       min-height: 0;
       min-width: 0;
       display: flex;
-      padding: 14px 18px 10px;
+      align-items: center;
+      padding: clamp(16px, 2.5vh, 26px) clamp(14px, 2vw, 30px);
     }
     #vista-archivo.pantalla .hoja-wrap {
-      width: 100%;
-      max-width: none;
+      width: min(100%, 1120px);
+      max-width: 1120px;
       min-width: 0;
-      height: 100%;
-      margin: 0;
+      height: min(100%, calc(100dvh - 108px));
+      margin: auto;
       display: flex;
       filter: drop-shadow(0 10px 18px rgba(0,0,0,0.55));
     }
@@ -765,7 +766,7 @@
       #vista-archivo.pantalla .archivo-header { flex-direction: row; align-items: center; padding: 6px 10px; }
       #vista-archivo.pantalla .archivo-header h2 { font-size: 12px; letter-spacing: 2px; }
       #vista-archivo.pantalla .carpeta-cuerpo { min-height: 0; padding: 10px 10px 8px; }
-      #vista-archivo.pantalla .hoja-wrap { width: 100%; margin: 0; }
+      #vista-archivo.pantalla .hoja-wrap { width: 100%; max-width: none; height: min(100%, calc(100dvh - 96px)); margin: 0; }
       #vista-archivo.pantalla .hoja { padding: 20px 18px 24px; min-height: 0; }
       #vista-archivo.pantalla .doc-cabecera { font-size: 8px; letter-spacing: 2px; margin-bottom: 10px; }
       #vista-archivo.pantalla .cuerpo-doc { flex-direction: column; gap: 10px; }
