@@ -29,6 +29,7 @@ lo del tablero, donde se mezcló todo).
   EVIDENCIA + hueco de foto. Textos escapados.
 
 ## Editor privado (sin versión pública, no enlazado)
+- El registro combina escritura con renglones guía muy sutiles y un espacio de evidencia claramente separado.
 - Puerta con clave + intro + portal/suave/crash + INTERFAZ y PUBLICAR.
   - La primera vez la etiqueta dice `PRIMERA VEZ · CREA TU CLAVE` (antes parecía que te estaba pidiendo una que no tenías). Enter también entra.
   - Si ya hay clave guardada aparece `¿OLVIDASTE LA CLAVE?` (debajo de ENTRAR, centrado): pide confirmación, borra `umbra_pass` de ese aparato y deja crear otra. No toca los registros.

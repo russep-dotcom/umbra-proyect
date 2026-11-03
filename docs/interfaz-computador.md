@@ -18,6 +18,7 @@ Aplica a las 2 páginas: normal (portada + cajón) y editor.
 - Aviso de update con `mensaje_pc`.
 
 ## Editor (pendientes/editor.html)
+- Registro: texto y evidencia en columnas separadas; barra superior con foco visible al usar teclado.
 - Registro a pantalla completa: hoja centrada, ancho máximo de 1120px y altura limitada para dejar un margen uniforme en computador.
 - Fondo negro original; luna completa; sello morado normal.
 - Título en Creepster; fundido puerta→panel al entrar.
