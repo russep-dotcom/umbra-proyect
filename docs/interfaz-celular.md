@@ -20,6 +20,7 @@ Aplica a las 2 páginas: normal (portada + cajón) y editor.
 - Aviso de update con `mensaje_movil`.
 
 ## Editor (pendientes/editor.html)
+- Registro a pantalla completa: hoja de ancho completo y centrada, con altura ajustada para dejar márgenes equilibrados en celular.
 - Fondo degradado + luna de sangre mejorada (220px, anillo orbital) + sello morado reforzado.
 - Título en Creepster; fundido puerta→panel al entrar.
 - Nota ♪ flotante; ajustes flotantes; pie visible.
