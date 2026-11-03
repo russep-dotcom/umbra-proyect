@@ -4,7 +4,7 @@
   "mensaje_movil": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "mensaje_pc": "UMBRA v4.35: sin sombrear textos. Recarga para ver el nuevo contenido.",
   "editor": "28",
-  "editor_mensaje": "UMBRA editor 27: hoja del expediente más proporcionada, centrada y ajustada a la pantalla. Actualiza para verlo.",
-  "editor_mensaje_movil": "UMBRA editor 27: la hoja del expediente queda centrada y con márgenes más parejos. Toca ACTUALIZAR.",
-  "editor_mensaje_pc": "UMBRA editor 27: hoja del expediente más proporcionada y centrada, con márgenes uniformes en pantalla. Actualiza para verlo."
+  "editor_mensaje": "UMBRA editor 28: zona de escritura y evidencia mejor organizadas, con renglones sutiles y controles más claros. Actualiza para verlo.",
+  "editor_mensaje_movil": "UMBRA editor 28: área de escritura más clara, renglones suaves y evidencia ordenada. Toca ACTUALIZAR.",
+  "editor_mensaje_pc": "UMBRA editor 28: escritura y evidencia en columnas equilibradas, con guía de renglones y controles más claros. Actualiza para verlo."
 }
